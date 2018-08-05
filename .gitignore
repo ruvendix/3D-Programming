@@ -32,3 +32,4 @@
 *.app
 *.db
 .vs/3D-Programming/v15/Browse.VC.opendb
+*.ipch
