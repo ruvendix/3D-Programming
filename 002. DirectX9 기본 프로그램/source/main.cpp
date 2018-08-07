@@ -37,7 +37,7 @@ HRESULT CreateProgramWindow();
 HRESULT InitDirectX9();
 
 // 에러 핸들러 함수입니다.
-void ErrorHandler(HRESULT hResult);
+//void ErrorHandler(HRESULT hResult);
 
 //////////////////////////////////////////////////////////////////////
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -109,8 +109,8 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	// 인터페이스를 해제해줍니다.
 	// 초기화했던 순서와 반대로 해제해줘야 합니다.
-	g_pD3DDevice9->Release();
-	g_pD3D9->Release();
+	SAFE_RELEASE(g_pD3DDevice9);
+	SAFE_RELEASE(g_pD3D9);
 
 	return msg.wParam; // 정상 종료입니다.
 }
@@ -121,19 +121,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT32 msg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		OutputDebugString(L"프로그램 창을 생성했습니다.");
+		RXDEBUGLOG("프로그램 창을 생성했습니다.");
 		return 0;
 	}
 	case WM_CLOSE:
 	{
 		::DestroyWindow(hWnd);
-		OutputDebugString(L"닫기 버튼을 클릭했습니다.");
+		RXDEBUGLOG("닫기 버튼을 클릭했습니다.");
 		return 0;
 	}
 	case WM_DESTROY:
 	{
 		::PostQuitMessage(0);
-		OutputDebugString(L"프로그램 창을 제거했습니다.");
+		RXDEBUGLOG("프로그램 창을 제거했습니다.");
 		return 0;
 	}
 	}
@@ -155,12 +155,12 @@ HRESULT InitInstance()
 	wcex.hIcon         = ::LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_RUVENDIX_ICO));
 	wcex.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = static_cast<HBRUSH>(::GetStockObject(GRAY_BRUSH));
-	wcex.lpszMenuName  = L"None";
+	wcex.lpszMenuName  = SZ_NONE;
 	wcex.lpszClassName = SZ_WINDOW_CLASS;
 	wcex.hIconSm       = wcex.hIcon;
 
 	::RegisterClassEx(&wcex);
-
+	
 	return S_OK;
 }
 
@@ -196,6 +196,7 @@ HRESULT CreateProgramWindow()
 		::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 		nullptr, g_hInst, nullptr);
 
+	NULLCHK_EFAIL_RETURN(g_hMainWnd);
 	::ShowWindow(g_hMainWnd, SW_NORMAL);
 	::UpdateWindow(g_hMainWnd);
 	::ShowCursor(TRUE);
@@ -208,6 +209,7 @@ HRESULT InitDirectX9()
 	// DirectX9 객체를 생성합니다.
 	// 인터페이스 포인터에 인스턴화된 객체를 반환해줍니다.
 	g_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
+	NULLCHK_EFAIL_RETURN(g_pD3D9);
 
 	//////////////////////////////////////////////////////////////////////
 	// 가상 디바이스 생성을 위한 정보를 설정해줍니다.
@@ -266,22 +268,8 @@ HRESULT InitDirectX9()
 		&D3DPP,                              // 가상 디바이스 생성을 위한 정보를 넘겨줍니다.
 		&g_pD3DDevice9);                     // 가상 디바이스의 객체 포인터를 받을 인터페이스 포인터입니다.
 
-	ErrorHandler(g_hResult);
+	DXERR_HANDLER(g_hResult);
+	NULLCHK_EFAIL_RETURN(g_pD3DDevice9);
 
 	return S_OK;
-}
-
-// 에러 핸들러입니다.
-// "DxErr.h"를 이용해서 에러를 좀 더 자세히 보여줍니다.
-// HRESULT로 반환하는 함수일 때만 사용할 수 있습니다.
-void ErrorHandler(HRESULT hResult)
-{
-	if (FAILED(hResult)) // hResult가 음수일 때만 처리합니다.
-	{
-		TCHAR szErr[256];
-		_sntprintf_s(szErr, 256, _T("Error : %s\nText : %s"),
-			DXGetErrorString(hResult), DXGetErrorDescription(hResult));
-		MessageBox(nullptr, szErr, L"Error", MB_OK);
-		__debugbreak(); // 디버그 모드일 때 중단점이 됩니다.
-	}
 }

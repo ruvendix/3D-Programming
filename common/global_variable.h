@@ -8,7 +8,6 @@
 
 HINSTANCE   g_hInst    = nullptr;
 HWND        g_hMainWnd = nullptr;
-
 HRESULT     g_hResult  = S_OK; // 에러 핸들러 변수입니다.
 
 #endif

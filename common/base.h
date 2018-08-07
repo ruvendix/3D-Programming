@@ -21,6 +21,7 @@
 
 #include "global_variable.h"
 #include "global_constant.h"
+#include "global_function.h"
 #include "macro.h"
 
 #endif
