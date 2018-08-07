@@ -270,7 +270,7 @@ HRESULT InitDirectX9()
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 	g_hResult = g_pD3D9->CreateDevice(
-		D3DADAPTER_DEFAULT,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
+		3,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
 		D3DCREATE_HARDWARE_VERTEXPROCESSING, // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
@@ -290,5 +290,6 @@ void ErrorHandler(HRESULT hResult)
 		_sntprintf_s(szErr, 256, _T("Error : %s\nText : %s"),
 			DXGetErrorString(hResult), DXGetErrorDescription(hResult));
 		MessageBox(nullptr, szErr, L"Error", MB_OK);
+		__debugbreak(); // 디버그 모드일 때 중단점이 됩니다.
 	}
 }

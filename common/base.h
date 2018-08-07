@@ -7,6 +7,7 @@
 #define BASE_H__
 
 #include <tchar.h>
+#include <intrin.h>
 
 #include <cstdio>
 #include <cstring>
