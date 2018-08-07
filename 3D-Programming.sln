@@ -8,6 +8,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED79-188F-4244-972F-1B0FD7B263D5}"
 	ProjectSection(SolutionItems) = preProject
 		common\base.h = common\base.h
+		common\global_constant.h = common\global_constant.h
+		common\global_variable.h = common\global_variable.h
+		common\macro.h = common\macro.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002. DirectX9 기본 프로그램", "002. DirectX9 기본 프로그램\002. DirectX9 기본 프로그램.vcxproj", "{BFDD0B78-D937-4266-812C-9A882CE7AC2F}"

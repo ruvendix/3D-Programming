@@ -1,16 +1,7 @@
 #include "../../common/Base.h"
 
 //////////////////////////////////////////////////////////////////////
-// 전역 변수입니다.
-HINSTANCE   g_hInst    = nullptr;
-HWND        g_hMainWnd = nullptr;
-const INT32 g_defaultClientWidth  = 1024;
-const INT32 g_defaultClientHeight = 768;
-LPCTSTR     g_szWindowClass       = L"Default_3D_Program";
-LPCTSTR     g_szProgramTitle      = L"Default_3D_Program";
-
-//////////////////////////////////////////////////////////////////////
-// 함수 선언입니다.
+// <함수 선언부입니다>
 //
 // 윈도우 메시지를 처리해주는 윈도우 프로시저입니다.
 LRESULT CALLBACK WndProc(HWND hWnd, UINT32 msg, WPARAM wParam, LPARAM lParam);
@@ -22,7 +13,7 @@ HRESULT InitInstance();
 HRESULT CreateProgramWindow();
 
 //////////////////////////////////////////////////////////////////////
-// Win32 API는 WinMain()이 진입점입니다.
+// <Win32 API는 WinMain()이 진입점입니다>
 INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	                     HINSTANCE hPrevInstance,
 	                     LPTSTR    szCmdLine,
@@ -106,7 +97,7 @@ HRESULT InitInstance()
 	wcex.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = static_cast<HBRUSH>(::GetStockObject(GRAY_BRUSH));
 	wcex.lpszMenuName  = L"None";
-	wcex.lpszClassName = g_szWindowClass;
+	wcex.lpszClassName = SZ_WINDOW_CLASS;
 	wcex.hIconSm       = wcex.hIcon;
 
 	::RegisterClassEx(&wcex);
@@ -118,10 +109,7 @@ HRESULT CreateProgramWindow()
 {
 	// 클라이언트 영역의 크기를 설정해줍니다.
 	RECT clientRt;
-	clientRt.left   = 0;
-	clientRt.top    = 0;
-	clientRt.right  = g_defaultClientWidth;
-	clientRt.bottom = g_defaultClientHeight;
+	::SetRect(&clientRt, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
 
 	// 클라이언트 영역의 크기를 조정해줍니다.
 	// 프레임 윈도우를 제외하고 순수하게 클라이언트 영역의 크기만 계산합니다.
@@ -140,7 +128,7 @@ HRESULT CreateProgramWindow()
 	// X 좌표는 ((1920 - 1024) / 2), Y 좌표는 ((1080 - 768) / 2)이 됩니다.
 	// 조정된 클라이언트 영역의 크기를 포함해서 프로그램 창을 생성해야 하므로
 	// g_defaultClientWidth가 아니라 clientRt.right - clientRt.left로 설정해야 합니다.
-	g_hMainWnd = ::CreateWindow(g_szWindowClass, g_szProgramTitle,
+	g_hMainWnd = ::CreateWindow(SZ_WINDOW_CLASS, SZ_PROGRAM_TITLE,
 		WS_OVERLAPPEDWINDOW | WS_VISIBLE,
 		(screenWidth - (clientRt.right - clientRt.left)) / 2,
 		(screenHeight - (clientRt.bottom - clientRt.top)) / 2,

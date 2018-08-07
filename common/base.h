@@ -19,4 +19,8 @@
 
 #include <windows.h>
 
+#include "global_variable.h"
+#include "global_constant.h"
+#include "macro.h"
+
 #endif
