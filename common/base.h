@@ -7,7 +7,7 @@
 #define BASE_H__
 
 #include <tchar.h>
-#include <intrin.h>
+#include <intrin.h> // __debugbreak()를 사용하기 위한 헤더 파일입니다.
 
 #include <cstdio>
 #include <cstring>

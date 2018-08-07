@@ -270,7 +270,7 @@ HRESULT InitDirectX9()
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 	g_hResult = g_pD3D9->CreateDevice(
-		3,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
+		D3DADAPTER_DEFAULT,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
 		D3DCREATE_HARDWARE_VERTEXPROCESSING, // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
@@ -282,6 +282,9 @@ HRESULT InitDirectX9()
 	return S_OK;
 }
 
+// 에러 핸들러입니다.
+// "DxErr.h"를 이용해서 에러를 좀 더 자세히 보여줍니다.
+// HRESULT로 반환하는 함수일 때만 사용할 수 있습니다.
 void ErrorHandler(HRESULT hResult)
 {
 	if (FAILED(hResult)) // hResult가 음수일 때만 처리합니다.
