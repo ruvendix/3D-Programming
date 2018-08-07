@@ -13,5 +13,8 @@
 // 프로젝트에 DirectX SDK가 설치된 경로를 설정해줘야 합니다.
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <DxErr.h>
+
+#include "../resource.h"
 
 #endif

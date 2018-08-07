@@ -8,6 +8,9 @@
 
 #include <tchar.h>
 
+#include <cstdio>
+#include <cstring>
+
 // 불필요한 내용을 포함하지 않기 위해서 사용합니다.
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN

@@ -2,6 +2,8 @@
 // DirectX9의 LIB 연결입니다.
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "DxErr.lib")
+#pragma comment(lib, "legacy_stdio_definitions.lib")
 
 #include "base_project.h"
 
@@ -24,6 +26,9 @@ IDirect3D9* g_pD3D9 = nullptr;
 // 시스템, 렌더링, 리소스 관리, 셰이더 등 다양한 작업을 처리해줍니다.
 IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 
+// 에러 핸들러 변수입니다.
+HRESULT g_hResult = S_OK;
+
 //////////////////////////////////////////////////////////////////////
 // 함수 선언입니다.
 //
@@ -38,6 +43,9 @@ HRESULT CreateProgramWindow();
 
 // DirectX9을 초기화해주는 함수입니다.
 HRESULT InitDirectX9();
+
+// 에러 핸들러 함수입니다.
+void ErrorHandler(HRESULT hResult);
 
 //////////////////////////////////////////////////////////////////////
 // Win32 API는 WinMain()이 진입점입니다.
@@ -152,7 +160,7 @@ HRESULT InitInstance()
 	wcex.cbClsExtra    = 0;
 	wcex.cbWndExtra    = 0;
 	wcex.hInstance     = g_hInst;
-	wcex.hIcon         = ::LoadIcon(nullptr, IDI_APPLICATION);
+	wcex.hIcon         = ::LoadIcon(g_hInst, MAKEINTRESOURCE(IDI_RUVENDIX_ICO));
 	wcex.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
 	wcex.hbrBackground = static_cast<HBRUSH>(::GetStockObject(GRAY_BRUSH));
 	wcex.lpszMenuName  = L"None";
@@ -261,7 +269,7 @@ HRESULT InitDirectX9()
 	//////////////////////////////////////////////////////////////////////
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
-	g_pD3D9->CreateDevice(
+	g_hResult = g_pD3D9->CreateDevice(
 		D3DADAPTER_DEFAULT,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
@@ -269,5 +277,18 @@ HRESULT InitDirectX9()
 		&D3DPP,                              // 가상 디바이스 생성을 위한 정보를 넘겨줍니다.
 		&g_pD3DDevice9);                     // 가상 디바이스의 객체 포인터를 받을 인터페이스 포인터입니다.
 
+	ErrorHandler(g_hResult);
+
 	return S_OK;
+}
+
+void ErrorHandler(HRESULT hResult)
+{
+	if (FAILED(hResult)) // hResult가 음수일 때만 처리합니다.
+	{
+		TCHAR szErr[256];
+		_sntprintf_s(szErr, 256, _T("Error : %s\nText : %s"),
+			DXGetErrorString(hResult), DXGetErrorDescription(hResult));
+		MessageBox(nullptr, szErr, L"Error", MB_OK);
+	}
 }
