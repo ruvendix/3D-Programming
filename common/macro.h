@@ -66,19 +66,18 @@ if (ptr)\
 #define __TFILE__      WIDEN2(__FILE__)
 #define __TFUNCTION__  WIDEN2(__FUNCTION__)
 #else
-#define __MFILE__      __FILE__
-#define __MFUNCTION__  __FUNCTION__
+#define __TFILE__      __FILE__
+#define __TFUNCTION__  __FUNCTION__
 #endif
 
-#define MSGBOX_A(szOutPut)         ::MessageBoxA(nullptr, szOutPut, "Caption", MB_OK)
-#define MSGBOX_W(szOutPut)         ::MessageBoxW(nullptr, L#szOutPut, L"Caption", MB_OK)
-
+// 메시지 박스만 출력합니다.
+// RXLOG()와 RXERRLOG()는 활용 범위가 더 넓습니다.
 #if defined(_UNICODE) || defined(UNICODE)
-#define MSGBOX(szOutPut)           MSGBOX_W(L#szOutPut)
-#define ERRMSGBOX(szErr)           RX::ShowErrorMessageBoxW(L#szErr, __TFILE__, __LINE__)
-#else						       
-#define MSGBOX(szOutPut)           MSGBOX_A(szOutPut)
-#define ERRMSGBOX(szErr)           RX::ShowErrorMessageBoxA(szErr, __TFILE__, __LINE__)
+#define MSGBOX(szText)      RX::ShowMessageBoxW(L#szText)
+#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxW(L#szErr, __TFILE__, __LINE__)
+#else					         
+#define MSGBOX(szText)      RX::ShowMessageBoxA(szText)
+#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxA(szErr, __TFILE__, __LINE__)
 #endif
 
 #define NULLCHK(ptr)\
@@ -101,37 +100,44 @@ if (ptr == nullptr)\
     return E_FAIL;\
 }
 
-#define NULLCHK_FAIL_HEAPALLOC(ptr)\
+#define NULLCHK_HEAPALLOC(ptr)\
 if (ptr == nullptr)\
 {\
-    ERRMSGBOX(#ptr " is fail heap alloc!");\
+    ERRMSGBOX(#ptr " is failed in heap allocation!");\
 }
 
-#define ERRMSG_RETURNBOX(szErr) ERRMSGBOX(szErr); return
-#define ERRMSG_EFAIL_RETURNBOX(szErr)  ERRMSGBOX(szErr); return E_FAIL
+#define ERRMSG_RETURNBOX(szErr)          ERRMSGBOX(szErr); return
+#define ERRMSG_EFAIL_RETURNBOX(szErr)    ERRMSGBOX(szErr); return E_FAIL
 
 //////////////////////////////////////////////////////////////////////////
 // 스트링 관련 매크로입니다.
 //
+// 디버그 모드만 작동, 릴리즈 모드는 X
+// RXDEBUGLOG() RX::RXDebugLogImpl()
 #if defined(DEBUG) || defined(_DEBUG)
-#define RXLOG(sz) MSGBOX_A(sz)
+#define RXDEBUGLOG(szText) RX::RXDebugLogImpl(szText)
 #else
-#define RXLOG(sz) OutputDebugStringA(sz)
+#define RXDEBUGLOG(szText) __noop
 #endif
 
-// 디버그 모드에서는 메시지 박스로 알려주고
-// 그 외의 모드에서는 로그로만 남깁니다. (파일에 쓰도록 개선 예정)
+// 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
+// 메시지 박스 출력 지원, 일반 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
-#define RXERRLOG(szErr) OutputDebugStringA(szErr)
+#define RXLOG(bMessageBox, szFormat, ...)\
+RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, false, szFormat, __VA_ARGS__)
 #else
-#define RXERRLOG(szErr) RX::ShowErrorMessageBoxA(szErr, __FILE__, __LINE__)
+#define RXLOG(bMessageBox, szFormat, ...)\
+RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, false, szFormat, __VA_ARGS__)
 #endif
 
-// printf()를 사용하는 것처럼 서식 문자열이 필요합니다.
+// 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
+// 메시지 박스 출력 지원, 에러 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
-#define RXDEBUGLOG(strFormat, ...) RX::OutputDebugLog(strFormat, __VA_ARGS__)
+#define RXERRLOG(bMessageBox, szFormat, ...)\
+RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, true, szFormat, __VA_ARGS__)
 #else
-#define RXDEBUGLOG(strFormat) __noop
+#define RXERRLOG(bMessageBox, szFormat, ...)\
+RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, true, szFormat, __VA_ARGS__)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -145,11 +151,20 @@ if (ptr == nullptr)\
 #define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255)
 
 // 파일, 라인, 에러 이름, 에러 내용
-#define DXERR_HANDLER(result)\
-if (FAILED(result))\
+#if defined(DEBUG) || defined(_DEBUG)
+#define DXERR_HANDLER(hResult)\
+if (FAILED(hResult))\
 {\
-    RX::ErrorHandler(DXGetErrorStringA(result),\
-        DXGetErrorDescriptionA(result));\
+    RX::DXErrorHandler(DXGetErrorStringA(hResult),\
+        DXGetErrorDescriptionA(hResult), PROJECT_MODE::PM_DEBUG);\
 }
+#else
+#define DXERR_HANDLER(hResult)\
+if (FAILED(hResult))\
+{\
+    RX::DXErrorHandler(DXGetErrorStringA(hResult),\
+        DXGetErrorDescriptionA(hResult), PROJECT_MODE::PM_RELEASE);\
+}
+#endif
 
 #endif

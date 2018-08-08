@@ -16,7 +16,7 @@
 // DirectX9 객체입니다.
 // 가상 디바이스 생성, 그래픽 카드 호환성 확인 등의 작업을 처리해줍니다.
 IDirect3D9* g_pD3D9 = nullptr;
-
+//
 // DirectX9 가상 디바이스입니다.
 // 시스템, 렌더링, 리소스 관리, 셰이더 등 다양한 작업을 처리해줍니다.
 IDirect3DDevice9* g_pD3DDevice9 = nullptr;
@@ -26,18 +26,15 @@ IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 //
 // 윈도우 메시지를 처리해주는 윈도우 프로시저입니다.
 LRESULT CALLBACK WndProc(HWND hWnd, UINT32 msg, WPARAM wParam, LPARAM lParam);
-
+//
 // 윈도우 클래스를 초기화해주는 함수입니다.
 HRESULT InitInstance();
-
+//
 // 프로그램 창을 생성해주는 함수입니다.
 HRESULT CreateProgramWindow();
-
+//
 // DirectX9을 초기화해주는 함수입니다.
 HRESULT InitDirectX9();
-
-// 에러 핸들러 함수입니다.
-//void ErrorHandler(HRESULT hResult);
 
 //////////////////////////////////////////////////////////////////////
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -270,6 +267,6 @@ HRESULT InitDirectX9()
 
 	DXERR_HANDLER(g_hResult);
 	NULLCHK_EFAIL_RETURN(g_pD3DDevice9);
-
+	
 	return S_OK;
 }

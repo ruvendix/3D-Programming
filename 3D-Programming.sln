@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED
 		common\base.h = common\base.h
 		common\global_constant.h = common\global_constant.h
 		common\global_function.h = common\global_function.h
+		common\global_type.h = common\global_type.h
 		common\global_variable.h = common\global_variable.h
 		common\macro.h = common\macro.h
 	EndProjectSection

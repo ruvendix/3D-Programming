@@ -10,6 +10,7 @@
 #include <intrin.h> // __debugbreak()를 사용하기 위한 헤더 파일입니다.
 
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 // 불필요한 내용을 포함하지 않기 위해서 사용합니다.
@@ -19,6 +20,7 @@
 
 #include <windows.h>
 
+#include "global_type.h"
 #include "global_variable.h"
 #include "global_constant.h"
 #include "global_function.h"
