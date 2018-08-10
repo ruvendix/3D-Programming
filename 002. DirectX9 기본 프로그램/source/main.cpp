@@ -3,7 +3,7 @@
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "DxErr.lib")
-
+//
 // Window Kit의 버전이 높아서 링크되지 않는 함수들을
 // 링크시켜주기 위해 사용합니다. 예를 들면 "DxErr.h"가 있습니다.
 #pragma comment(lib, "legacy_stdio_definitions.lib")
@@ -28,7 +28,7 @@ IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 LRESULT CALLBACK WndProc(HWND hWnd, UINT32 msg, WPARAM wParam, LPARAM lParam);
 //
 // 윈도우 클래스를 초기화해주는 함수입니다.
-HRESULT InitInstance();
+HRESULT InitInstance(); 
 //
 // 프로그램 창을 생성해주는 함수입니다.
 HRESULT CreateProgramWindow();
@@ -51,12 +51,26 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	// 인스턴스 핸들을 전역 변수에도 등록해줍니다.
 	g_hInst = hInstance;
 
-	// 프로그램 초기화 및 창을 생성합니다.
-	InitInstance();
-	CreateProgramWindow();
+	// 프로그램 초기화입니다.
+	if (FAILED(InitInstance()))
+	{
+		RXERRLOG(false, "프로그램 비정상 종료!");
+		::exit(1);
+	}
 	
+	// 프로그램 창을 생성합니다.
+	if (FAILED(CreateProgramWindow()))
+	{
+		RXERRLOG(false, "프로그램 비정상 종료!");
+		::exit(1);
+	}
+
 	// DirectX9을 초기화합니다.
-	InitDirectX9();
+	if (FAILED(InitDirectX9()))
+	{
+		RXERRLOG(false, "프로그램 비정상 종료!");
+		::exit(1);
+	}
 
 	MSG msg;
 	::ZeroMemory(&msg, sizeof(msg));
@@ -108,7 +122,9 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	// 초기화했던 순서와 반대로 해제해줘야 합니다.
 	SAFE_RELEASE(g_pD3DDevice9);
 	SAFE_RELEASE(g_pD3D9);
+	RXLOG(false, "DirectX9 안전하게 전부 해제!");
 
+	RXLOG(false, "프로그램 정상 종료!");
 	return msg.wParam; // 정상 종료입니다.
 }
 
@@ -156,8 +172,12 @@ HRESULT InitInstance()
 	wcex.lpszClassName = SZ_WINDOW_CLASS;
 	wcex.hIconSm       = wcex.hIcon;
 
-	::RegisterClassEx(&wcex);
+	if (::RegisterClassEx(&wcex) == 0)
+	{
+		ERRMSG_EFAIL_RETURNBOX("프로그램 초기화 실패!");
+	}
 	
+	RXLOG(false, "프로그램 초기화 성공!");
 	return S_OK;
 }
 
@@ -193,11 +213,12 @@ HRESULT CreateProgramWindow()
 		::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 		nullptr, g_hInst, nullptr);
 
-	NULLCHK_EFAIL_RETURN(g_hMainWnd);
+	NULLCHK_EFAIL_RETURN(g_hMainWnd, "프로그램 창 생성 실패!");
 	::ShowWindow(g_hMainWnd, SW_NORMAL);
 	::UpdateWindow(g_hMainWnd);
 	::ShowCursor(TRUE);
 
+	RXLOG(false, "프로그램 창 생성 성공!");
 	return S_OK;
 }
 
@@ -206,7 +227,8 @@ HRESULT InitDirectX9()
 	// DirectX9 객체를 생성합니다.
 	// 인터페이스 포인터에 인스턴화된 객체를 반환해줍니다.
 	g_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
-	NULLCHK_EFAIL_RETURN(g_pD3D9);
+	NULLCHK_EFAIL_RETURN(g_pD3D9, "DirectX9 객체 생성 실패!");
+	RXLOG(false, "DirectX9 객체 생성 성공!");
 
 	//////////////////////////////////////////////////////////////////////
 	// 가상 디바이스 생성을 위한 정보를 설정해줍니다.
@@ -264,9 +286,10 @@ HRESULT InitDirectX9()
 		D3DCREATE_HARDWARE_VERTEXPROCESSING, // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
 		&D3DPP,                              // 가상 디바이스 생성을 위한 정보를 넘겨줍니다.
 		&g_pD3DDevice9);                     // 가상 디바이스의 객체 포인터를 받을 인터페이스 포인터입니다.
-
-	DXERR_HANDLER(g_hResult);
-	NULLCHK_EFAIL_RETURN(g_pD3DDevice9);
 	
+	DXERR_HANDLER();
+	NULLCHK_EFAIL_RETURN(g_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패!");
+	
+	RXLOG(false, "DirectX9 가상 디바이스 생성 성공!");
 	return S_OK;
 }

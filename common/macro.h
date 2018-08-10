@@ -71,13 +71,14 @@ if (ptr)\
 #endif
 
 // 메시지 박스만 출력합니다.
-// RXLOG()와 RXERRLOG()는 활용 범위가 더 넓습니다.
+// 프로젝트 모드에 상관없이 무조건 알려줘야 할 때 사용합니다.
+// ERRMSGBOX()는 로그로도 출력합니다.
 #if defined(_UNICODE) || defined(UNICODE)
-#define MSGBOX(szText)      RX::ShowMessageBoxW(L#szText)
-#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxW(L#szErr, __TFILE__, __LINE__)
+#define MSGBOX(szText)      RX::ShowMessageBoxImplW(L#szText)
+#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxImplW(L#szErr, __TFILE__, __LINE__); RXERRLOG(false, szErr)
 #else					         
-#define MSGBOX(szText)      RX::ShowMessageBoxA(szText)
-#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxA(szErr, __TFILE__, __LINE__)
+#define MSGBOX(szText)      RX::ShowMessageBoxImplA(szText)
+#define ERRMSGBOX(szErr)    RX::ShowErrorMessageBoxImplA(szErr, __TFILE__, __LINE__); RXERRLOG(false, szErr)
 #endif
 
 #define NULLCHK(ptr)\
@@ -86,17 +87,19 @@ if (ptr == nullptr)\
     ERRMSGBOX(#ptr " is nullptr!");\
 }
 
-#define NULLCHK_RETURN(ptr)\
+#define NULLCHK_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
     ERRMSGBOX(#ptr " is nullptr!");\
+	ERRMSG_RETURNBOX(szErr);\
     return;\
 }
 
-#define NULLCHK_EFAIL_RETURN(ptr)\
+#define NULLCHK_EFAIL_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
     ERRMSGBOX(#ptr " is nullptr!");\
+	ERRMSG_EFAIL_RETURNBOX(szErr);\
     return E_FAIL;\
 }
 
@@ -124,20 +127,20 @@ if (ptr == nullptr)\
 // 메시지 박스 출력 지원, 일반 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
 #define RXLOG(bMessageBox, szFormat, ...)\
-RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, false, szFormat, __VA_ARGS__)
+RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, false, __FILE__, __LINE__, szFormat, __VA_ARGS__)
 #else
 #define RXLOG(bMessageBox, szFormat, ...)\
-RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, false, szFormat, __VA_ARGS__)
+RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, false, _FILE__, __LINE__, szFormat, __VA_ARGS__)
 #endif
 
 // 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
 // 메시지 박스 출력 지원, 에러 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
 #define RXERRLOG(bMessageBox, szFormat, ...)\
-RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, true, szFormat, __VA_ARGS__)
+RX::RXLogImpl(PROJECT_MODE::PM_DEBUG, bMessageBox, true, __FILE__, __LINE__, szFormat, __VA_ARGS__)
 #else
 #define RXERRLOG(bMessageBox, szFormat, ...)\
-RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, true, szFormat, __VA_ARGS__)
+RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, true, __FILE__, __LINE__, szFormat, __VA_ARGS__)
 #endif
 
 //////////////////////////////////////////////////////////////////////////
@@ -151,19 +154,21 @@ RX::RXLogImpl(PROJECT_MODE::PM_RELEASE, bMessageBox, true, szFormat, __VA_ARGS__
 #define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255)
 
 // 파일, 라인, 에러 이름, 에러 내용
+// 전역 변수인 g_hResult로만 작동합니다.
+// 매크로 함수에 인자를 넣어도 빌드는 되지만 경고가 발생합니다.
 #if defined(DEBUG) || defined(_DEBUG)
-#define DXERR_HANDLER(hResult)\
-if (FAILED(hResult))\
+#define DXERR_HANDLER()\
+if (FAILED(g_hResult))\
 {\
-    RX::DXErrorHandler(DXGetErrorStringA(hResult),\
-        DXGetErrorDescriptionA(hResult), PROJECT_MODE::PM_DEBUG);\
+    RX::DXErrorHandlerImpl(DXGetErrorStringA(g_hResult),\
+        DXGetErrorDescriptionA(g_hResult), PROJECT_MODE::PM_DEBUG, __FILE__, __LINE__);\
 }
 #else
-#define DXERR_HANDLER(hResult)\
-if (FAILED(hResult))\
+#define DXERR_HANDLER()\
+if (FAILED(g_hResult))\
 {\
-    RX::DXErrorHandler(DXGetErrorStringA(hResult),\
-        DXGetErrorDescriptionA(hResult), PROJECT_MODE::PM_RELEASE);\
+    RX::DXErrorHandlerImpl(DXGetErrorStringA(g_hResult),\
+        DXGetErrorDescriptionA(g_hResult), PROJECT_MODE::PM_RELEASE, __FILE__, __LINE__);\
 }
 #endif
 

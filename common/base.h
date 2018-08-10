@@ -21,9 +21,9 @@
 #include <windows.h>
 
 #include "global_type.h"
-#include "global_variable.h"
 #include "global_constant.h"
-#include "global_function.h"
+#include "global_variable.h"
+#include "global_function_impl.h"
 #include "macro.h"
 
 #endif
