@@ -6,7 +6,7 @@
 #ifndef BASE_PROJECT_H__
 #define BASE_PROJECT_H__
 
-#include "../../common/base.h"
+#include "../common/common.h"
 
 //////////////////////////////////////////////////////////////////////
 // DirectX9을 사용하기 위한 헤더 파일입니다.
@@ -15,6 +15,6 @@
 #include <d3dx9.h>
 #include <DxErr.h>
 
-#include "../resource.h"
+#include "resource.h"
 
 #endif

@@ -13,13 +13,16 @@
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="base_project.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="source\base_project.h">
-      <Filter>source</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>resource</Filter>
+    </ClInclude>
+    <ClInclude Include="base_project.h">
+      <Filter>source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

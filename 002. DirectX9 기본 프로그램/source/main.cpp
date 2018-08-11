@@ -1,5 +1,10 @@
+#include "base_project.h"
+#include "../common/global_variable_definition.h"
+
 //////////////////////////////////////////////////////////////////////
-// <DirectX9의 LIB 연결입니다>
+// <라이브러리 연결부입니다.>
+//
+// DirectX9 라이브러리 연결입니다
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "DxErr.lib")
@@ -7,8 +12,9 @@
 // Window Kit의 버전이 높아서 링크되지 않는 함수들을
 // 링크시켜주기 위해 사용합니다. 예를 들면 "DxErr.h"가 있습니다.
 #pragma comment(lib, "legacy_stdio_definitions.lib")
-
-#include "base_project.h"
+//
+// RX 라이브러리 연결입니다.
+#pragma comment(lib, "RXBaseDX_Debug.lib")
 
 //////////////////////////////////////////////////////////////////////
 // <전역 변수 선언부입니다>
@@ -47,6 +53,11 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
+
+#if defined(_UNICODE) || defined(UNICODE)
+	// 기본 로케일을 한국어로 설정합니다.
+	_wsetlocale(LC_ALL, L"kor");
+#endif
 
 	// 인스턴스 핸들을 전역 변수에도 등록해줍니다.
 	g_hInst = hInstance;
@@ -279,7 +290,7 @@ HRESULT InitDirectX9()
 	//////////////////////////////////////////////////////////////////////
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
-	g_hResult = g_pD3D9->CreateDevice(
+	g_hDXResult = g_pD3D9->CreateDevice(
 		D3DADAPTER_DEFAULT,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
@@ -289,7 +300,7 @@ HRESULT InitDirectX9()
 	
 	DXERR_HANDLER();
 	NULLCHK_EFAIL_RETURN(g_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패!");
-	
+
 	RXLOG(false, "DirectX9 가상 디바이스 생성 성공!");
 	return S_OK;
 }

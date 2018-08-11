@@ -1,4 +1,6 @@
 #include "../../common/Base.h"
+#include "../../common/global_variable_definition.h"
+//#include "../../common/global_constant.h"
 
 //////////////////////////////////////////////////////////////////////
 // <함수 선언부입니다>

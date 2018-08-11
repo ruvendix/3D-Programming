@@ -8,10 +8,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED79-188F-4244-972F-1B0FD7B263D5}"
 	ProjectSection(SolutionItems) = preProject
 		common\base.h = common\base.h
+		common\common.h = common\common.h
 		common\global_constant.h = common\global_constant.h
-		common\global_function_impl.h = common\global_function_impl.h
+		common\global_function.h = common\global_function.h
 		common\global_type.h = common\global_type.h
-		common\global_variable.h = common\global_variable.h
+		common\global_variable_declaration.h = common\global_variable_declaration.h
 		common\macro.h = common\macro.h
 	EndProjectSection
 EndProject
