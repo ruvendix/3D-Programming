@@ -84,41 +84,39 @@ if (ptr)\
 // 프로젝트 모드에 상관없이 무조건 알려줘야 할 때 사용합니다.
 // ERRMSGBOX()는 로그로도 출력합니다.
 #if defined(_UNICODE) || defined(UNICODE)
-#define MSGBOX(szText)      RX::ShowMessageBoxImplW(L#szText)
-#define ERRMSGBOX(szErr)    RXERRLOG(L#szErr)
+#define MSGBOX(szText)      RX::ShowMessageBoxImplW(L##szText)
 #else					         
 #define MSGBOX(szText)      RX::ShowMessageBoxImplA(szText)
-#define ERRMSGBOX(szErr)    RXERRLOG(szErr)
 #endif
 
 #define NULLCHK(ptr)\
 if (ptr == nullptr)\
 {\
-    ERRMSGBOX(#ptr " is nullptr!");\
+    RXERRLOG(#ptr " is nullptr!");\
 }
 
 #define NULLCHK_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
-    ERRMSGBOX(#ptr " is nullptr!");\
-	ERRMSG_RETURNBOX(szErr);\
+    RXERRLOG(#ptr " is nullptr!");\
+	RXERRLOG_RETURN(szErr);\
 }
 
 #define NULLCHK_EFAIL_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
-    ERRMSGBOX(#ptr " is nullptr!");\
-	ERRMSG_EFAIL_RETURNBOX(szErr);\
+    RXERRLOG(#ptr " is nullptr!");\
+	RXERRLOG_EFAIL_RETURN(szErr);\
 }
 
 #define NULLCHK_HEAPALLOC(ptr)\
 if (ptr == nullptr)\
 {\
-    ERRMSGBOX(#ptr " is failed in heap allocation!");\
+    RXERRLOG(#ptr " is failed in heap allocation!");\
 }
 
-#define ERRMSG_RETURNBOX(szErr)          ERRMSGBOX(szErr); return
-#define ERRMSG_EFAIL_RETURNBOX(szErr)    ERRMSGBOX(szErr); return E_FAIL
+#define RXERRLOG_RETURN(szErr)       RXERRLOG(szErr); return
+#define RXERRLOG_EFAIL_RETURN(szErr) RXERRLOG(szErr); return E_FAIL
 
 //////////////////////////////////////////////////////////////////////////
 // 스트링 관련 매크로입니다.
@@ -127,7 +125,7 @@ if (ptr == nullptr)\
 // RXDEBUGLOG() RX::RXDebugLogImpl()
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define RXDEBUGLOG(szText) RX::RXDebugLogImplW(L#szText)
+#define RXDEBUGLOG(szText) RX::RXDebugLogImplW(L##szText)
 	#else
 	#define RXDEBUGLOG(szText) RX::RXDebugLogImplA(szText)
 	#endif
@@ -141,11 +139,11 @@ if (ptr == nullptr)\
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, L#szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, L#szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
@@ -164,10 +162,10 @@ if (ptr == nullptr)\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, L#szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, L#szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)

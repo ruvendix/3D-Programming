@@ -65,21 +65,21 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	// 프로그램 초기화입니다.
 	if (FAILED(InitInstance()))
 	{
-		RXERRLOG(false, "프로그램 비정상 종료!");
+		RXERRLOG("프로그램 비정상 종료!");
 		::exit(1);
 	}
 	
 	// 프로그램 창을 생성합니다.
 	if (FAILED(CreateProgramWindow()))
 	{
-		RXERRLOG(false, "프로그램 비정상 종료!");
+		RXERRLOG("프로그램 비정상 종료!");
 		::exit(1);
 	}
 
 	// DirectX9을 초기화합니다.
 	if (FAILED(InitDirectX9()))
 	{
-		RXERRLOG(false, "프로그램 비정상 종료!");
+		RXERRLOG("프로그램 비정상 종료!");
 		::exit(1);
 	}
 
@@ -185,7 +185,7 @@ HRESULT InitInstance()
 
 	if (::RegisterClassEx(&wcex) == 0)
 	{
-		ERRMSG_EFAIL_RETURNBOX("프로그램 초기화 실패!");
+		RXERRLOG_EFAIL_RETURN("프로그램 초기화 실패!");
 	}
 	
 	RXLOG(false, "프로그램 초기화 성공!");
@@ -291,7 +291,7 @@ HRESULT InitDirectX9()
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 	g_hDXResult = g_pD3D9->CreateDevice(
-		D3DADAPTER_DEFAULT,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
+		3,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
 		D3DCREATE_HARDWARE_VERTEXPROCESSING, // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
