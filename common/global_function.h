@@ -28,6 +28,8 @@ namespace RX
 	DLL_DEFINE void ShowErrorMessageBoxImplW(const WCHAR* szErr, const WCHAR* szFileName, INT32 line);
 	DLL_DEFINE void DXErrorHandlerImplW(HRESULT DXError, PROJECT_MODE eMode, const WCHAR* szFileName,
 		INT32 line, const WCHAR* szFunSig);
+	DLL_DEFINE void Win32LastErrorHandlerImplW(PROJECT_MODE eMode, const WCHAR* szFileName,
+		INT32 line, const WCHAR* szFunSig);
 
 	// 멀티바이트 버전입니다.
 	DLL_DEFINE void RXDebugLogImplA(const CHAR* szText);
@@ -36,6 +38,8 @@ namespace RX
 	DLL_DEFINE void ShowMessageBoxImplA(const CHAR* szText);
 	DLL_DEFINE void ShowErrorMessageBoxImplA(const CHAR* szErr, const CHAR* szFileName, INT32 line);
 	DLL_DEFINE void DXErrorHandlerImplA(HRESULT DXError, PROJECT_MODE eMode, const CHAR* szFileName,
+		INT32 line, const CHAR* szFunSig);
+	DLL_DEFINE void Win32LastErrorHandlerImplA(PROJECT_MODE eMode, const CHAR* szFileName,
 		INT32 line, const CHAR* szFunSig);
 
 } // namespace RX end

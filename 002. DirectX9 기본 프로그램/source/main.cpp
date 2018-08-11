@@ -291,7 +291,7 @@ HRESULT InitDirectX9()
 
 	// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 	g_hDXResult = g_pD3D9->CreateDevice(
-		3,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
+		0,                  // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 		D3DDEVTYPE_HAL,                      // HAL Device를 사용하겠다는 것입니다.
 		D3DPP.hDeviceWindow,                 // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
 		D3DCREATE_HARDWARE_VERTEXPROCESSING, // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
@@ -300,6 +300,8 @@ HRESULT InitDirectX9()
 	
 	DXERR_HANDLER();
 	NULLCHK_EFAIL_RETURN(g_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패!");
+
+	WIN32ERR_HANDLER();
 
 	RXLOG(false, "DirectX9 가상 디바이스 생성 성공!");
 	return S_OK;

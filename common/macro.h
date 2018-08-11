@@ -214,4 +214,33 @@ if (FAILED(g_hDXResult))\
 	#endif
 #endif
 
+//////////////////////////////////////////////////////////////////////////
+// 그 외의 매크로입니다.
+//
+#if defined(_UNICODE) || defined(UNICODE)
+#define Win32LastErrorHandler Win32LastErrorHandlerImplW()
+#else
+#define Win32LastErrorHandler Win32LastErrorHandlerImplA()
+#endif
+
+// 파일, 라인, 에러 이름, 에러 내용
+// GetLastError()를 이용한 Win32 API의 에러 핸들러입니다.
+#if defined(DEBUG) || defined(_DEBUG)
+#if defined(_UNICODE) || defined(UNICODE)
+#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
+			__TFILE__, __LINE__, __TFUNSIG__);
+#else
+#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
+			__TFILE__, __LINE__, __TFUNSIG__);
+#endif
+#else
+#if defined(_UNICODE) || defined(UNICODE)
+#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
+			__TFILE__, __LINE__, __TFUNSIG__);
+#else
+#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
+			__TFILE__, __LINE__, __TFUNSIG__);
+#endif
+#endif
+
 #endif

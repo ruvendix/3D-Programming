@@ -247,4 +247,51 @@ namespace RX
 		__debugbreak();
 	}
 
+	// ::GetLastError()를 이용한 Win32 API 에러 핸들러입니다.
+	DLL_DEFINE void Win32LastErrorHandlerImplA(PROJECT_MODE eMode, const CHAR* szFileName,
+		INT32 line, const CHAR* szFunSig)
+	{
+		DWORD errorCode = ::GetLastError();
+		if (errorCode == 0)
+		{
+			return;
+		}
+
+		CHAR* szText = nullptr;
+		::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+			nullptr, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), szText, 0, nullptr);
+
+		CHAR szErr[DEFAULT_STRING_LENGTH];
+		_snprintf_s(szErr, _countof(szErr), "Error : %0x\nText : %s", errorCode, szText);
+		ShowErrorMessageBoxImplA(szErr, szFileName, line);
+
+		RXLogImplA(eMode, false, false, szFileName, line, szFunSig,
+			"Error(%0x) Text(%s)", errorCode, szText);
+
+		LocalFree(szText);
+	}
+
+	DLL_DEFINE void Win32LastErrorHandlerImplW(PROJECT_MODE eMode, const WCHAR* szFileName,
+		INT32 line, const WCHAR* szFunSig)
+	{
+		DWORD errorCode = ::GetLastError();
+		if (errorCode == 0)
+		{
+			return;
+		}
+
+		WCHAR* szText = nullptr;
+		::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+			nullptr, errorCode, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), szText, 0, nullptr);
+
+		WCHAR szErr[DEFAULT_STRING_LENGTH];
+		_snwprintf_s(szErr, _countof(szErr), L"Error : %0x\nText : %s", errorCode, szText);
+		ShowErrorMessageBoxImplW(szErr, szFileName, line);
+
+		RXLogImplW(eMode, false, false, szFileName, line, szFunSig,
+			L"Error(%0x) Text(%s)", errorCode, szText);
+
+		LocalFree(szText);
+	}
+
 } // namespace RX end
