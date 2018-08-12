@@ -109,6 +109,13 @@ namespace RX
 		fopen_s(&pLog, g_szLogFile, "at");
 		fprintf(pLog, szFull);
 		fclose(pLog);
+
+		if (bError)
+		{
+			// 디버그 모드일 때 중단점이 됩니다.
+			// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+			__debugbreak();
+		}
 	}
 
 	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bError,
@@ -177,6 +184,13 @@ namespace RX
 		fopen_s(&pLog, g_szLogFile, "at");
 		fwprintf(pLog, szFull);
 		fclose(pLog);
+
+		if (bError)
+		{
+			// 디버그 모드일 때 중단점이 됩니다.
+			// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+			__debugbreak();
+		}
 	}
 
 	// 메시지 박스를 보여주는 함수입니다.
@@ -196,10 +210,6 @@ namespace RX
 		CHAR szText[DEFAULT_STRING_LENGTH];
 		_snprintf_s(szText, _countof(szText), "%s\n%s(%d)", szErr, szFileName, line);
 		::MessageBoxA(nullptr, szText, "Error", MB_ICONERROR);
-
-		// 디버그 모드일 때 중단점이 됩니다.
-		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
-		__debugbreak();
 	}
 
 	DLL_DEFINE void ShowErrorMessageBoxImplW(const WCHAR* szErr, const WCHAR* szFileName, INT32 line)
@@ -207,10 +217,6 @@ namespace RX
 		WCHAR szText[DEFAULT_STRING_LENGTH];
 		_snwprintf_s(szText, _countof(szText), L"%s\n%s(%d)", szErr, szFileName, line);
 		::MessageBoxW(nullptr, szText, L"Error", MB_ICONERROR);
-
-		// 디버그 모드일 때 중단점이 됩니다.
-		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
-		__debugbreak();
 	}
 
 	// 에러 핸들러입니다. 실제 구현부입니다.
@@ -229,12 +235,8 @@ namespace RX
 		ShowErrorMessageBoxImplA(szErr, szFileName, line);
 
 		// 로그로도 출력합니다.
-		RXLogImplA(eMode, false, false, szFileName, line, szFunSig,
+		RXLogImplA(eMode, false, true, szFileName, line, szFunSig,
 			"Error(%s) Text(%s)", szErrName, szErrText);
-
-		// 디버그 모드일 때 중단점이 됩니다.
-		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
-		__debugbreak();
 	}
 
 	DLL_DEFINE void DXErrorHandlerImplW(HRESULT DXError, PROJECT_MODE eMode,
@@ -248,12 +250,8 @@ namespace RX
 		ShowErrorMessageBoxImplW(szErr, szFileName, line);
 
 		// 로그로도 출력합니다.
-		RXLogImplW(eMode, false, false, szFileName, line, szFunSig,
+		RXLogImplW(eMode, false, true, szFileName, line, szFunSig,
 			L"Error(%s) Text(%s)", szErrName, szErrText);
-
-		// 디버그 모드일 때 중단점이 됩니다.
-		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
-		__debugbreak();
 	}
 
 	// ::GetLastError()를 이용한 Win32 API 에러 핸들러입니다.
@@ -274,7 +272,7 @@ namespace RX
 		_snprintf_s(szErr, _countof(szErr), "Error : %0x\nText : %s", errorCode, szText);
 		ShowErrorMessageBoxImplA(szErr, szFileName, line);
 
-		RXLogImplA(eMode, false, false, szFileName, line, szFunSig,
+		RXLogImplA(eMode, false, true, szFileName, line, szFunSig,
 			"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);
@@ -301,14 +299,10 @@ namespace RX
 		_snwprintf_s(szErr, _countof(szErr), L"Error : %0x\nText : %s", errorCode, szText);
 		ShowErrorMessageBoxImplW(szErr, szFileName, line);
 
-		RXLogImplW(eMode, false, false, szFileName, line, szFunSig,
+		RXLogImplW(eMode, false, true, szFileName, line, szFunSig,
 			L"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);
-
-		// 디버그 모드일 때 중단점이 됩니다.
-		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
-		__debugbreak();
 	}
 
 } // namespace RX end

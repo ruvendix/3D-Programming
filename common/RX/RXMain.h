@@ -33,6 +33,7 @@ namespace RX
 		virtual HRESULT DriveMain();
 		virtual HRESULT Update();
 		virtual HRESULT Release();
+		virtual void    ChangeScreenMode(bool bFullScreen);
 
 		void ChangeProgramTitle(const TCHAR* szTitle);
 
@@ -70,9 +71,15 @@ namespace RX
 			m_arrSubFunc[static_cast<INT32>(type)].func = func;
 		}
 
+		void setFullScreen(bool bFullScreen)
+		{
+			m_bFullScreen = bFullScreen;
+		}
+
 	protected:
 		// ====================================================================================
 		// 기본 정보
+		bool             m_bFullScreen;
 		HWND             m_hMainWnd;
 		HINSTANCE        m_hInst;
 		WNDPROC          m_wndProc;

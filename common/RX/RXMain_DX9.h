@@ -35,6 +35,9 @@ namespace RX
 		virtual HRESULT InitD3D9();
 		virtual HRESULT DriveMain() override;
 		virtual HRESULT Release()   override;
+		virtual void    ChangeScreenMode(bool bFullScreen) override;
+
+		HRESULT VerifyDevice(D3DPRESENT_PARAMETERS* pD3DPP);
 
 		// ====================================================================================
 		// 메인 루프
@@ -67,6 +70,8 @@ namespace RX
 		// ====================================================================================
 		// 기본 정보
 		bool                 m_bLostDevice;
+		bool                 m_bMSAA;      // 멀티 샘플링(안티 얼라이징) 사용 여부입니다.
+		DWORD                m_dwBehavior; // 정점 처리 방식입니다.
 		IDirect3D9*          m_pD3D9;
 		IDirect3DDevice9*    m_pD3DDevice9;
 		RXFrame              m_frame;

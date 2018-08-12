@@ -14,6 +14,11 @@
 #include "stdafx.h"
 #include "RXMain.h"
 
+namespace
+{
+	RX::RXMain* g_pThis = nullptr;
+}
+
 HRESULT CALLBACK DefaultSubInit()
 {
 	return S_OK;
@@ -84,9 +89,25 @@ LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 			RXDEBUGLOG("ESC 키를 눌렀습니다.");
 			break;
 		}
+		case VK_UP:
+		{
+			g_pThis->ChangeScreenMode(false);
+			break;
+		}
 		}
 
 		return 0;
+	}
+	case WM_SYSCOMMAND:
+	{
+		switch (wParam)
+		{
+		case SC_MAXIMIZE:
+		{
+			g_pThis->ChangeScreenMode(true);
+			break;
+		}
+		}
 	}
 	}
 
@@ -98,6 +119,9 @@ namespace RX
 
 	RXMain::RXMain()
 	{
+		g_pThis = this;
+
+		m_bFullScreen  = false;
 		m_hMainWnd     = nullptr;
 		m_hInst        = nullptr;
 		m_wndProc      = DefaultWndProc;
@@ -192,10 +216,20 @@ namespace RX
 		RECT clientRt;
 		::SetRect(&clientRt, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
 
+		DWORD dwStyle;
+		if (m_bFullScreen)
+		{
+			dwStyle = WS_EX_TOPMOST | WS_VISIBLE | WS_POPUP;
+		}
+		else
+		{
+			dwStyle = WS_OVERLAPPEDWINDOW;
+		}
+
 		// 클라이언트 영역의 크기를 조정해줍니다.
 		// 프레임 윈도우를 제외하고 순수하게 클라이언트 영역의 크기만 계산합니다.
 		// 즉, g_defaultClientWidth와 g_defaultClientHeight로 설정한 값이 적용됩니다.
-		::AdjustWindowRect(&clientRt, WS_OVERLAPPEDWINDOW | WS_VISIBLE, FALSE);
+		::AdjustWindowRect(&clientRt, dwStyle, FALSE);
 
 		// 현재 모니터 해상도에 설정된 값을 가져옵니다.
 		// 현재 설정된 해상도가 1920 X 1080이라면
@@ -209,8 +243,7 @@ namespace RX
 		// X 좌표는 ((1920 - 1024) / 2), Y 좌표는 ((1080 - 768) / 2)이 됩니다.
 		// 조정된 클라이언트 영역의 크기를 포함해서 프로그램 창을 생성해야 하므로
 		// g_defaultClientWidth가 아니라 clientRt.right - clientRt.left로 설정해야 합니다.
-		m_hMainWnd = ::CreateWindow(SZ_WINDOW_CLASS, SZ_PROGRAM_TITLE,
-			WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+		m_hMainWnd = ::CreateWindow(SZ_WINDOW_CLASS, SZ_PROGRAM_TITLE, dwStyle,
 			(screenWidth - (clientRt.right - clientRt.left)) / 2,
 			(screenHeight - (clientRt.bottom - clientRt.top)) / 2,
 			clientRt.right - clientRt.left,
@@ -231,6 +264,8 @@ namespace RX
 	{
 		MSG msg;
 		::ZeroMemory(&msg, sizeof(msg));
+
+		bool m_bDriveFailure = false;
 
 		for ( ; ; )
 		{
@@ -256,7 +291,19 @@ namespace RX
 			else
 			{
 				Update();
+
+				if (m_routineState == ROUTINE_STATE::FAILURE)
+				{
+					m_msgCode = 0;
+					m_bDriveFailure = true;
+					break;
+				}
 			}
+		}
+
+		if (m_bDriveFailure)
+		{
+			return E_FAIL;
 		}
 
 		return S_OK;
@@ -320,6 +367,37 @@ namespace RX
 		Release();
 		RXLOG(false, "프로그램 정상 종료!");
 		return S_OK;
+	}
+
+	void RXMain::ChangeScreenMode(bool bFullScreen)
+	{
+		m_bFullScreen = bFullScreen;
+
+		INT32 screenWidth  = GetSystemMetrics(SM_CXSCREEN);
+		INT32 screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		if (m_bFullScreen) // 전체 화면 모드
+		{
+			SetWindowLongPtr(m_hMainWnd, GWL_STYLE, WS_EX_TOPMOST | WS_VISIBLE | WS_POPUP);
+			SetWindowPos(m_hMainWnd, HWND_TOP, 0, 0,
+				screenWidth, screenHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
+
+			RXLOG(false, "전체 화면 모드로 전환!");
+		}
+		else // 창 화면 모드
+		{
+			RECT clientRt;
+			::SetRect(&clientRt, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
+			AdjustWindowRect(&clientRt, WS_OVERLAPPEDWINDOW, false);
+
+			SetWindowLongPtr(m_hMainWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
+			SetWindowPos(m_hMainWnd, HWND_TOP,
+				(screenWidth - (clientRt.right - clientRt.left)) / 2,
+				(screenHeight - (clientRt.bottom - clientRt.top)) / 2,
+				clientRt.right, clientRt.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
+
+			RXLOG(false, "창 화면 모드로 전환!");
+		}
 	}
 
 } // namespace RX end
