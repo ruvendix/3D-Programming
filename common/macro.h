@@ -1,14 +1,15 @@
-//////////////////////////////////////////////////////////////////////
-// <작성 날짜>
-// 2018.08.07
-//
-// <작성자>
-// Ruvendix
-//
-// <파일 내용>
-// 공동으로 사용되는 매크로 함수 모음입니다.
-// 전역 함수에 영향을 받습니다.
-//////////////////////////////////////////////////////////////////////
+/*====================================================================================
+ *
+ * Copyright (C) Ruvendix. All Rights Reserved.
+ *
+ * <작성 날짜>
+ * 2018-08-07
+ *
+ * <파일 내용>
+ * 공동으로 사용되는 매크로 모음입니다.
+ * 전역 함수에 영향을 받습니다.
+ *
+ ====================================================================================*/
 #ifndef MACRO_H__
 #define MACRO_H__
 
@@ -226,21 +227,21 @@ if (FAILED(g_hDXResult))\
 // 파일, 라인, 에러 이름, 에러 내용
 // GetLastError()를 이용한 Win32 API의 에러 핸들러입니다.
 #if defined(DEBUG) || defined(_DEBUG)
-#if defined(_UNICODE) || defined(UNICODE)
-#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
-			__TFILE__, __LINE__, __TFUNSIG__);
-#else
-#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
-			__TFILE__, __LINE__, __TFUNSIG__);
+	#if defined(_UNICODE) || defined(UNICODE)
+	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
+				__TFILE__, __LINE__, __TFUNSIG__);
+	#else
+	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
+				__TFILE__, __LINE__, __TFUNSIG__);
 #endif
 #else
-#if defined(_UNICODE) || defined(UNICODE)
-#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
-			__TFILE__, __LINE__, __TFUNSIG__);
-#else
-#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
-			__TFILE__, __LINE__, __TFUNSIG__);
-#endif
+	#if defined(_UNICODE) || defined(UNICODE)
+	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
+				__TFILE__, __LINE__, __TFUNSIG__);
+	#else
+	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
+				__TFILE__, __LINE__, __TFUNSIG__);
+	#endif
 #endif
 
 #endif
