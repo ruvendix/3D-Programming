@@ -18,6 +18,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002. DirectX9 기본 프로그램", "002. DirectX9 기본 프로그램\002. DirectX9 기본 프로그램.vcxproj", "{BFDD0B78-D937-4266-812C-9A882CE7AC2F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "main", "main", "{5F94FFF2-2847-42FD-8F2F-419438183329}"
+	ProjectSection(SolutionItems) = preProject
+		common\main_sub.cpp = common\main_sub.cpp
+		common\main_sub.h = common\main_sub.h
+		common\main_sub_DX9.cpp = common\main_sub_DX9.cpp
+		common\main_sub_DX9.h = common\main_sub_DX9.h
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -45,6 +53,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F94FFF2-2847-42FD-8F2F-419438183329} = {BE46ED79-188F-4244-972F-1B0FD7B263D5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64BA5704-1040-4CFB-9F96-5BCA7924C7DC}

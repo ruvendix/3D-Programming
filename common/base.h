@@ -15,11 +15,13 @@
 
 #include <tchar.h>
 #include <intrin.h> // __debugbreak()를 사용하기 위한 헤더 파일입니다.
+#include <crtdbg.h> // 디버그 메모리 추적을 위한 헤더 파일
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <clocale>
+#include <ctime>
 
 // SDKDDKVer.h를 포함하면 최고 수준의 가용성을 가진 Windows 플랫폼이 정의됩니다.
 // 이전 Windows 플랫폼에 대해 응용 프로그램을 빌드하려는 경우에는 SDKDDKVer.h를 포함하기 전에
@@ -32,6 +34,7 @@
 #endif
 
 #include <windows.h>
+#include <mmsystem.h>
 
 #ifdef RXDLL_EXPORTS
 #define DLL_DEFINE __declspec(dllexport)
@@ -41,5 +44,6 @@
 
 #include "global_type.h"
 #include "global_constant.h"
+#include "global_variable_declaration.h"
 
 #endif

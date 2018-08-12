@@ -15,7 +15,7 @@
 
 #include "global_function.h"
 
-//////////////////////////////////////////////////////////////////////////
+// ====================================================================================
 // 동적 할당, Release, LostDevice, ResetDevice 관련 매크로입니다.
 // 동적 할당 영역은 _NORMAL_BLOCK으로 설정합니다.
 //
@@ -66,7 +66,7 @@ if (ptr)\
 	ptr->OnResetDevice();\
 }
 
-//////////////////////////////////////////////////////////////////////////
+// ====================================================================================
 // 메시지 박스 관련 매크로입니다.
 //
 #if defined(_UNICODE) || defined(UNICODE)
@@ -119,7 +119,7 @@ if (ptr == nullptr)\
 #define RXERRLOG_RETURN(szErr)       RXERRLOG(szErr); return
 #define RXERRLOG_EFAIL_RETURN(szErr) RXERRLOG(szErr); return E_FAIL
 
-//////////////////////////////////////////////////////////////////////////
+// ====================================================================================
 // 스트링 관련 매크로입니다.
 //
 // 디버그 모드만 작동, 릴리즈 모드는 X
@@ -178,7 +178,7 @@ if (ptr == nullptr)\
 	#endif
 #endif
 
-//////////////////////////////////////////////////////////////////////////
+// ====================================================================================
 // DirectX 관련 매크로입니다.
 //
 #define DXCOLOR_WHITE   D3DCOLOR_ARGB(255, 255, 255, 255)
@@ -188,34 +188,34 @@ if (ptr == nullptr)\
 #define DXCOLOR_BLUE    D3DCOLOR_ARGB(255,   0,   0, 255)
 #define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255)
 
-#define DXERR_HANDLER()\
-if (FAILED(g_hDXResult))\
+// DirectX 에러 핸들러 매크로입니다.
+// HRESULT값만 넣어야 정상 작동합니다.
+#define DXERR_HANDLER(hDXResult)\
+if (FAILED(hDXResult))\
 {\
-	DXERR_HANDLER_IMPL();\
+	DXERR_HANDLER_IMPL(hDXResult);\
 }
 
 // 파일, 라인, 에러 이름, 에러 내용
-// 전역 변수인 g_hResult로만 작동합니다.
-// 매크로 함수에 인자를 넣어도 빌드는 되지만 경고가 발생합니다.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define DXERR_HANDLER_IMPL() RX::DXErrorHandlerImplW(g_hDXResult, PROJECT_MODE::PM_DEBUG,\
+	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_DEBUG,\
 				__TFILE__, __LINE__, __TFUNSIG__);
 	#else
-	#define DXERR_HANDLER_IMPL() RX::DXErrorHandlerImplA(g_hDXResult, PROJECT_MODE::PM_DEBUG,\
+	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_DEBUG,\
 				__TFILE__, __LINE__, __TFUNSIG__);
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define DXERR_HANDLER_IMPL() RX::DXErrorHandlerImplW(g_hDXResult, PROJECT_MODE::PM_RELEASE,\
+	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_RELEASE,\
 				__TFILE__, __LINE__, __TFUNSIG__);
 	#else
-	#define DXERR_HANDLER_IMPL() RX::DXErrorHandlerImplA(g_hDXResult, PROJECT_MODE::PM_RELEASE,\
+	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_RELEASE,\
 				__TFILE__, __LINE__, __TFUNSIG__);
 	#endif
 #endif
 
-//////////////////////////////////////////////////////////////////////////
+// ====================================================================================
 // 그 외의 매크로입니다.
 //
 #if defined(_UNICODE) || defined(UNICODE)

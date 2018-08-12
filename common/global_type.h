@@ -19,4 +19,36 @@ enum class PROJECT_MODE : INT32
 	PM_RELEASE,
 };
 
+enum class ROUTINE_STATE : INT32
+{
+	NORMAL = 0,
+	FAILURE,
+	EXIT,
+};
+
+enum class SUBFUNC_TYPE : INT32
+{
+	INIT,
+	UPDATE,
+	RENDER,
+	RELEASE,
+	LOSTDEVICE,
+	RESETDEVICE,
+	MAX,
+};
+
+typedef HRESULT(CALLBACK* SubFunc)();
+
+// 서브 루틴 타입과 함수는 1:1 맞춤입니다.
+struct SubFuncInfo
+{
+	const static INT32 MAX_SUBFUNC = static_cast<INT32>(SUBFUNC_TYPE::MAX);
+	SubFunc func;
+
+	void Reset()
+	{
+		func = nullptr;
+	}
+};
+
 #endif
