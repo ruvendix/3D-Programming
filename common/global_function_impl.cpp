@@ -196,6 +196,10 @@ namespace RX
 		CHAR szText[DEFAULT_STRING_LENGTH];
 		_snprintf_s(szText, _countof(szText), "%s\n%s(%d)", szErr, szFileName, line);
 		::MessageBoxA(nullptr, szText, "Error", MB_ICONERROR);
+
+		// 디버그 모드일 때 중단점이 됩니다.
+		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+		__debugbreak();
 	}
 
 	DLL_DEFINE void ShowErrorMessageBoxImplW(const WCHAR* szErr, const WCHAR* szFileName, INT32 line)
@@ -203,6 +207,10 @@ namespace RX
 		WCHAR szText[DEFAULT_STRING_LENGTH];
 		_snwprintf_s(szText, _countof(szText), L"%s\n%s(%d)", szErr, szFileName, line);
 		::MessageBoxW(nullptr, szText, L"Error", MB_ICONERROR);
+
+		// 디버그 모드일 때 중단점이 됩니다.
+		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+		__debugbreak();
 	}
 
 	// 에러 핸들러입니다. 실제 구현부입니다.
@@ -270,6 +278,10 @@ namespace RX
 			"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);
+
+		// 디버그 모드일 때 중단점이 됩니다.
+		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+		__debugbreak();
 	}
 
 	DLL_DEFINE void Win32LastErrorHandlerImplW(PROJECT_MODE eMode, const WCHAR* szFileName,
@@ -293,6 +305,10 @@ namespace RX
 			L"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);
+
+		// 디버그 모드일 때 중단점이 됩니다.
+		// 디버거가 없을 때는 프로그램이 자동 종료됩니다.
+		__debugbreak();
 	}
 
 } // namespace RX end

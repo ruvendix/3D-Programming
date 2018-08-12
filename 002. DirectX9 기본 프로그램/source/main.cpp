@@ -13,7 +13,7 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	RX::RXMain main;
+	RX::RXMain_DX9 main;
 	main.RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
 
 	return main.getMessageCode();
