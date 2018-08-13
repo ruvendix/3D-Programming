@@ -89,14 +89,9 @@ LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 			RXDEBUGLOG("ESC 키를 눌렀습니다.");
 			break;
 		}
-		case VK_UP:
-		{
-			g_pThis->ChangeScreenMode(false);
-			break;
-		}
 		}
 
-		return 0;
+		break;
 	}
 	case WM_SYSCOMMAND:
 	{
@@ -104,10 +99,34 @@ LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 		{
 		case SC_MAXIMIZE:
 		{
-			g_pThis->ChangeScreenMode(true);
+			g_pThis->ToggleFullScreenMode(true);
+			RXDEBUGLOG("최대화를 클릭했습니다. 창 화면 -> 전체 화면");
 			break;
 		}
 		}
+
+		break;
+	}
+	}
+
+	// Alt + Enter를 위한 처리입니다.
+	switch (msg)
+	{
+	case WM_KEYDOWN:
+	case WM_SYSKEYDOWN:
+	{
+		// 왼쪽 Alt + Enter입니다.
+		// 오른쪽 Alt는 WM_KEYDOWN으로 들어옵니다.
+		if (wParam == VK_RETURN)
+		{
+			if ((HIWORD(lParam) & KF_ALTDOWN)) // Alt를 눌렀는지 비트 플래그로 확인합니다.
+			{
+				g_pThis->ToggleFullScreenMode();
+				RXDEBUGLOG("왼쪽 Alt + Enter를 눌렀습니다. 전체 화면 <-> 창 화면");
+			}
+		}
+
+		break;
 	}
 	}
 
@@ -369,9 +388,17 @@ namespace RX
 		return S_OK;
 	}
 
-	void RXMain::ChangeScreenMode(bool bFullScreen)
+	void RXMain::ToggleFullScreenMode(bool bFullScreen)
 	{
-		m_bFullScreen = bFullScreen;
+		if (bFullScreen) // 최대화 키를 위한 변수입니다.
+		{
+			m_bFullScreen = bFullScreen;
+		}
+		else
+		{
+			// 전체 화면이면 창 화면으로, 창 화면이면 전체 화면으로 전환합니다.
+			m_bFullScreen == true ? m_bFullScreen = false : m_bFullScreen = true;
+		}
 
 		INT32 screenWidth  = GetSystemMetrics(SM_CXSCREEN);
 		INT32 screenHeight = GetSystemMetrics(SM_CYSCREEN);

@@ -35,7 +35,7 @@ namespace RX
 		virtual HRESULT InitD3D9();
 		virtual HRESULT DriveMain() override;
 		virtual HRESULT Release()   override;
-		virtual void    ChangeScreenMode(bool bFullScreen) override;
+		virtual void    ToggleFullScreenMode(bool bFullScreen = false) override;
 
 		HRESULT VerifyDevice(D3DPRESENT_PARAMETERS* pD3DPP);
 

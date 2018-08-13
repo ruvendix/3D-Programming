@@ -20,62 +20,6 @@ namespace
 	RX::RXMain_DX9* g_pThis = nullptr;
 }
 
-LRESULT CALLBACK DefaultWndProcDX9(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg)
-	{
-	case WM_CREATE:
-	{
-		RXDEBUGLOG("프로그램 창을 생성했습니다.");
-		return 0;
-	}
-	case WM_CLOSE:
-	{
-		::DestroyWindow(hWnd);
-		RXDEBUGLOG("닫기 버튼을 클릭했습니다.");
-		return 0;
-	}
-	case WM_DESTROY:
-	{
-		::PostQuitMessage(0);
-		RXDEBUGLOG("프로그램 창을 제거했습니다.");
-		return 0;
-	}
-	case WM_KEYDOWN:
-	{
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-		{
-			::SendMessage(hWnd, WM_CLOSE, 0, 0); // 동기화 함수
-			RXDEBUGLOG("ESC 키를 눌렀습니다.");
-			break;
-		}
-		case VK_UP:
-		{
-			g_pThis->ChangeScreenMode(false);
-			break;
-		}
-		}
-
-		return 0;
-	}
-	case WM_SYSCOMMAND:
-	{
-		switch (wParam)
-		{
-		case SC_MAXIMIZE:
-		{
-			g_pThis->ChangeScreenMode(true);
-			break;
-		}
-		}
-	}
-	}
-
-	return ::DefWindowProc(hWnd, msg, wParam, lParam);
-}
-
 namespace RX
 {
 
@@ -97,7 +41,6 @@ namespace RX
 
 	HRESULT RXMain_DX9::InitMain()
 	{
-		setWndProc(DefaultWndProcDX9);
 		RXMain::InitMain();
 
 		if (FAILED(InitD3D9()))
@@ -424,16 +367,12 @@ namespace RX
 		return S_OK;
 	}
 
-	void RXMain_DX9::ChangeScreenMode(bool bFullScreen)
+	void RXMain_DX9::ToggleFullScreenMode(bool bFullScreen)
 	{
-		m_bFullScreen = bFullScreen;
+		RXMain::ToggleFullScreenMode(bFullScreen);
 
 		OnLostDevice();
 		OnResetDevice();
-
-		// 뭔가 좀 이상하지만...
-		// 리셋 디바이스 먼저 해야 하므로 이렇게 사용합니다.
-		RXMain::ChangeScreenMode(m_bFullScreen);
 	}
 
 	HRESULT RXMain_DX9::Update()

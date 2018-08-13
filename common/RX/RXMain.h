@@ -33,7 +33,7 @@ namespace RX
 		virtual HRESULT DriveMain();
 		virtual HRESULT Update();
 		virtual HRESULT Release();
-		virtual void    ChangeScreenMode(bool bFullScreen);
+		virtual void    ToggleFullScreenMode(bool bFullScreen = false);
 
 		void ChangeProgramTitle(const TCHAR* szTitle);
 
