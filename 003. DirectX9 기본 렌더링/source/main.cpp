@@ -73,7 +73,7 @@ HRESULT CALLBACK OnInit()
 	NULLCHK(g_pD3DDevice9);
 
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.
-	CustomVertex vertices[4] =
+	CustomVertex vertices[3] =
 	{
 		{ { 500.0f, 100.0f, 0.0f }, 1.0f, DXCOLOR_RED   },
 	    { { 800.0f, 600.0f, 0.0f }, 1.0f, DXCOLOR_GREEN },
@@ -82,7 +82,7 @@ HRESULT CALLBACK OnInit()
 
 	// 정점 버퍼를 생성합니다.
 	g_hDXResult = g_pD3DDevice9->CreateVertexBuffer(
-		sizeof(CustomVertex) * 4, // 정점 버퍼의 크기입니다.
+		sizeof(CustomVertex) * 3, // 정점 버퍼의 크기입니다.
 		0,                        // 사용법인데 일반적으로는 0입니다.
 		CUSTOM_FVF,               // FVF 형식입니다.
 		D3DPOOL_MANAGED,          // 메모리풀 설정입니다.
@@ -97,7 +97,7 @@ HRESULT CALLBACK OnInit()
 	void* pVertexData = nullptr;
 	g_pVertexBuffer->Lock(
 		0,                        // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
-		sizeof(CustomVertex) * 4, // 복사할 정점 정보의 크기를 넘겨줍니다.
+		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 크기를 넘겨줍니다.
 		&pVertexData,             // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
 		0);                       // 잠금 플래그인데 0으로 설정합니다.
 	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 4);
