@@ -100,7 +100,7 @@ HRESULT CALLBACK OnInit()
 		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 크기를 넘겨줍니다.
 		&pVertexData,             // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
 		0);                       // 잠금 플래그인데 0으로 설정합니다.
-	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 4);
+	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 3);
 	g_pVertexBuffer->Unlock();
 
 	return S_OK;
