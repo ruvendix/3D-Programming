@@ -442,7 +442,7 @@ namespace RX
 
 	HRESULT RXMain_DX9::BeginRender()
 	{
-		m_pD3DDevice9->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, DXCOLOR_BLUE, 1.0f, 0);
+		m_pD3DDevice9->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, DXCOLOR_BLACK, 1.0f, 0);
 		m_pD3DDevice9->BeginScene();
 		return S_OK;
 	}

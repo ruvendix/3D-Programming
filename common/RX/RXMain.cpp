@@ -185,11 +185,6 @@ namespace RX
 			}
 		}
 
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
-		{
-			RXERRLOG_EFAIL_RETURN("서브 초기화 실패!");
-		}
-
 		return S_OK;
 	}
 
@@ -373,6 +368,11 @@ namespace RX
 			m_routineState = ROUTINE_STATE::FAILURE;
 			m_msgCode      = 0;
 			RXERRLOG_EFAIL_RETURN("프로그램 비정상 종료!");
+		}
+
+		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
+		{
+			RXERRLOG_EFAIL_RETURN("서브 초기화 실패!");
 		}
 
 		if (FAILED(DriveMain()))
