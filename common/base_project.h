@@ -12,7 +12,7 @@
 #ifndef BASE_PROJECT_H__
 #define BASE_PROJECT_H__
 
-#include "../common/common.h"
+#include "common.h"
 
 // ====================================================================================
 // DirectX9을 사용하기 위한 헤더 파일입니다.
@@ -23,7 +23,7 @@
 
 // ====================================================================================
 // main 루틴을 사용하기 위한 헤더 파일입니다.
-#include "../common/RX/RXMain_DX9.h"
+#include "RX/RXMain_DX9.h"
 
 #include "resource.h"
 

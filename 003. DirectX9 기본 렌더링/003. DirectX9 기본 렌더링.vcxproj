@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{BFDD0B78-D937-4266-812C-9A882CE7AC2F}</ProjectGuid>
-    <RootNamespace>My002DirectX9기본프로그램</RootNamespace>
+    <ProjectGuid>{DD15862C-17C4-4059-96F5-E62F90A4D338}</ProjectGuid>
+    <RootNamespace>My003DirectX9기본렌더링</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -78,9 +78,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);D:\Study\GitHub\3D-Programming\common</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>base_project.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);D:\Study\GitHub\3D-Programming\common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;D:\Study\GitHub\3D-Programming\common;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -123,20 +123,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\base_project.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="source\main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\common\base_project.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="002. DirectX9 기본 프로그램.rc" />
+    <ResourceCompile Include="003. DirectX9 기본 렌더링.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\ruven\Desktop\이미지 모음\Ruvendix.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\base_project.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

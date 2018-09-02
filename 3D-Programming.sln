@@ -18,6 +18,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002. DirectX9 기본 프로그램", "002. DirectX9 기본 프로그램\002. DirectX9 기본 프로그램.vcxproj", "{BFDD0B78-D937-4266-812C-9A882CE7AC2F}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "003. DirectX9 기본 렌더링", "003. DirectX9 기본 렌더링\003. DirectX9 기본 렌더링.vcxproj", "{DD15862C-17C4-4059-96F5-E62F90A4D338}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -42,6 +44,14 @@ Global
 		{BFDD0B78-D937-4266-812C-9A882CE7AC2F}.Release|x64.Build.0 = Release|x64
 		{BFDD0B78-D937-4266-812C-9A882CE7AC2F}.Release|x86.ActiveCfg = Release|Win32
 		{BFDD0B78-D937-4266-812C-9A882CE7AC2F}.Release|x86.Build.0 = Release|Win32
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Debug|x64.ActiveCfg = Debug|x64
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Debug|x64.Build.0 = Debug|x64
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Debug|x86.ActiveCfg = Debug|Win32
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Debug|x86.Build.0 = Debug|Win32
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Release|x64.ActiveCfg = Release|x64
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Release|x64.Build.0 = Release|x64
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Release|x86.ActiveCfg = Release|Win32
+		{DD15862C-17C4-4059-96F5-E62F90A4D338}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

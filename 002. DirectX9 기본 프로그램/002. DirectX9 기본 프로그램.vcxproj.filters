@@ -8,21 +8,24 @@
     <Filter Include="resource">
       <UniqueIdentifier>{36fb54b9-6842-49af-b0f3-3b8243a8b913}</UniqueIdentifier>
     </Filter>
+    <Filter Include="header">
+      <UniqueIdentifier>{ee80b4fa-a854-4cfb-a9cc-6157414f34a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="base_project.cpp">
+    <ClCompile Include="..\common\base_project.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="resource.h">
-      <Filter>resource</Filter>
+    <ClInclude Include="..\common\base_project.h">
+      <Filter>header</Filter>
     </ClInclude>
-    <ClInclude Include="base_project.h">
-      <Filter>source</Filter>
+    <ClInclude Include="resource.h">
+      <Filter>header</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
