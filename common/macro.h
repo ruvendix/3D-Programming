@@ -96,6 +96,12 @@ if (ptr == nullptr)\
     RXERRLOG(#ptr " is nullptr!");\
 }
 
+#define NULLCHK_RETURN_NOCOMENT(ptr)\
+if (ptr == nullptr)\
+{\
+    RXERRLOG_RETURN(#ptr " is nullptr!");\
+}
+
 #define NULLCHK_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
@@ -144,13 +150,13 @@ if (ptr == nullptr)\
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, bMessageBox, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, bMessageBox, false,\
@@ -166,12 +172,12 @@ if (ptr == nullptr)\
 		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true,\
 		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
