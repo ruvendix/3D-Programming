@@ -35,6 +35,8 @@ void IdentityTest();
 void TransposeTest();
 void MultiplyTest();
 void IdentityMultiplyTest();
+void DeterminantTest();
+void InverseTest();
 
 // ====================================================================================
 INT32 main()
@@ -47,7 +49,9 @@ INT32 main()
 	//IdentityTest();
 	//TransposeTest();
 	//MultiplyTest();
-	IdentityMultiplyTest();
+	//IdentityMultiplyTest();
+	//DeterminantTest();
+	//InverseTest();
 
 	return 0;
 }
@@ -361,4 +365,53 @@ void IdentityMultiplyTest()
 	matResult = mat2 * mat1;
 	printf("mat2 * mat1의 결과입니다.\n");
 	ShowMatrixValue(&matResult);
+}
+
+void DeterminantTest()
+{
+	// 4행 4열 행렬의 기본형입니다.
+	D3DXMATRIXA16 mat;
+
+	// 영행렬로 만듭니다.
+	ZeroMatrix(&mat);
+	
+	SetMatrix1stRow(&mat, 1.0f, 2.0f, 3.0f, 4.0f);
+	SetMatrix2ndRow(&mat, 4.0f, 3.0f, 2.0f, 1.0f);
+	SetMatrix3rdRow(&mat, 3.0f, 1.0f, 2.0f, 4.0f);
+	SetMatrix4thRow(&mat, 2.0f, 1.0f, 4.0f, 3.0f);
+
+	printf("행렬식을 구합니다.\n");
+	FLOAT rDet = D3DXMatrixDeterminant(&mat);
+	printf("구한 행렬식 : %.2f\n", rDet);
+
+	// 행렬식이 0이 아니라면 역행렬이 존재하는 가역행렬입니다.
+}
+
+void InverseTest()
+{
+	// 4행 4열 행렬의 기본형입니다.
+	D3DXMATRIXA16 mat;
+
+	// 영행렬로 만듭니다.
+	ZeroMatrix(&mat);
+
+	SetMatrix1stRow(&mat, 1.0f, 2.0f, 3.0f, 4.0f);
+	SetMatrix2ndRow(&mat, 4.0f, 3.0f, 2.0f, 1.0f);
+	SetMatrix3rdRow(&mat, 3.0f, 1.0f, 2.0f, 4.0f);
+	SetMatrix4thRow(&mat, 2.0f, 1.0f, 4.0f, 3.0f);
+	
+	// 역행렬을 구합니다.
+	FLOAT rDet = 0.0f;
+	D3DXMATRIXA16 matResult;
+	ZeroMatrix(&matResult);
+	D3DXMatrixInverse(&matResult, &rDet, &mat);
+	
+	printf("역행렬을 구합니다.\n");
+	printf("행렬식은 %.2f입니다.\n", rDet);
+	ShowMatrixValue(&matResult);
+
+	rDet = 0.0f;
+	printf("행렬식을 구합니다.\n");
+	rDet = D3DXMatrixDeterminant(&mat);
+	printf("구한 행렬식 : %.2f\n", rDet);
 }
