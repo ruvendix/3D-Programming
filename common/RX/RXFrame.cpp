@@ -49,7 +49,7 @@ namespace RX
 		{
 			// FPS = 프레임 카운트 / 1초
 			m_FPS = m_frameCount * CLOCKS_PER_SEC / m_frameTime.getIntervalTime();
-			//RXDEBUGLOG("현재 프레임 카운트 %d, FPS : %d", m_frameCount, dwCurrentFPS);
+			//RXDEBUGLOG("현재 프레임 카운트 %d, FPS : %d", m_frameCount, m_FPS);
 			InitFrame();
 		}
 	}

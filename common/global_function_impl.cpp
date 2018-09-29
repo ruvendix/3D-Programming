@@ -43,7 +43,7 @@ namespace RX
 	// 출력 가능한 로그의 길이는 멀티바이트 기준으로 문자 512개입니다.
 	// 앞에 기본 문자열이 추가되므로 총 출력 가능한 로그의 길이는 512 + 512 = 1024입니다.
 	// 메시지 박스 출력 기능도 있는데 일반 메시지 박스와 에러 메시지 박스를 지원합니다.
-	DLL_DEFINE void RXLogImplA(PROJECT_MODE eMode, bool bMessageBox, bool bError,
+	DLL_DEFINE void RXLogImplA(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
 		const CHAR* szFile, INT32 line, const CHAR* szFunSig, const CHAR* szFormat, ...)
 	{
 		CHAR szFull[MAX_STRING_LENGTH];
@@ -76,7 +76,8 @@ namespace RX
 		}
 
 		// 파일이나 서버에 로그를 남기는 루틴이 오면 됩니다.
-		if (strlen(g_szLogFile) <= 0)
+		if ( (bFile == true) &&
+			 (strlen(g_szLogFile) <= 0) )
 		{
 			// 시스템 시간을 이용해서 현재 시간을 구합니다.
 			SYSTEMTIME sysTime;
@@ -119,11 +120,16 @@ namespace RX
 		}
 	}
 
-	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bError,
+	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
 		const WCHAR* szFile, INT32 line, const WCHAR* szFunSig, const WCHAR* szFormat, ...)
 	{
 		WCHAR szFull[MAX_STRING_LENGTH];
-		_snwprintf_s(szFull, _countof(szFull), L"%s(%d) <%s> : ", szFile, line, szFunSig);
+		::ZeroMemory(szFull, _countof(szFull));
+
+		if (szFile != nullptr)
+		{
+			_snwprintf_s(szFull, _countof(szFull), L"%s(%d) <%s> : ", szFile, line, szFunSig);
+		}
 
 		WCHAR szText[DEFAULT_STRING_LENGTH];
 		va_list vaList;
@@ -152,7 +158,8 @@ namespace RX
 		}
 
 		// 파일이나 서버에 로그를 남기는 루틴이 오면 됩니다.
-		if (strlen(g_szLogFile) <= 0)
+		if ( (bFile == true) &&
+			 (strlen(g_szLogFile) <= 0) )
 		{
 			// 시스템 시간을 이용해서 현재 시간을 구합니다.
 			SYSTEMTIME sysTime;
@@ -237,7 +244,7 @@ namespace RX
 		ShowErrorMessageBoxImplA(szErr, szFileName, line);
 
 		// 로그로도 출력합니다.
-		RXLogImplA(eMode, false, true, szFileName, line, szFunSig,
+		RXLogImplA(eMode, false, true, true, szFileName, line, szFunSig,
 			"Error(%s) Text(%s)", szErrName, szErrText);
 	}
 
@@ -252,7 +259,7 @@ namespace RX
 		ShowErrorMessageBoxImplW(szErr, szFileName, line);
 
 		// 로그로도 출력합니다.
-		RXLogImplW(eMode, false, true, szFileName, line, szFunSig,
+		RXLogImplW(eMode, false, true, true, szFileName, line, szFunSig,
 			L"Error(%s) Text(%s)", szErrName, szErrText);
 	}
 
@@ -274,7 +281,7 @@ namespace RX
 		_snprintf_s(szErr, _countof(szErr), "Error : %0x\nText : %s", errorCode, szText);
 		ShowErrorMessageBoxImplA(szErr, szFileName, line);
 
-		RXLogImplA(eMode, false, true, szFileName, line, szFunSig,
+		RXLogImplA(eMode, false, true, true, szFileName, line, szFunSig,
 			"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);
@@ -301,7 +308,7 @@ namespace RX
 		_snwprintf_s(szErr, _countof(szErr), L"Error : %0x\nText : %s", errorCode, szText);
 		ShowErrorMessageBoxImplW(szErr, szFileName, line);
 
-		RXLogImplW(eMode, false, true, szFileName, line, szFunSig,
+		RXLogImplW(eMode, false, true, true, szFileName, line, szFunSig,
 			L"Error(%0x) Text(%s)", errorCode, szText);
 
 		LocalFree(szText);

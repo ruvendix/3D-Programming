@@ -23,7 +23,7 @@ namespace RX
 
 	// 유니코드 버전입니다.
 	DLL_DEFINE void RXDebugLogImplW(const WCHAR* szText);
-	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bError,
+	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
 		const WCHAR* szFile, INT32 line, const WCHAR* szFunSig, const WCHAR* szFormat, ...);
 	DLL_DEFINE void ShowMessageBoxImplW(const WCHAR* szText);
 	DLL_DEFINE void ShowErrorMessageBoxImplW(const WCHAR* szErr, const WCHAR* szFileName, INT32 line);
@@ -34,7 +34,7 @@ namespace RX
 
 	// 멀티바이트 버전입니다.
 	DLL_DEFINE void RXDebugLogImplA(const CHAR* szText);
-	DLL_DEFINE void RXLogImplA(PROJECT_MODE eMode, bool bMessageBox, bool bError,
+	DLL_DEFINE void RXLogImplA(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
 		const CHAR* szFile, INT32 line, const CHAR* szFunSig, const CHAR* szFormat, ...);
 	DLL_DEFINE void ShowMessageBoxImplA(const CHAR* szText);
 	DLL_DEFINE void ShowErrorMessageBoxImplA(const CHAR* szErr, const CHAR* szFileName, INT32 line);

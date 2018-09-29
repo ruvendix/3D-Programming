@@ -248,7 +248,7 @@ namespace RX
 		}
 
 		// 후면 버퍼의 페이지 플리핑 간격을 설정합니다.
-		pD3DPP->PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+		pD3DPP->PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT; // 기본은 수직동기
 
 		// 전체 화면으로 전환될 때의 처리입니다.
 		if (m_bFullScreen)

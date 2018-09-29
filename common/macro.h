@@ -129,15 +129,18 @@ if (ptr == nullptr)\
 // 스트링 관련 매크로입니다.
 //
 // 디버그 모드만 작동, 릴리즈 모드는 X
-// RXDEBUGLOG() RX::RXDebugLogImpl()
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
-#define RXDEBUGLOG(szText) RX::RXDebugLogImplW(L##szText)
+	#define RXDEBUGLOG(szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, false, false, false,\
+			nullptr, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
-	#define RXDEBUGLOG(szText) RX::RXDebugLogImplA(szText)
+	#define RXDEBUGLOG(szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, false, false, false,\
+			nullptr, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
-	#define RXDEBUGLOG(szText) __noop
+	#define RXDEBUGLOG __noop
 #endif
 
 // 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
@@ -145,21 +148,21 @@ if (ptr == nullptr)\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, false,\
+		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
 			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, false,\
+		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
 			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, bMessageBox, false,\
+		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
 			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, bMessageBox, false,\
+		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
 			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
@@ -168,18 +171,18 @@ if (ptr == nullptr)\
 // 메시지 박스 출력 지원, 에러 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true,\
+	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
 		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
-	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true,\
+	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, true,\
 		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true,\
+	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true, true,\
 		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
 	#else
-	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true,\
+	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true, true,\
 		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
