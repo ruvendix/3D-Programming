@@ -15,29 +15,29 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="source\main.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\base_project.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
+    <Image Include="C:\Users\ruven\Desktop\이미지 모음\Ruvendix.ico">
+      <Filter>resource</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\base_project.h">
-      <Filter>header</Filter>
-    </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>header</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="005. Matrix.rc">
+    <ResourceCompile Include="006. Transformation.rc">
       <Filter>resource</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="C:\Users\ruven\Desktop\이미지 모음\Ruvendix.ico">
-      <Filter>resource</Filter>
-    </Image>
+    <ClInclude Include="resource.h">
+      <Filter>header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\base_project.h">
+      <Filter>header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\common\base_project.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
+    <ClCompile Include="source\main.cpp">
+      <Filter>source</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
