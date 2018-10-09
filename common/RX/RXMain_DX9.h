@@ -65,6 +65,10 @@ namespace RX
 
 		// ====================================================================================
 		// setter
+		void setClearColor(D3DCOLOR clearColor)
+		{
+			m_clearColor = clearColor;
+		}
 
 	protected:
 		// ====================================================================================
@@ -74,6 +78,7 @@ namespace RX
 		DWORD                m_dwBehavior; // 정점 처리 방식입니다.
 		IDirect3D9*          m_pD3D9;
 		IDirect3DDevice9*    m_pD3DDevice9;
+		D3DCOLOR             m_clearColor;
 		RXFrame              m_frame;
 	};
 

@@ -32,10 +32,12 @@ namespace RX
 		virtual HRESULT InitMain();
 		virtual HRESULT DriveMain();
 		virtual HRESULT Update();
+		virtual HRESULT Render();
 		virtual HRESULT Release();
 		virtual void    ToggleFullScreenMode(bool bFullScreen = false);
 
 		void ChangeProgramTitle(const TCHAR* szTitle);
+		void AdjustClientRect();
 
 		// ====================================================================================
 		// getter
@@ -59,16 +61,31 @@ namespace RX
 			return m_hMainWnd;
 		}
 
+		RECT getClientRect() const noexcept
+		{
+			return m_rtClient;
+		}
+
+		INT32 getClientWidth() const noexcept
+		{
+			return m_clientWidth;
+		}
+
+		INT32 getClientHeight() const noexcept
+		{
+			return m_clientHeight;
+		}
+
 		// ====================================================================================
 		// setter
 		void setWndProc(WNDPROC wndProc)
 		{
-			m_wndProc = wndProc;
+			::SetWindowLongPtr(m_hMainWnd, GWLP_WNDPROC, reinterpret_cast<LONG>(wndProc));
 		}
 
 		void setSubFunc(SubFunc func, SUBFUNC_TYPE type)
 		{
-			m_arrSubFunc[static_cast<INT32>(type)].func = func;
+			m_subFunc[static_cast<INT32>(type)].func = func;
 		}
 
 		void setFullScreen(bool bFullScreen)
@@ -82,10 +99,12 @@ namespace RX
 		bool             m_bFullScreen;
 		HWND             m_hMainWnd;
 		HINSTANCE        m_hInst;
-		WNDPROC          m_wndProc;
 		ROUTINE_STATE    m_routineState;
 		INT32            m_msgCode;
-		SubFuncInfo      m_arrSubFunc[SubFuncInfo::MAX_SUBFUNC];
+		RECT             m_rtClient;
+		INT32            m_clientWidth;
+		INT32            m_clientHeight;
+		SubFuncInfo      m_subFunc[SubFuncInfo::MAX_SUBFUNC];
 
 		// ====================================================================================
 		// 리소스 정보

@@ -31,6 +31,7 @@ namespace RX
 		m_bMSAA       = false;
 		m_pD3D9       = nullptr;
 		m_pD3DDevice9 = nullptr;
+		m_clearColor  = DXCOLOR_BLACK;
 		m_dwBehavior  = 0;
 	}
 
@@ -149,7 +150,10 @@ namespace RX
 
 				// 업데이트 루틴은 FPS에 영향을 받습니다.
 				// 25 정도로 해주면 좋습니다.
-				// 이쪽은 하드웨어에 따라 성능 차이가 거의 없습니다.
+				// (1 / UPDATE_FRAME_PER_SECOND) 간격이 존재하므로
+				// 아무리 빠른 하드웨어라 해도 초당 25로 고정되어있습니다.
+				// 반면에 아무리 느린 하드웨어라 해도 업데이트를 MAX_FRAMESKIP만큼 한 뒤에
+				// 렌더링하므로 어느 정도 게임 속도는 보장됩니다.
 				while ( (::timeGetTime() > nextGameTime) &&
 					    (updateCallCount < MAX_FRAMESKIP) )
 				{
@@ -158,7 +162,7 @@ namespace RX
 						Update();
 					}
 
-					nextGameTime += FRAME_SKIP_TIME;
+					nextGameTime += FRAME_SKIP_TIME; // 1000 / 25 = 40 => 0.04초의 간격
 					++updateCallCount;
 
 					//RXDEBUGLOG("업데이트 호출 수 : %d", updateCallCount);
@@ -195,7 +199,7 @@ namespace RX
 
 	HRESULT RXMain_DX9::Release()
 	{
-		m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func();
+		m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func();
 
 		SAFE_RELEASE(m_pD3DDevice9);
 		SAFE_RELEASE(m_pD3D9);
@@ -388,7 +392,7 @@ namespace RX
 		{
 			BeginRender();
 
-			if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
+			if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
 			{
 				RXERRLOG_EFAIL_RETURN("서브 렌더 실패!");
 			}
@@ -442,7 +446,7 @@ namespace RX
 
 	HRESULT RXMain_DX9::BeginRender()
 	{
-		m_pD3DDevice9->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, DXCOLOR_BLACK, 1.0f, 0);
+		m_pD3DDevice9->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_clearColor, 1.0f, 0);
 		m_pD3DDevice9->BeginScene();
 		return S_OK;
 	}
@@ -455,7 +459,7 @@ namespace RX
 
 	HRESULT RXMain_DX9::OnLostDevice()
 	{
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::LOSTDEVICE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::LOSTDEVICE)].func()))
 		{
 			RXERRLOG_EFAIL_RETURN("서브 로스트 디바이스 실패!");
 		}
@@ -480,7 +484,7 @@ namespace RX
 
 		m_pD3DDevice9->Reset(&D3DPP);
 
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::RESETDEVICE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RESETDEVICE)].func()))
 		{
 			RXERRLOG_EFAIL_RETURN("서브 리셋 디바이스 실패!");
 		}

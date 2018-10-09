@@ -43,6 +43,8 @@ namespace RX
 	DLL_DEFINE void Win32LastErrorHandlerImplA(PROJECT_MODE eMode, const CHAR* szFileName,
 		INT32 line, const CHAR* szFunSig);
 
+	DLL_DEFINE void DrawLineWin32(HDC hDC, INT32 startX, INT32 startY, INT32 endX, INT32 endY);
+
 } // namespace RX end
 
 #endif

@@ -143,13 +143,14 @@ namespace RX
 		m_bFullScreen  = false;
 		m_hMainWnd     = nullptr;
 		m_hInst        = nullptr;
-		m_wndProc      = DefaultWndProc;
 		m_routineState = ROUTINE_STATE::NORMAL;
+		m_clientWidth  = 0;
+		m_clientHeight = 0;
 		m_msgCode      = 0;
 
 		for (INT32 i = 0; i < SubFuncInfo::MAX_SUBFUNC; ++i)
 		{
-			m_arrSubFunc[i].Reset();
+			m_subFunc[i].Reset();
 		}
 
 		m_iconID = 0;
@@ -179,9 +180,9 @@ namespace RX
 		for (INT32 i = 0; i < SubFuncInfo::MAX_SUBFUNC; ++i)
 		{
 			// subFunc가 nullptr이 아니면 이미 등록된 상태입니다.
-			if (m_arrSubFunc[i].func == nullptr)
+			if (m_subFunc[i].func == nullptr)
 			{
-				m_arrSubFunc[i].func = subFuncTable[i];
+				m_subFunc[i].func = subFuncTable[i];
 			}
 		}
 
@@ -195,7 +196,7 @@ namespace RX
 
 		wcex.cbSize        = sizeof(wcex);
 		wcex.style         = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc   = m_wndProc;
+		wcex.lpfnWndProc   = DefaultWndProc;
 		wcex.cbClsExtra    = 0;
 		wcex.cbWndExtra    = 0;
 		wcex.hInstance     = m_hInst;
@@ -227,8 +228,8 @@ namespace RX
 	HRESULT RXMain::CreateProgramWindow()
 	{
 		// 클라이언트 영역의 크기를 설정해줍니다.
-		RECT clientRt;
-		::SetRect(&clientRt, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
+		RECT rtClient;
+		::SetRect(&rtClient, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
 
 		DWORD dwStyle;
 		if (m_bFullScreen)
@@ -242,8 +243,11 @@ namespace RX
 
 		// 클라이언트 영역의 크기를 조정해줍니다.
 		// 프레임 윈도우를 제외하고 순수하게 클라이언트 영역의 크기만 계산합니다.
-		// 즉, g_defaultClientWidth와 g_defaultClientHeight로 설정한 값이 적용됩니다.
-		::AdjustWindowRect(&clientRt, dwStyle, FALSE);
+		::AdjustWindowRect(&rtClient, dwStyle, FALSE);
+
+		m_clientWidth  = rtClient.right - rtClient.left;
+		m_clientHeight = rtClient.bottom - rtClient.top;
+		::SetRect(&m_rtClient, 0, 0, m_clientWidth, m_clientHeight);
 
 		// 현재 모니터 해상도에 설정된 값을 가져옵니다.
 		// 현재 설정된 해상도가 1920 X 1080이라면
@@ -256,12 +260,11 @@ namespace RX
 		// 예를 들어 1024 X 768의 클라이언트 영역과 1920 X 1080의 모니터 영역이 있을 때
 		// X 좌표는 ((1920 - 1024) / 2), Y 좌표는 ((1080 - 768) / 2)이 됩니다.
 		// 조정된 클라이언트 영역의 크기를 포함해서 프로그램 창을 생성해야 하므로
-		// g_defaultClientWidth가 아니라 clientRt.right - clientRt.left로 설정해야 합니다.
+		// rtClient.right - rtClient.left로 설정해야 합니다.
 		m_hMainWnd = ::CreateWindow(SZ_WINDOW_CLASS, SZ_PROGRAM_TITLE, dwStyle,
-			(screenWidth - (clientRt.right - clientRt.left)) / 2,
-			(screenHeight - (clientRt.bottom - clientRt.top)) / 2,
-			clientRt.right - clientRt.left,
-			clientRt.bottom - clientRt.top,
+			(screenWidth - (rtClient.right - rtClient.left)) / 2,
+			(screenHeight - (rtClient.bottom - rtClient.top)) / 2,
+			m_clientWidth, m_clientHeight,
 			::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 			nullptr, m_hInst, nullptr);
 
@@ -305,6 +308,7 @@ namespace RX
 			else
 			{
 				Update();
+				Render();
 
 				if (m_routineState == ROUTINE_STATE::FAILURE)
 				{
@@ -325,7 +329,7 @@ namespace RX
 
 	HRESULT RXMain::Update()
 	{
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].func()))
 		{
 			RXERRLOG_EFAIL_RETURN("서브 업데이트 실패!");
 		}
@@ -333,9 +337,19 @@ namespace RX
 		return S_OK;
 	}
 
+	HRESULT RXMain::Render()
+	{
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
+		{
+			RXERRLOG_EFAIL_RETURN("서브 렌더 실패!");
+		}
+
+		return S_OK;
+	}
+
 	HRESULT RXMain::Release()
 	{
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func()))
 		{
 			RXERRLOG_EFAIL_RETURN("서브 릴리즈 실패!");
 		}
@@ -346,6 +360,15 @@ namespace RX
 	void RXMain::ChangeProgramTitle(const TCHAR* szTitle)
 	{
 		::SetWindowText(m_hMainWnd, szTitle);
+	}
+
+	void RXMain::AdjustClientRect()
+	{
+		RECT rtClient;
+		GetClientRect(m_hMainWnd, &rtClient);
+		m_clientWidth  = rtClient.right - rtClient.left;
+		m_clientHeight = rtClient.bottom - rtClient.top;
+		::SetRect(&m_rtClient, 0, 0, m_clientWidth, m_clientHeight);
 	}
 
 	HRESULT RXMain::RunMainRoutine(HINSTANCE hInst, INT32 iconID)
@@ -370,7 +393,7 @@ namespace RX
 			RXERRLOG_EFAIL_RETURN("프로그램 비정상 종료!");
 		}
 
-		if (FAILED(m_arrSubFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
 		{
 			RXERRLOG_EFAIL_RETURN("서브 초기화 실패!");
 		}
@@ -425,6 +448,8 @@ namespace RX
 
 			RXLOG(false, "창 화면 모드로 전환!");
 		}
+
+		AdjustClientRect();
 	}
 
 } // namespace RX end
