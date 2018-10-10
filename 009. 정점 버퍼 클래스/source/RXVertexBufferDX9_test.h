@@ -21,28 +21,34 @@ struct CustomVertex
 	DWORD       dwColor; // 정점의 색상입니다.
 };
 
-class RXVertexBufferDX9
+namespace RX
 {
-public:
-	RXVertexBufferDX9();
-	virtual ~RXVertexBufferDX9();
 
-	void InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor);
+	class RXVertexBufferDX9
+	{
+	public:
+		RXVertexBufferDX9();
+		virtual ~RXVertexBufferDX9();
 
-	HRESULT CreateVertexBuffer();
-	void DrawPrimitive();
+		void    InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor);
+		void    DrawPrimitive();
+		HRESULT CreateVertexBuffer();
 
-	// ====================================================================================
-	// Getter
+		// ====================================================================================
+		// Getter
 
-	// ====================================================================================
-	// Setter
-	void setFVF(DWORD fvf);
+		// ====================================================================================
+		// Setter
+		void setFVF(DWORD fvf)
+		{
+			m_dwFVF = fvf;
+		}
 
-private:
-	DWORD m_dwFVF;
-	std::vector<CustomVertex> m_vecVertex;
-	IDirect3DVertexBuffer9*   m_pVertexBuffer;
-};
+	private:
+		DWORD m_dwFVF;
+		std::vector<CustomVertex> m_vecVertex;
+		IDirect3DVertexBuffer9*   m_pVertexBuffer;
+	};
 
+} // namespace RX end
 #endif
