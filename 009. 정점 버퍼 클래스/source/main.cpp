@@ -23,6 +23,7 @@ namespace
 extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 extern HRESULT           g_hDXResult   = S_OK;
 
+
 // ====================================================================================
 // 함수 선언부입니다.
 HRESULT CALLBACK OnInit();
