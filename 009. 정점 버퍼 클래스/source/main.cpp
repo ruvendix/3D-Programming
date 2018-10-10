@@ -83,9 +83,11 @@ HRESULT CALLBACK OnInit()
 
 	g_pVB1->CreateVertexBuffer();
 
+	// ==================================================================
 	// 여기서부터는 두 번째 정점 버퍼 생성 과정입니다.
 	g_pVB2 = RXNew RX::RXVertexBufferDX9;
 	NULLCHK_HEAPALLOC(g_pVB2);
+
 	g_pVB2->setFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 
 	g_pVB2->InsertVertex(-0.4f, -0.2f, 0.0f, DXCOLOR_BLUE);
