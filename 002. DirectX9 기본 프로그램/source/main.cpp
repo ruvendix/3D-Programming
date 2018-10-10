@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "../common/global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>

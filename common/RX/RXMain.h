@@ -40,7 +40,7 @@ namespace RX
 		void AdjustClientRect();
 
 		// ====================================================================================
-		// getter
+		// Getter
 		ROUTINE_STATE getRoutineState() const noexcept
 		{
 			return m_routineState;
@@ -77,7 +77,7 @@ namespace RX
 		}
 
 		// ====================================================================================
-		// setter
+		// Setter
 		void setWndProc(WNDPROC wndProc)
 		{
 			::SetWindowLongPtr(m_hMainWnd, GWLP_WNDPROC, reinterpret_cast<LONG>(wndProc));

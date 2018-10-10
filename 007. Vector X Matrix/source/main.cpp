@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -31,6 +33,7 @@ void ShowMatrixValue(D3DXMATRIXA16* pMat);
 void VectorMultiplyMatrixTest();
 void PointMultiplyMatrixTest();
 void VectorMultiplyTransformationMatrix();
+
 
 // ====================================================================================
 INT32 main()

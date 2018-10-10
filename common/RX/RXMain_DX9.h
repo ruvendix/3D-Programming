@@ -52,7 +52,7 @@ namespace RX
 		HRESULT OnResetDevice();
 
 		// ====================================================================================
-		// getter
+		// Getter
 		IDirect3D9* getD3D9() const noexcept
 		{
 			return m_pD3D9;
@@ -64,7 +64,7 @@ namespace RX
 		}
 
 		// ====================================================================================
-		// setter
+		// Setter
 		void setClearColor(D3DCOLOR clearColor)
 		{
 			m_clearColor = clearColor;

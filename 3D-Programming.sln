@@ -14,6 +14,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED
 		common\global_type.h = common\global_type.h
 		common\global_variable_declaration.h = common\global_variable_declaration.h
 		common\macro.h = common\macro.h
+		common\main.h = common\main.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002. DirectX9 기본 프로그램", "002. DirectX9 기본 프로그램\002. DirectX9 기본 프로그램.vcxproj", "{BFDD0B78-D937-4266-812C-9A882CE7AC2F}"
@@ -29,6 +30,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "007. Vector X Matrix", "007. Vector X Matrix\007. Vector X Matrix.vcxproj", "{A92989E1-F2C5-46AD-8FE0-E18E201DDF77}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "008. 다양한 회전", "008. 다양한 회전\008. 다양한 회전.vcxproj", "{0069A187-55B4-4D31-95C1-4AB838B53DE0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "009. 정점 버퍼 클래스", "009. 정점 버퍼 클래스\009. 정점 버퍼 클래스.vcxproj", "{7B770C10-D26D-4788-9829-6717343FBBAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -102,6 +105,14 @@ Global
 		{0069A187-55B4-4D31-95C1-4AB838B53DE0}.Release|x64.Build.0 = Release|x64
 		{0069A187-55B4-4D31-95C1-4AB838B53DE0}.Release|x86.ActiveCfg = Release|Win32
 		{0069A187-55B4-4D31-95C1-4AB838B53DE0}.Release|x86.Build.0 = Release|Win32
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Debug|x64.ActiveCfg = Debug|x64
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Debug|x64.Build.0 = Debug|x64
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Debug|x86.ActiveCfg = Debug|Win32
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Debug|x86.Build.0 = Debug|Win32
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x64.ActiveCfg = Release|x64
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x64.Build.0 = Release|x64
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x86.ActiveCfg = Release|Win32
+		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

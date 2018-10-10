@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -29,10 +31,11 @@ struct CustomVertex
 namespace
 {
 	RX::RXMain_DX9*         g_pMainDX       = nullptr;
-	IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
 	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-	HRESULT                 g_hDXResult     = S_OK;
 }
+
+extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+extern HRESULT           g_hDXResult   = S_OK;
 
 
 // ====================================================================================

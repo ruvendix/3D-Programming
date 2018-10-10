@@ -44,7 +44,8 @@ namespace RX
 			m_dwStartTime = m_dwEndTime;
 		}
 
-		// getter
+		// ====================================================================================
+		// Getter
 		DWORD getStartTime() const noexcept
 		{
 			return m_dwStartTime;

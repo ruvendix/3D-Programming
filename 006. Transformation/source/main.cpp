@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -9,6 +11,7 @@
 // 아래에 있는 뜻은 변환되기 전의 공간좌표와 색상을 사용하겠다는 뜻입니다.
 // D3DFVF_XYZRHW에서 D3DFVF_XYZ로 변경됩니다.
 #define CUSTOM_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE)
+
 
 // ====================================================================================
 // 구조체 및 공용체 선언부입니다.
@@ -22,15 +25,18 @@ struct CustomVertex
 	DWORD       dwColor; // 정점의 색상을 의미합니다. Diffuse는 분산이라는 뜻입니다.
 };
 
+
 // ====================================================================================
 // 전역 변수 선언부입니다.
 namespace
 {
 	RX::RXMain_DX9*         g_pMainDX       = nullptr;
-	IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
 	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-	HRESULT                 g_hDXResult     = S_OK;
 }
+
+extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+extern HRESULT           g_hDXResult   = S_OK;
+
 
 // ====================================================================================
 // 함수 선언부입니다.
@@ -42,6 +48,7 @@ void ScalingTest(FLOAT rX, FLOAT rY, FLOAT rZ);
 void Rotation2DTest(FLOAT rDegree);           // 2차원에서의 기준 축 회전입니다.
 void RotationQuaternion2DTest(FLOAT rDegree); // 2차원에서의 쿼터니언 회전입니다.
 void TranslationTest(FLOAT rX, FLOAT rY, FLOAT rZ);
+
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>

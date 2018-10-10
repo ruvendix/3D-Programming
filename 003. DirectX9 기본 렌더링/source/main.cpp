@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -8,6 +10,7 @@
 // DirectX9에서는 FVF 설정이 필요합니다.
 // 아래에 있는 뜻은 변환된 공간좌표와 색상을 사용하겠다는 뜻입니다.
 #define CUSTOM_FVF (D3DFVF_XYZRHW | D3DFVF_DIFFUSE)
+
 
 // ====================================================================================
 // 구조체 및 공용체 선언부입니다.
@@ -21,21 +24,25 @@ struct CustomVertex
 	DWORD       dwColor; // 정점의 색상을 의미합니다. Diffuse는 분산이라는 뜻입니다.
 };
 
+
 // ====================================================================================
 // 전역 변수 선언부입니다.
 namespace
 {
 	RX::RXMain_DX9*         g_pMainDX       = nullptr;
-	IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
 	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-	HRESULT                 g_hDXResult     = S_OK;
 }
+
+extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+extern HRESULT           g_hDXResult   = S_OK;
+
 
 // ====================================================================================
 // 함수 선언부입니다.
 HRESULT CALLBACK OnInit();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
+
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>

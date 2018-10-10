@@ -27,8 +27,9 @@ namespace RX
 
 		void InitFrame();
 		void UpdateFrame();
-
-		// getter
+		
+		// ====================================================================================
+		// Getter
 		DWORD getFPS() const
 		{
 			return m_FPS;

@@ -13,7 +13,6 @@ global_function.h
 macro.h
 
 global_function_impl.cpp
-global_variable_definition.h
 -----------------------------------------
 common.h은 각 프로젝트에 반드시 포함되어야 하는 헤더 파일입니다.
 common.h 안에는 base.h, global_function.h, macro.h가 포함되어있습니다.
@@ -27,9 +26,10 @@ global_function_impl.cpp는 DLL로 선언된 함수의 구현부입니다.
 실제 프로젝트에서는 DLL로 작동하므로 구현부는 신경 쓰지 않아도 됩니다.
 DLL이므로 전역 변수 영역이 프로젝트와 겹치면 안 됩니다.
 
-global_variable_declaration.h는 미리 컴파일된 헤더 파일을 고려해서 분리했습니다.
-선언부는 extern으로 되어있으며 각 프로젝트에서는 global_variable_definition.h을
-포함해서 사용해야 합니다.
+global_variable_declaration.h은 각 프로젝트에서
+공용되는 전역변수들의 선언이 모아져있습니다.
+선언부는 extern으로 되어있으며, 각 프로젝트에서는
+해당 헤더 파일을 반드시 포함해야 합니다.
 
 macro.h는 global_function.h에 있는 함수를 사용하기도 합니다.
 하지만 global_function.h는 macro.h를 포함하지 않으므로 순서에 유의해야 합니다.

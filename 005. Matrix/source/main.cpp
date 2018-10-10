@@ -1,5 +1,7 @@
 #include "base_project.h"
-#include "global_variable_definition.h"
+#include "global_variable_declaration.h"
+#include "main.h"
+
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -37,6 +39,7 @@ void MultiplyTest();
 void IdentityMultiplyTest();
 void DeterminantTest();
 void InverseTest();
+
 
 // ====================================================================================
 INT32 main()
