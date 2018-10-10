@@ -39,7 +39,7 @@ HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
 void ScalingTest(FLOAT rX, FLOAT rY, FLOAT rZ);
-void Rotation2DTest(FLOAT rDegree);           // 2차원에서의 오일러 회전입니다.
+void Rotation2DTest(FLOAT rDegree);           // 2차원에서의 기준 축 회전입니다.
 void RotationQuaternion2DTest(FLOAT rDegree); // 2차원에서의 쿼터니언 회전입니다.
 void TranslationTest(FLOAT rX, FLOAT rY, FLOAT rZ);
 
@@ -182,7 +182,8 @@ void RotationQuaternion2DTest(FLOAT rDegree)
 
 	// 설정한 임의의 축으로 쿼터니언을 설정합니다.
 	D3DXQUATERNION quat;
-	D3DXQuaternionRotationAxis(&quat, &vAxis, -D3DXToRadian(rDegree)); // 각도를 라디안으로 변경해야 합니다.
+	D3DXQuaternionRotationAxis(&quat, &vAxis,
+		-D3DXToRadian(rDegree)); // 각도를 라디안으로 변경해야 합니다.
 
 	// 쿼터니언을 행렬로 변환시킵니다.
 	D3DXMATRIXA16 matRot;
