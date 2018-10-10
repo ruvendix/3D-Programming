@@ -16,7 +16,8 @@
 namespace
 {
 	RX::RXMain_DX9*        g_pMainDX       = nullptr;
-	RX::RXVertexBufferDX9* g_pVertexBuffer = nullptr;
+	RX::RXVertexBufferDX9* g_pVB1 = nullptr;
+	RX::RXVertexBufferDX9* g_pVB2 = nullptr;
 }
 
 extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
@@ -64,22 +65,36 @@ HRESULT CALLBACK OnInit()
 	g_pD3DDevice9 = g_pMainDX->getD3DDevice9();
 	NULLCHK(g_pD3DDevice9);
 
-	g_pVertexBuffer = RXNew RX::RXVertexBufferDX9;
-	NULLCHK_HEAPALLOC(g_pVertexBuffer);
+	g_pVB1 = RXNew RX::RXVertexBufferDX9;
+	NULLCHK_HEAPALLOC(g_pVB1);
 
 	// FVF(Flexible Vertex Format) 형식을 설정합니다.
 	// DirectX9에서는 FVF 설정이 필요합니다.
 	// 아래에 있는 뜻은 변환되기 전의 공간좌표와 색상을 사용하겠다는 뜻입니다.
-	g_pVertexBuffer->setFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
+	g_pVB1->setFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.
 	// 순서(Winding Order)를 무시하려면 반시계방향(CCW) 컬링을 막아야 합니다.
 	// 여기서 넣는 정점은 로컬좌표입니다. 이 정점들을 월드좌표로 변환하게 됩니다.
-	g_pVertexBuffer->InsertVertex(0.0f, 0.2f, 0.0f, DXCOLOR_RED);
-	g_pVertexBuffer->InsertVertex(0.2f, -0.2f, 0.0f, DXCOLOR_GREEN);
-	g_pVertexBuffer->InsertVertex(-0.2f, -0.2f, 0.0f, DXCOLOR_BLUE);
+	g_pVB1->InsertVertex(0.0f, 0.2f, 0.0f, DXCOLOR_RED);
+	g_pVB1->InsertVertex(0.2f, -0.2f, 0.0f, DXCOLOR_GREEN);
+	g_pVB1->InsertVertex(-0.2f, -0.2f, 0.0f, DXCOLOR_BLUE);
 
-	g_pVertexBuffer->CreateVertexBuffer();
+	g_pVB1->CreateVertexBuffer();
+
+	// 여기서부터는 두 번째 정점 버퍼 생성 과정입니다.
+	g_pVB2 = RXNew RX::RXVertexBufferDX9;
+	NULLCHK_HEAPALLOC(g_pVB2);
+	g_pVB2->setFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
+
+	g_pVB2->InsertVertex(-0.4f, -0.2f, 0.0f, DXCOLOR_BLUE);
+	g_pVB2->InsertVertex(-0.2f, -0.6f, 0.0f, DXCOLOR_RED);
+	g_pVB2->InsertVertex(-0.6f, -0.6f, 0.0f, DXCOLOR_GREEN);
+	g_pVB2->InsertVertex(-0.8f, -0.2f, 0.0f, DXCOLOR_RED);
+	g_pVB2->InsertVertex(-0.4f, -0.2f, 0.0f, DXCOLOR_GREEN);
+	g_pVB2->InsertVertex(-0.6f, -0.6f, 0.0f, DXCOLOR_BLUE);
+
+	g_pVB2->CreateVertexBuffer();
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
@@ -96,19 +111,21 @@ HRESULT CALLBACK OnInit()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	D3DXMATRIXA16 matTrans;
-	D3DXMatrixTranslation(&matTrans, 0.2f, 0.0f, 0.0f);
+	D3DXMATRIXA16 matRot;
+	D3DXMatrixRotationZ(&matRot, D3DXToRadian(-20.0f));
 
 	// 로컬좌표를 월드좌표로 변환해줍니다.
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matTrans);
+	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 
-	g_pVertexBuffer->DrawPrimitive();
+	g_pVB1->DrawPrimitive();
+	g_pVB2->DrawPrimitive();
 
 	return S_OK;
 }
 
 HRESULT CALLBACK OnRelease()
 {
-	SAFE_DELTE(g_pVertexBuffer);
+	SAFE_DELTE(g_pVB2);
+	SAFE_DELTE(g_pVB1);
 	return S_OK;
 }
