@@ -144,7 +144,7 @@ HRESULT CALLBACK OnRender()
 	//RotationEulerAngleTest(10.0f, 30.0f, -10.0f);
 
 	// 임의의 축 회전을 테스트합니다.
-	D3DXVECTOR3 vAxis(0.0f, 0.0f, 1.0f);
+	//D3DXVECTOR3 vAxis(0.0f, 0.0f, 1.0f);
 	//RotationFreeAxis(vAxis, -70.0f);
 
 	// 쿼터니언 회전을 테스트합니다.
