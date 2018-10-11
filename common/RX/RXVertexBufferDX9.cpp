@@ -9,30 +9,30 @@
  * DirectX9의 정점 버퍼를 클래스로 래핑했습니다.
  *
  ====================================================================================*/
-#include "base_project.h"
-#include "RXVertexBufferDX9_test.h"
+#include "PCH.h"
+#include "RXVertexBufferDX9.h"
 
 namespace RX
 {
 
-	RXVertexBufferDX9Test::RXVertexBufferDX9Test()
+	RXVertexBufferDX9::RXVertexBufferDX9()
 	{
 		m_dwFVF = 0;
 		m_pVertexBuffer = nullptr;
 	}
 
-	RXVertexBufferDX9Test::~RXVertexBufferDX9Test()
+	RXVertexBufferDX9::~RXVertexBufferDX9()
 	{
 		SAFE_RELEASE(m_pVertexBuffer);
 	}
 
-	void RXVertexBufferDX9Test::InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor)
+	void RXVertexBufferDX9::InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor)
 	{
 		CustomVertex customVertex = { { rX, rY, rZ }, dwColor };
 		m_vecVertex.push_back(customVertex);
 	}
 
-	void RXVertexBufferDX9Test::DrawPrimitive()
+	void RXVertexBufferDX9::DrawPrimitive()
 	{
 		g_pD3DDevice9->SetFVF(m_dwFVF);
 		g_pD3DDevice9->SetStreamSource(
@@ -47,7 +47,7 @@ namespace RX
 			m_vecVertex.size() / 3); // 프리미티브 개수입니다.
 	}
 
-	HRESULT RXVertexBufferDX9Test::CreateVertexBuffer()
+	HRESULT RXVertexBufferDX9::CreateVertexBuffer()
 	{
 		INT32 vertexCnt = m_vecVertex.size();
 

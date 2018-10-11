@@ -38,7 +38,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 
-#ifdef RXDLL_EXPORTS
+#ifdef RXBASEDX_EXPORTS
 #define DLL_DEFINE __declspec(dllexport)
 #else
 #define DLL_DEFINE __declspec(dllimport)

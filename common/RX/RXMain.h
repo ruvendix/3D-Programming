@@ -11,10 +11,10 @@
  * 서브 클래싱도 지원하므로 자유로운 수정도 가능합니다.
  *
  ====================================================================================*/
-#ifndef MAIN_SUB_H_
-#define MAIN_SUB_H_
+#ifndef RXMAIN_H_
+#define RXMAIN_H_
 
-#include "../common.h"
+#include "common.h"
 
 namespace RX
 {

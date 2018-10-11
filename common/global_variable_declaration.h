@@ -22,6 +22,6 @@ extern HBITMAP g_hBackBufferBitmap;
 extern HBITMAP g_hOldBackBufferBitmap;
 
 extern IDirect3DDevice9* g_pD3DDevice9;
-extern HRESULT           g_hDXResult;
+extern HRESULT           g_DXResult;
 
 #endif

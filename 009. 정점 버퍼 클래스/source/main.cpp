@@ -1,7 +1,7 @@
 #include "base_project.h"
 #include "global_variable_declaration.h"
 #include "main.h"
-#include "RXVertexBufferDX9_test.h"
+#include "RX/RXVertexBufferDX9.h"
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -15,13 +15,13 @@
 // 전역 변수 선언부입니다.
 namespace
 {
-	RX::RXMain_DX9*        g_pMainDX       = nullptr;
-	RX::RXVertexBufferDX9* g_pVB1 = nullptr;
-	RX::RXVertexBufferDX9* g_pVB2 = nullptr;
+	RX::RXMain_DX9*        g_pMainDX = nullptr;
+	RX::RXVertexBufferDX9* g_pVB1    = nullptr;
+	RX::RXVertexBufferDX9* g_pVB2    = nullptr;
 }
 
 extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_hDXResult   = S_OK;
+extern HRESULT           g_DXResult   = S_OK;
 
 
 // ====================================================================================

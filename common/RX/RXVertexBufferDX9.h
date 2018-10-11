@@ -9,10 +9,10 @@
  * DirectX9의 정점 버퍼를 클래스로 래핑했습니다.
  *
  ====================================================================================*/
-#ifndef RXVERTEXBUFFERDX9_TEST_H__
-#define RXVERTEXBUFFERDX9_TEST_H__
+#ifndef RXVERTEXBUFFERDX9_H__
+#define RXVERTEXBUFFERDX9_H__
 
-#include "base_project.h"
+#include "common.h"
 
 // 정점의 형식을 설정합니다.
 struct CustomVertex
@@ -24,11 +24,11 @@ struct CustomVertex
 namespace RX
 {
 
-	class RXVertexBufferDX9Test
+	class DLL_DEFINE RXVertexBufferDX9
 	{
 	public:
-		RXVertexBufferDX9Test();
-		virtual ~RXVertexBufferDX9Test();
+		RXVertexBufferDX9();
+		virtual ~RXVertexBufferDX9();
 
 		void    InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor);
 		void    DrawPrimitive();
@@ -45,9 +45,9 @@ namespace RX
 		}
 
 	private:
-		DWORD m_dwFVF;
-		std::vector<CustomVertex> m_vecVertex;
-		IDirect3DVertexBuffer9*   m_pVertexBuffer;
+		DWORD                        m_dwFVF;
+		std::vector<CustomVertex>    m_vecVertex;
+		IDirect3DVertexBuffer9*      m_pVertexBuffer;
 	};
 
 } // namespace RX end

@@ -17,4 +17,8 @@
 #include "global_function.h"
 #include "macro.h"
 
+#ifdef RXBASEDX_EXPORTS
+#include "PCH.h"
+#endif 
+
 #endif

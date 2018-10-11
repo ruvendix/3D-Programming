@@ -34,7 +34,7 @@ namespace
 }
 
 extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_hDXResult   = S_OK;
+extern HRESULT           g_DXResult   = S_OK;
 
 
 // ====================================================================================
@@ -88,7 +88,7 @@ HRESULT CALLBACK OnInit()
 	};
 
 	// 정점 버퍼를 생성합니다.
-	g_hDXResult = g_pD3DDevice9->CreateVertexBuffer(
+	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
 		sizeof(CustomVertex) * 3, // 정점 버퍼의 크기입니다.
 		0,                        // 사용법인데 일반적으로는 0입니다.
 		CUSTOM_FVF,               // FVF 형식입니다.
@@ -96,7 +96,7 @@ HRESULT CALLBACK OnInit()
 		&g_pVertexBuffer,         // 정점 버퍼의 포인터를 넘깁니다.
 		nullptr);                 // nullptr로 설정합니다.
 
-	DXERR_HANDLER(g_hDXResult);
+	DXERR_HANDLER(g_DXResult);
 	NULLCHK_EFAIL_RETURN(g_pVertexBuffer, "정점 버퍼 초기화 실패!");
 	
 	// 정점 버퍼에 실제로 정점 정보를 복사합니다.

@@ -12,21 +12,17 @@
  * DirectX9 전용 코어 서브 루틴입니다.
  *
  ====================================================================================*/
-#include "stdafx.h"
-#include "RXMain_DX9.h"
+#include "PCH.h"
+#include "RXMainDX9.h"
 
-namespace
-{
-	RX::RXMain_DX9* g_pThis = nullptr;
-}
+extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+extern HRESULT           g_DXResult    = S_OK;
 
 namespace RX
 {
 
 	RXMain_DX9::RXMain_DX9()
 	{
-		g_pThis = this;
-
 		m_bLostDevice = false;
 		m_bMSAA       = false;
 		m_pD3D9       = nullptr;
@@ -107,6 +103,7 @@ namespace RX
 	
 		DXERR_HANDLER(hDXResult);
 		NULLCHK_EFAIL_RETURN(m_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패!");
+		g_pD3DDevice9 = m_pD3DDevice9;
 
 		RXLOG(false, "DirectX9 가상 디바이스 생성 성공!");
 		return S_OK;

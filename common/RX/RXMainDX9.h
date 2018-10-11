@@ -12,15 +12,11 @@
  * DirectX9 전용 코어 서브 루틴입니다.
  *
  ====================================================================================*/
-#ifndef MAIN_SUB_DIRECTX9_H_
-#define MAIN_SUB_DIRECTX9_H_
+#ifndef RXMAINDX9_H_
+#define RXMAINDX9_H_
 
 #include "RXMain.h"
 #include "RXFrame.h"
-
-#ifdef RXBASEDX_EXPORTS
-#include "stdafx.h"
-#endif
 
 namespace RX
 {
