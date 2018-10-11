@@ -36,6 +36,7 @@
 #endif
 
 #include <windows.h>
+#include <windowsx.h>
 #include <mmsystem.h>
 
 #ifdef RXBASEDX_EXPORTS
