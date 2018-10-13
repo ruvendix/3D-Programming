@@ -12,6 +12,37 @@
 #include "PCH.h"
 #include "RXVertexBufferDX9.h"
 
+namespace
+{
+	INT32 CalcPrimitiveCount(D3DPRIMITIVETYPE primitiveType, INT32 vertexCnt)
+	{
+		INT32 primitiveCnt = 0;
+		switch (primitiveType)
+		{
+		case D3DPT_POINTLIST:
+			primitiveCnt = vertexCnt;
+			break;
+		case D3DPT_LINELIST:
+			primitiveCnt = vertexCnt / 2;
+			break;
+		case D3DPT_LINESTRIP:
+			primitiveCnt = vertexCnt - 1;
+			break;
+		case D3DPT_TRIANGLELIST:
+			primitiveCnt = vertexCnt / 3;
+			break;
+		case D3DPT_TRIANGLESTRIP:
+			primitiveCnt = vertexCnt - 2;
+			break;
+		case D3DPT_TRIANGLEFAN:
+			primitiveCnt = vertexCnt - 2;
+			break;
+		}
+
+		return primitiveCnt;
+	}
+}
+
 namespace RX
 {
 
@@ -32,7 +63,7 @@ namespace RX
 		m_vecVertex.push_back(customVertex);
 	}
 
-	void RXVertexBufferDX9::DrawPrimitive()
+	void RXVertexBufferDX9::DrawPrimitive(D3DPRIMITIVETYPE primitiveType)
 	{
 		g_pD3DDevice9->SetFVF(m_dwFVF);
 		g_pD3DDevice9->SetStreamSource(
@@ -42,9 +73,9 @@ namespace RX
 			sizeof(CustomVertex)); // 보폭(Stride)은 FVF로 생성한 크기와 일치해야 합니다.
 
 		g_pD3DDevice9->DrawPrimitive(
-			D3DPT_TRIANGLELIST,      // 렌더링 형식을 설정합니다.
+			primitiveType,           // 렌더링 형식을 설정합니다.
 			0,                       // 오프셋은 0으로 설정합니다.
-			m_vecVertex.size() / 3); // 프리미티브 개수입니다.
+			CalcPrimitiveCount(primitiveType, m_vecVertex.size())); // 프리미티브 개수입니다.
 	}
 
 	HRESULT RXVertexBufferDX9::CreateVertexBuffer()
@@ -54,7 +85,7 @@ namespace RX
 		// 정점 버퍼를 생성합니다.
 		g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
 			sizeof(CustomVertex) * vertexCnt, // 정점 버퍼의 크기입니다.
-			0,                                // Usage는 0으로 설정합니다.
+			D3DUSAGE_NONE,                    // Usage는 0으로 설정합니다.
 			m_dwFVF,                          // FVF 형식입니다.
 			D3DPOOL_MANAGED,                  // 메모리풀입니다.
 			&m_pVertexBuffer,                 // 정점 버퍼의 포인터입니다.
@@ -70,7 +101,7 @@ namespace RX
 			0,                                // 오프셋이 0이면 전체 잠금입니다.
 			sizeof(CustomVertex) * vertexCnt, // 복사할 정점 정보의 크기를 넘겨줍니다.
 			&pVertexData,                     // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
-			0);                               // 잠금 플래그는 0으로 설정합니다.
+			D3DFLAG_NONE);                    // 잠금 플래그는 0으로 설정합니다.
 
 		::CopyMemory(pVertexData, &m_vecVertex[0], sizeof(CustomVertex) * vertexCnt);
 		m_pVertexBuffer->Unlock();

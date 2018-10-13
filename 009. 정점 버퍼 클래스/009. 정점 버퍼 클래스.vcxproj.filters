@@ -15,25 +15,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\common\base_project.cpp">
-      <Filter>source\base</Filter>
-    </ClCompile>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\RXVertexBufferDX9_test.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\source\base_project.cpp">
+      <Filter>source\base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\base_project.h">
-      <Filter>source\base</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>source\base</Filter>
     </ClInclude>
     <ClInclude Include="source\RXVertexBufferDX9_test.h">
       <Filter>source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\include\base_project.h">
+      <Filter>source\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

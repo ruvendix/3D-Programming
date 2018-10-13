@@ -7,14 +7,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "001. Win32 API 기본 프�
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "common", "common", "{BE46ED79-188F-4244-972F-1B0FD7B263D5}"
 	ProjectSection(SolutionItems) = preProject
-		common\base.h = common\base.h
-		common\common.h = common\common.h
-		common\global_constant.h = common\global_constant.h
-		common\global_function.h = common\global_function.h
-		common\global_type.h = common\global_type.h
-		common\global_variable_declaration.h = common\global_variable_declaration.h
-		common\macro.h = common\macro.h
-		common\main.h = common\main.h
+		common\include\base.h = common\include\base.h
+		common\include\common.h = common\include\common.h
+		common\include\global_constant.h = common\include\global_constant.h
+		common\include\global_function.h = common\include\global_function.h
+		common\include\global_type.h = common\include\global_type.h
+		common\include\global_variable_declaration.h = common\include\global_variable_declaration.h
+		common\include\macro.h = common\include\macro.h
+		common\include\main.h = common\include\main.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "002. DirectX9 기본 프로그램", "002. DirectX9 기본 프로그램\002. DirectX9 기본 프로그램.vcxproj", "{BFDD0B78-D937-4266-812C-9A882CE7AC2F}"
@@ -32,6 +32,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "008. 다양한 회전", "008. 다양한 회전\008. 다양한 회전.vcxproj", "{0069A187-55B4-4D31-95C1-4AB838B53DE0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "009. 정점 버퍼 클래스", "009. 정점 버퍼 클래스\009. 정점 버퍼 클래스.vcxproj", "{7B770C10-D26D-4788-9829-6717343FBBAD}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "010. 3D 기본 렌더링", "010. 3D 기본 렌더링\010. 3D 기본 렌더링.vcxproj", "{970A599C-989D-4A02-A25B-C71E2BE61517}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,14 @@ Global
 		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x64.Build.0 = Release|x64
 		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x86.ActiveCfg = Release|Win32
 		{7B770C10-D26D-4788-9829-6717343FBBAD}.Release|x86.Build.0 = Release|Win32
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Debug|x64.ActiveCfg = Debug|x64
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Debug|x64.Build.0 = Debug|x64
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Debug|x86.ActiveCfg = Debug|Win32
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Debug|x86.Build.0 = Debug|Win32
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Release|x64.ActiveCfg = Release|x64
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Release|x64.Build.0 = Release|x64
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Release|x86.ActiveCfg = Release|Win32
+		{970A599C-989D-4A02-A25B-C71E2BE61517}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -31,11 +31,15 @@ namespace RX
 		virtual ~RXVertexBufferDX9();
 
 		void    InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor);
-		void    DrawPrimitive();
+		void    DrawPrimitive(D3DPRIMITIVETYPE primitiveType);
 		HRESULT CreateVertexBuffer();
 
 		// ====================================================================================
 		// Getter
+		INT32 getVertexCount() const noexcept
+		{
+			return (m_vecVertex.size());
+		}
 
 		// ====================================================================================
 		// Setter

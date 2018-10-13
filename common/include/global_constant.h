@@ -21,6 +21,7 @@ const INT32 MAX_STRING_LENGTH     = 1024;
 const INT32 MAX_FILE_NAME         = 256;
 
 const INT32 D3DUSAGE_NONE = 0;
+const INT32 D3DFLAG_NONE  = 0;
 
 // 프레임 카운트에만 사용되고
 // 실제 프레임은 시간으로 측정되기 때문에

@@ -120,8 +120,8 @@ HRESULT CALLBACK OnRender()
 	// 로컬좌표를 월드좌표로 변환해줍니다.
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 
-	g_pVB1->DrawPrimitive();
-	g_pVB2->DrawPrimitive();
+	g_pVB1->DrawPrimitive(D3DPT_TRIANGLELIST);
+	g_pVB2->DrawPrimitive(D3DPT_TRIANGLELIST);
 
 	return S_OK;
 }

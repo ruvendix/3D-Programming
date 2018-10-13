@@ -107,6 +107,11 @@ LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 
 		break;
 	}
+	case WM_SIZE:
+	{
+		g_pThis->AdjustClientRect();
+		break;
+	}
 	}
 
 	// Alt + Enter를 위한 처리입니다.
@@ -228,8 +233,11 @@ namespace RX
 	HRESULT RXMain::CreateProgramWindow()
 	{
 		// 클라이언트 영역의 크기를 설정해줍니다.
-		RECT rtClient;
-		::SetRect(&rtClient, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
+		RECT rtClient = { 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT };
+		::CopyRect(&m_rtClient, &rtClient);
+
+		m_clientWidth  = DEFAULT_CLIENT_WIDTH;
+		m_clientHeight = DEFAULT_CLIENT_HEIGHT;
 
 		DWORD dwStyle;
 		if (m_bFullScreen)
@@ -242,11 +250,12 @@ namespace RX
 		}
 
 		// 클라이언트 영역의 크기를 조정해줍니다.
-		// 프레임 윈도우를 제외하고 순수하게 클라이언트 영역의 크기만 계산합니다.
+		// 프레임 윈도우를 포함해서 순수하게 클라이언트 영역의 크기만 계산합니다.
+		// 즉, 기존 창의 크기보다 더 커집니다.
 		::AdjustWindowRect(&rtClient, dwStyle, FALSE);
 
-		m_clientWidth  = rtClient.right - rtClient.left;
-		m_clientHeight = rtClient.bottom - rtClient.top;
+		INT fullClientWidth  = rtClient.right - rtClient.left;
+		INT fullClientHeight = rtClient.bottom - rtClient.top;
 		::SetRect(&m_rtClient, 0, 0, m_clientWidth, m_clientHeight);
 
 		// 현재 모니터 해상도에 설정된 값을 가져옵니다.
@@ -262,9 +271,9 @@ namespace RX
 		// 조정된 클라이언트 영역의 크기를 포함해서 프로그램 창을 생성해야 하므로
 		// rtClient.right - rtClient.left로 설정해야 합니다.
 		m_hMainWnd = ::CreateWindow(SZ_WINDOW_CLASS, SZ_PROGRAM_TITLE, dwStyle,
-			(screenWidth - (rtClient.right - rtClient.left)) / 2,
-			(screenHeight - (rtClient.bottom - rtClient.top)) / 2,
-			m_clientWidth, m_clientHeight,
+			(screenWidth - fullClientWidth) / 2,
+			(screenHeight - fullClientHeight) / 2,
+			fullClientWidth, fullClientHeight,
 			::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 			nullptr, m_hInst, nullptr);
 

@@ -6,26 +6,26 @@
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="resource">
-      <UniqueIdentifier>{36fb54b9-6842-49af-b0f3-3b8243a8b913}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="header">
       <UniqueIdentifier>{ee80b4fa-a854-4cfb-a9cc-6157414f34a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\base">
+      <UniqueIdentifier>{36fb54b9-6842-49af-b0f3-3b8243a8b913}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\base_project.cpp">
-      <Filter>source</Filter>
+    <ClCompile Include="..\common\source\base_project.cpp">
+      <Filter>source\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\common\base_project.h">
-      <Filter>header</Filter>
+    <ClInclude Include="..\common\include\base_project.h">
+      <Filter>source\base</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
-      <Filter>header</Filter>
+      <Filter>source\base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
