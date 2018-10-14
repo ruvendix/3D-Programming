@@ -105,7 +105,7 @@ namespace RX
 
 		::CopyMemory(pVertexData, &m_vecVertex[0], sizeof(CustomVertex) * vertexCnt);
 		m_pVertexBuffer->Unlock();
-
+		
 		return S_OK;
 	}
 

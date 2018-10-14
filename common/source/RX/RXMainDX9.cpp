@@ -205,6 +205,14 @@ namespace RX
 		return S_OK;
 	}
 
+	HRESULT RXMain_DX9::ResizeResolution(INT32 clientWidth, INT32 clientHeight)
+	{
+		RXMain::ResizeResolution(clientWidth, clientHeight);
+		OnLostDevice();
+		OnResetDevice();
+		return S_OK;
+	}
+
 	// 가상 디바이스를 생성하기 전에 검증해주는 함수입니다.
 	// 검증하는 순서는 다음과 같습니다.
 	//
@@ -234,8 +242,8 @@ namespace RX
 		// 전체 화면일 때는 디스플레이 모드 정보로 설정해줍니다.
 		if (m_bFullScreen == false)
 		{
-			pD3DPP->BackBufferWidth  = DEFAULT_CLIENT_WIDTH;
-			pD3DPP->BackBufferHeight = DEFAULT_CLIENT_HEIGHT;
+			pD3DPP->BackBufferWidth  = getClientWidth();
+			pD3DPP->BackBufferHeight = getClientHeight();
 		}
 
 		// 후면 버퍼의 형식을 설정해줍니다.
@@ -368,12 +376,12 @@ namespace RX
 		return S_OK;
 	}
 
-	void RXMain_DX9::ToggleFullScreenMode(bool bFullScreen)
+	HRESULT RXMain_DX9::ToggleFullScreenMode(bool bFullScreen)
 	{
 		RXMain::ToggleFullScreenMode(bFullScreen);
-
 		OnLostDevice();
 		OnResetDevice();
+		return S_OK;
 	}
 
 	HRESULT RXMain_DX9::Update()

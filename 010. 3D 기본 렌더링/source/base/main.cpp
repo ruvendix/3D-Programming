@@ -28,6 +28,8 @@ extern HRESULT           g_DXResult    = S_OK;
 HRESULT CALLBACK OnInit();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
+HRESULT CALLBACK OnLost();
+HRESULT CALLBACK OnReset();
 
 void ViewMatrixTest();
 void ProjectionMatrixTest();
@@ -54,6 +56,8 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
 	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
 	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	g_pMainDX->setSubFunc(OnLost,    SUBFUNC_TYPE::LOSTDEVICE);
+	g_pMainDX->setSubFunc(OnReset,   SUBFUNC_TYPE::RESETDEVICE);
 
 	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
 
@@ -79,8 +83,6 @@ HRESULT CALLBACK OnInit()
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
 	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	return S_OK;
 }
@@ -93,7 +95,7 @@ HRESULT CALLBACK OnRender()
 {
 	//ViewMatrixTest();
 	//ProjectionMatrixTest();
-	//ViewPortTest();
+	ViewPortTest();
 	return S_OK;
 }
 
@@ -320,4 +322,16 @@ void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ)
 	pV->x = rX;
 	pV->y = rY;
 	pV->z = rZ;
+}
+
+HRESULT CALLBACK OnLost()
+{
+	OnRelease();
+	return S_OK;
+}
+
+HRESULT CALLBACK OnReset()
+{
+	OnInit();
+	return S_OK;
 }

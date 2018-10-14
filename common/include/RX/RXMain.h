@@ -34,10 +34,16 @@ namespace RX
 		virtual HRESULT Update();
 		virtual HRESULT Render();
 		virtual HRESULT Release();
-		virtual void    ToggleFullScreenMode(bool bFullScreen = false);
+		virtual HRESULT ResizeResolution(INT32 clientWidth, INT32 clientHeight);
+		virtual HRESULT ToggleFullScreenMode(bool bFullScreen = false);
 
 		void ChangeProgramTitle(const TCHAR* szTitle);
 		void AdjustClientRect();
+
+		bool IsFullScreen() const noexcept
+		{
+			return (m_bFullScreen == true);
+		}
 
 		// ====================================================================================
 		// Getter
@@ -66,14 +72,19 @@ namespace RX
 			return m_rtClient;
 		}
 
+		RECT getWindowRect() const noexcept
+		{
+			return m_rtWindow;
+		}
+
 		INT32 getClientWidth() const noexcept
 		{
-			return m_clientWidth;
+			return (m_rtClient.right - m_rtClient.left);
 		}
 
 		INT32 getClientHeight() const noexcept
 		{
-			return m_clientHeight;
+			return (m_rtClient.bottom - m_rtClient.top);
 		}
 
 		// ====================================================================================
@@ -102,8 +113,7 @@ namespace RX
 		ROUTINE_STATE    m_routineState;
 		INT32            m_msgCode;
 		RECT             m_rtClient;
-		INT32            m_clientWidth;
-		INT32            m_clientHeight;
+		RECT             m_rtWindow;
 		SubFuncInfo      m_subFunc[SubFuncInfo::MAX_SUBFUNC];
 
 		// ====================================================================================

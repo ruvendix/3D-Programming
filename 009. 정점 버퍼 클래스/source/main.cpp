@@ -29,6 +29,8 @@ extern HRESULT           g_DXResult   = S_OK;
 HRESULT CALLBACK OnInit();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
+HRESULT CALLBACK OnLost();
+HRESULT CALLBACK OnReset();
 
 
 // ====================================================================================
@@ -49,6 +51,8 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
 	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
 	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	g_pMainDX->setSubFunc(OnLost,    SUBFUNC_TYPE::LOSTDEVICE);
+	g_pMainDX->setSubFunc(OnReset,   SUBFUNC_TYPE::RESETDEVICE);
 
 	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
 
@@ -130,5 +134,17 @@ HRESULT CALLBACK OnRelease()
 {
 	SAFE_DELTE(g_pVB2);
 	SAFE_DELTE(g_pVB1);
+	return S_OK;
+}
+
+HRESULT CALLBACK OnLost()
+{
+	OnRelease();
+	return S_OK;
+}
+
+HRESULT CALLBACK OnReset()
+{
+	OnInit();
 	return S_OK;
 }

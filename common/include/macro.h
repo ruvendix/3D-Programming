@@ -102,6 +102,18 @@ if (ptr == nullptr)\
     RXERRLOG_RETURN(#ptr " is nullptr!");\
 }
 
+#define NULL_RETURN(ptr)\
+if (ptr == nullptr)\
+{\
+    return;\
+}
+
+#define NULL_OK_RETURN(ptr)\
+if (ptr == nullptr)\
+{\
+    return S_OK;\
+}
+
 #define NULLCHK_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
