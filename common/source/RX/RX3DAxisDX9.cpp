@@ -37,7 +37,6 @@ namespace RX
 		m_pVB->InsertVertex(0.0f, 0.0f, -rDist, DXCOLOR_BLUE);
 		m_pVB->InsertVertex(0.0f, 0.0f, rDist, DXCOLOR_BLUE);
 
-		m_pVB->setFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE);
 		m_pVB->CreateVertexBuffer();
 
 		return S_OK;

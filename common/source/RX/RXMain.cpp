@@ -535,13 +535,13 @@ void OnChangeSize()
 void OnMouseLButtonDown(LPARAM lParam)
 {
 	//MSGBOX("마우스 왼쪽 버튼 클릭!");
-	g_pThis->ResizeResolution(1024, 768);
+	//g_pThis->ResizeResolution(1024, 768);
 }
 
 void OnMouseRButtonDown(LPARAM lParam)
 {
 	//MSGBOX("마우스 오른쪽 버튼 클릭!");
-	g_pThis->ResizeResolution(800, 600);
+	//g_pThis->ResizeResolution(800, 600);
 }
 
 void OnMouseMove()
