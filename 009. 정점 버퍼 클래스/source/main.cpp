@@ -1,7 +1,6 @@
 #include "base_project.h"
 #include "global_variable_declaration.h"
 #include "main.h"
-#include "RX/RXVertexBufferDX9.h"
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -124,9 +123,8 @@ HRESULT CALLBACK OnRender()
 	// 로컬좌표를 월드좌표로 변환해줍니다.
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 
-	g_pVB1->DrawPrimitive(D3DPT_TRIANGLELIST);
-	g_pVB2->DrawPrimitive(D3DPT_TRIANGLELIST);
-
+	RX::RXRendererDX9::Instance()->DrawPrimitive(D3DPT_TRIANGLELIST, *g_pVB1);
+	RX::RXRendererDX9::Instance()->DrawPrimitive(D3DPT_TRIANGLELIST, *g_pVB2);
 	return S_OK;
 }
 

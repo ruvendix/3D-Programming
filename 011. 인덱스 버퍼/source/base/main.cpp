@@ -1,7 +1,7 @@
 #include "base_project.h"
 #include "global_variable_declaration.h"
 #include "main.h"
-#include "RX/RXCubeDX9.h"
+#include "RX\RXCubeDX9.h"
 
 // ====================================================================================
 // 매크로 정의부입니다.
@@ -75,8 +75,8 @@ HRESULT CALLBACK OnInit()
 	D3DXVECTOR3 vMin(-1.0f, -1.0f, -1.0f);
 	D3DXVECTOR3 vMax( 1.0f,  1.0f,  1.0f);
 
-	g_pCube->CreateCube(vMin, vMax);
-	//g_pCube->CreateCube(vMin, vMax, CUBE_DRAW_TYPE::INDEX);
+	g_pCube->CreateCubeByVertex(vMin, vMax);
+	//g_pCube->CreateCubeByIndex(vMin, vMax);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
@@ -119,8 +119,8 @@ HRESULT CALLBACK OnRender()
 	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// 큐브 렌더링입니다.
-	g_pCube->DrawCube();
-	//g_pCube->DrawCube(CUBE_DRAW_TYPE::INDEX);
+	g_pCube->DrawCubeByVertex();
+	//g_pCube->DrawCubeByIndex();
 
 	return S_OK;
 }

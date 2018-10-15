@@ -128,6 +128,12 @@ if (ptr == nullptr)\
 	RXERRLOG_EFAIL_RETURN(szErr);\
 }
 
+#define NULLCHK_EFAIL_RETURN_NOCOMENT(ptr)\
+if (ptr == nullptr)\
+{\
+    RXERRLOG_EFAIL_RETURN(#ptr " is nullptr!");\
+}
+
 #define NULLCHK_HEAPALLOC(ptr)\
 if (ptr == nullptr)\
 {\

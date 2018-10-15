@@ -13,29 +13,25 @@
 #define RXCUBEDX9_H__
 
 #include "common.h"
-#include "RXVertexBufferDX9.h"
-
-enum class CUBE_DRAW_TYPE : INT32
-{
-	NORMAL,
-	INDEX,
-};
+#include "RXRenderObjectDX9.h"
 
 namespace RX
 {
 
-	class DLL_DEFINE RXCubeDX9
+	class DLL_DEFINE RXCubeDX9 : public RXRenderObjectDX9
 	{
 	public:
 		RXCubeDX9() = default;
-		virtual ~RXCubeDX9();
+		virtual ~RXCubeDX9() = default;
 
-		HRESULT CreateCube(const D3DXVECTOR3& vMin,
-			const D3DXVECTOR3& vMax, CUBE_DRAW_TYPE type = CUBE_DRAW_TYPE::NORMAL);
-		void    DrawCube(CUBE_DRAW_TYPE type = CUBE_DRAW_TYPE::NORMAL);
+		HRESULT CreateCubeByVertex(const D3DXVECTOR3& vMin, const D3DXVECTOR3& vMax);
+		HRESULT CreateCubeByIndex(const D3DXVECTOR3& vMin, const D3DXVECTOR3& vMax);
+		void    InitBaseVertex(const D3DXVECTOR3& vMin, const D3DXVECTOR3& vMax);
+		void    DrawCubeByVertex();
+		void    DrawCubeByIndex();
 
 	private:
-		RX::RXVertexBufferDX9* m_pVB;
+		D3DXVECTOR3 m_vBase[8]; // 기준이 되는 정점
 	};
 
 } // namespace RX end

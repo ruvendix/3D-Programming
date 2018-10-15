@@ -13,22 +13,19 @@
 #define RX3DAXISDX9_H__
 
 #include "common.h"
-#include "RXVertexBufferDX9.h"
+#include "RXRenderObjectDX9.h"
 
 namespace RX
 {
 
-	class DLL_DEFINE RX3DAxisDX9
+	class DLL_DEFINE RX3DAxisDX9 : public RXRenderObjectDX9
 	{
 	public:
 		RX3DAxisDX9() = default;
-		virtual ~RX3DAxisDX9();
+		virtual ~RX3DAxisDX9() = default;
 
 		HRESULT CreateAxis(FLOAT rDist);
-		void DrawAxis();
-
-	private:
-		RX::RXVertexBufferDX9* m_pVB;
+		void    DrawAxis();
 	};
 
 } // namespace RX end

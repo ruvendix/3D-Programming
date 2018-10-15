@@ -109,6 +109,7 @@ namespace RX
 				rRenderingInterpolation =
 					float(::timeGetTime() + FRAME_SKIP_TIME - nextGameTime) / float(FRAME_SKIP_TIME);
 				//RXDEBUGLOG("렌더링 보간값 : %.2f", rRenderingInterpolation);				
+				RXRendererDX9::Instance()->ResetDrawCallCount();
 				Render(rRenderingInterpolation);
 
 				// 렌더링을 완료하면 프레임 카운트가 1증가 됩니다.
