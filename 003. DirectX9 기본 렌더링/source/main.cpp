@@ -80,7 +80,7 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = g_pMainDX->getD3DDevice9();
+	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
 	NULLCHK(g_pD3DDevice9);
 
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.

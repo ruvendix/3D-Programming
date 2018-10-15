@@ -34,49 +34,20 @@ namespace RX
 		virtual HRESULT ResizeResolution(INT32 clientWidth, INT32 clientHeight) override;
 		virtual HRESULT ToggleFullScreenMode(bool bFullScreen = false) override;
 
-		HRESULT VerifyDevice(D3DPRESENT_PARAMETERS* pD3DPP);
-
 		// ====================================================================================
 		// 메인 루프
 		virtual HRESULT Update();
 		HRESULT Render(FLOAT rInterpolation);
-		HRESULT BeginRender();
-		HRESULT EndRender();
 
 		// ====================================================================================
 		// 로스트 디바이스, 리셋 디바이스
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
 
-		// ====================================================================================
-		// Getter
-		IDirect3D9* getD3D9() const noexcept
-		{
-			return m_pD3D9;
-		}
-
-		IDirect3DDevice9* getD3DDevice9() const noexcept
-		{
-			return m_pD3DDevice9;
-		}
-
-		// ====================================================================================
-		// Setter
-		void setClearColor(D3DCOLOR clearColor)
-		{
-			m_clearColor = clearColor;
-		}
-
 	protected:
 		// ====================================================================================
 		// 기본 정보
-		bool                 m_bLostDevice;
-		bool                 m_bMSAA;      // 멀티 샘플링(안티 얼라이징) 사용 여부입니다.
-		DWORD                m_dwBehavior; // 정점 처리 방식입니다.
-		IDirect3D9*          m_pD3D9;
-		IDirect3DDevice9*    m_pD3DDevice9;
-		D3DCOLOR             m_clearColor;
-		RXFrame              m_frame;
+		RXFrame m_frame;
 	};
 
 } // namespace RX end

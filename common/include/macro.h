@@ -1,13 +1,13 @@
-/*====================================================================================
+ï»¿/*====================================================================================
  *
  * Copyright (C) Ruvendix. All Rights Reserved.
  *
- * <ÀÛ¼º ³¯Â¥>
+ * <ìž‘ì„± ë‚ ì§œ>
  * 2018-08-07
  *
- * <ÆÄÀÏ ³»¿ë>
- * °øµ¿À¸·Î »ç¿ëµÇ´Â ¸ÅÅ©·Î ¸ðÀ½ÀÔ´Ï´Ù.
- * Àü¿ª ÇÔ¼ö¿¡ ¿µÇâÀ» ¹Þ½À´Ï´Ù.
+ * <íŒŒì¼ ë‚´ìš©>
+ * ê³µë™ìœ¼ë¡œ ì‚¬ìš©ë˜ëŠ” ë§¤í¬ë¡œ ëª¨ìŒìž…ë‹ˆë‹¤.
+ * ì „ì—­ í•¨ìˆ˜ì— ì˜í–¥ì„ ë°›ìŠµë‹ˆë‹¤.
  *
  ====================================================================================*/
 #ifndef MACRO_H__
@@ -16,8 +16,8 @@
 #include "global_function.h"
 
 // ====================================================================================
-// µ¿Àû ÇÒ´ç, Release, LostDevice, ResetDevice °ü·Ã ¸ÅÅ©·ÎÀÔ´Ï´Ù.
-// µ¿Àû ÇÒ´ç ¿µ¿ªÀº _NORMAL_BLOCKÀ¸·Î ¼³Á¤ÇÕ´Ï´Ù.
+// ë™ì  í• ë‹¹, Release, LostDevice, ResetDevice ê´€ë ¨ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
+// ë™ì  í• ë‹¹ ì˜ì—­ì€ _NORMAL_BLOCKìœ¼ë¡œ ì„¤ì •í•©ë‹ˆë‹¤.
 //
 #if defined(DEBUG) | defined(_DEBUG)
 #define RXNew new(_NORMAL_BLOCK, __FILE__, __LINE__)
@@ -52,14 +52,14 @@ if (ptr)\
     ptr = nullptr;\
 }
 
-// ÀåÄ¡¸¦ ¼Õ½ÇÇßÀ» ¶§ »ç¿ëµË´Ï´Ù.
+// ìž¥ì¹˜ë¥¼ ì†ì‹¤í–ˆì„ ë•Œ ì‚¬ìš©ë©ë‹ˆë‹¤.
 #define SAFE_LOST_DEVICE(ptr)\
 if (ptr)\
 {\
 	ptr->OnLostDevice();\
 }
 
-// ÀåÄ¡¸¦ º¹±¸ÇÒ ¶§ »ç¿ëµË´Ï´Ù.
+// ìž¥ì¹˜ë¥¼ ë³µêµ¬í•  ë•Œ ì‚¬ìš©ë©ë‹ˆë‹¤.
 #define SAFE_RESET_DEVICE(ptr)\
 if (ptr)\
 {\
@@ -67,7 +67,7 @@ if (ptr)\
 }
 
 // ====================================================================================
-// ¸Þ½ÃÁö ¹Ú½º °ü·Ã ¸ÅÅ©·ÎÀÔ´Ï´Ù.
+// ë©”ì‹œì§€ ë°•ìŠ¤ ê´€ë ¨ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
 //
 #if defined(_UNICODE) || defined(UNICODE)
 #define WIDEN(x)       L##x
@@ -81,9 +81,9 @@ if (ptr)\
 #define __TFUNSIG__    __FUNCSIG__
 #endif
 
-// ¸Þ½ÃÁö ¹Ú½º¸¸ Ãâ·ÂÇÕ´Ï´Ù.
-// ÇÁ·ÎÁ§Æ® ¸ðµå¿¡ »ó°ü¾øÀÌ ¹«Á¶°Ç ¾Ë·ÁÁà¾ß ÇÒ ¶§ »ç¿ëÇÕ´Ï´Ù.
-// ERRMSGBOX()´Â ·Î±×·Îµµ Ãâ·ÂÇÕ´Ï´Ù.
+// ë©”ì‹œì§€ ë°•ìŠ¤ë§Œ ì¶œë ¥í•©ë‹ˆë‹¤.
+// í”„ë¡œì íŠ¸ ëª¨ë“œì— ìƒê´€ì—†ì´ ë¬´ì¡°ê±´ ì•Œë ¤ì¤˜ì•¼ í•  ë•Œ ì‚¬ìš©í•©ë‹ˆë‹¤.
+// ERRMSGBOX()ëŠ” ë¡œê·¸ë¡œë„ ì¶œë ¥í•©ë‹ˆë‹¤.
 #if defined(_UNICODE) || defined(UNICODE)
 #define MSGBOX(szText)      RX::ShowMessageBoxImplW(L##szText)
 #else					         
@@ -138,9 +138,9 @@ if (ptr == nullptr)\
 #define RXERRLOG_EFAIL_RETURN(szErr) RXERRLOG(szErr); return E_FAIL
 
 // ====================================================================================
-// ½ºÆ®¸µ °ü·Ã ¸ÅÅ©·ÎÀÔ´Ï´Ù.
+// ìŠ¤íŠ¸ë§ ê´€ë ¨ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
 //
-// µð¹ö±× ¸ðµå¸¸ ÀÛµ¿, ¸±¸®Áî ¸ðµå´Â X
+// ë””ë²„ê·¸ ëª¨ë“œë§Œ ìž‘ë™, ë¦´ë¦¬ì¦ˆ ëª¨ë“œëŠ” X
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXDEBUGLOG(szFormat, ...)\
@@ -155,8 +155,8 @@ if (ptr == nullptr)\
 	#define RXDEBUGLOG __noop
 #endif
 
-// ¼­½Ä ¹®ÀÚ¿­ Áö¿ø, µð¹ö±× ¸ðµå¿¡¼­´Â µð¹ö±× Ãâ·ÂÃ¢¿¡µµ Ãâ·Â
-// ¸Þ½ÃÁö ¹Ú½º Ãâ·Â Áö¿ø, ÀÏ¹Ý ¸Þ½ÃÁö ¹Ú½º¸¸ Áö¿øÇÕ´Ï´Ù.
+// ì„œì‹ ë¬¸ìžì—´ ì§€ì›, ë””ë²„ê·¸ ëª¨ë“œì—ì„œëŠ” ë””ë²„ê·¸ ì¶œë ¥ì°½ì—ë„ ì¶œë ¥
+// ë©”ì‹œì§€ ë°•ìŠ¤ ì¶œë ¥ ì§€ì›, ì¼ë°˜ ë©”ì‹œì§€ ë°•ìŠ¤ë§Œ ì§€ì›í•©ë‹ˆë‹¤.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
@@ -179,8 +179,8 @@ if (ptr == nullptr)\
 	#endif
 #endif
 
-// ¼­½Ä ¹®ÀÚ¿­ Áö¿ø, µð¹ö±× ¸ðµå¿¡¼­´Â µð¹ö±× Ãâ·ÂÃ¢¿¡µµ Ãâ·Â
-// ¸Þ½ÃÁö ¹Ú½º Ãâ·Â Áö¿ø, ¿¡·¯ ¸Þ½ÃÁö ¹Ú½º¸¸ Áö¿øÇÕ´Ï´Ù.
+// ì„œì‹ ë¬¸ìžì—´ ì§€ì›, ë””ë²„ê·¸ ëª¨ë“œì—ì„œëŠ” ë””ë²„ê·¸ ì¶œë ¥ì°½ì—ë„ ì¶œë ¥
+// ë©”ì‹œì§€ ë°•ìŠ¤ ì¶œë ¥ ì§€ì›, ì—ëŸ¬ ë©”ì‹œì§€ ë°•ìŠ¤ë§Œ ì§€ì›í•©ë‹ˆë‹¤.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
@@ -200,24 +200,25 @@ if (ptr == nullptr)\
 #endif
 
 // ====================================================================================
-// DirectX °ü·Ã ¸ÅÅ©·ÎÀÔ´Ï´Ù.
+// DirectX ê´€ë ¨ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
 //
-#define DXCOLOR_WHITE   D3DCOLOR_ARGB(255, 255, 255, 255)
-#define DXCOLOR_BLACK   D3DCOLOR_ARGB(255,   0,   0,   0)
-#define DXCOLOR_RED     D3DCOLOR_ARGB(255, 255,   0,   0)
-#define DXCOLOR_GREEN   D3DCOLOR_ARGB(255,   0, 255,   0)
-#define DXCOLOR_BLUE    D3DCOLOR_ARGB(255,   0,   0, 255)
-#define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255)
+#define DXCOLOR_WHITE   D3DCOLOR_ARGB(255, 255, 255, 255) // í°ìƒ‰
+#define DXCOLOR_BLACK   D3DCOLOR_ARGB(255,   0,   0,   0) // ê²€ì€ìƒ‰
+#define DXCOLOR_RED     D3DCOLOR_ARGB(255, 255,   0,   0) // ë¹¨ê°„ìƒ‰
+#define DXCOLOR_GREEN   D3DCOLOR_ARGB(255,   0, 255,   0) // ì´ˆë¡ìƒ‰
+#define DXCOLOR_BLUE    D3DCOLOR_ARGB(255,   0,   0, 255) // íŒŒëž€ìƒ‰
+#define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255) // ë¶„í™ìƒ‰
+#define DXCOLOR_TEAL    D3DCOLOR_ARGB(255, 64,  128, 128) // ì²­ë¡ìƒ‰
 
-// DirectX ¿¡·¯ ÇÚµé·¯ ¸ÅÅ©·ÎÀÔ´Ï´Ù.
-// HRESULT°ª¸¸ ³Ö¾î¾ß Á¤»ó ÀÛµ¿ÇÕ´Ï´Ù.
+// DirectX ì—ëŸ¬ í•¸ë“¤ëŸ¬ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
+// HRESULTê°’ë§Œ ë„£ì–´ì•¼ ì •ìƒ ìž‘ë™í•©ë‹ˆë‹¤.
 #define DXERR_HANDLER(hDXResult)\
 if (FAILED(hDXResult))\
 {\
 	DXERR_HANDLER_IMPL(hDXResult);\
 }
 
-// ÆÄÀÏ, ¶óÀÎ, ¿¡·¯ ÀÌ¸§, ¿¡·¯ ³»¿ë
+// íŒŒì¼, ë¼ì¸, ì—ëŸ¬ ì´ë¦„, ì—ëŸ¬ ë‚´ìš©
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_DEBUG,\
@@ -237,7 +238,7 @@ if (FAILED(hDXResult))\
 #endif
 
 // ====================================================================================
-// ±× ¿ÜÀÇ ¸ÅÅ©·ÎÀÔ´Ï´Ù.
+// ê·¸ ì™¸ì˜ ë§¤í¬ë¡œìž…ë‹ˆë‹¤.
 //
 #if defined(_UNICODE) || defined(UNICODE)
 #define Win32LastErrorHandler Win32LastErrorHandlerImplW()
@@ -245,8 +246,8 @@ if (FAILED(hDXResult))\
 #define Win32LastErrorHandler Win32LastErrorHandlerImplA()
 #endif
 
-// ÆÄÀÏ, ¶óÀÎ, ¿¡·¯ ÀÌ¸§, ¿¡·¯ ³»¿ë
-// GetLastError()¸¦ ÀÌ¿ëÇÑ Win32 APIÀÇ ¿¡·¯ ÇÚµé·¯ÀÔ´Ï´Ù.
+// íŒŒì¼, ë¼ì¸, ì—ëŸ¬ ì´ë¦„, ì—ëŸ¬ ë‚´ìš©
+// GetLastError()ë¥¼ ì´ìš©í•œ Win32 APIì˜ ì—ëŸ¬ í•¸ë“¤ëŸ¬ìž…ë‹ˆë‹¤.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
@@ -264,5 +265,57 @@ if (FAILED(hDXResult))\
 				__TFILE__, __LINE__, __TFUNSIG__);
 	#endif
 #endif
+
+// ====================================================================================
+// í”¼ë‹‰ìŠ¤ ì‹±ê¸€í†¤ìž…ë‹ˆë‹¤.
+// ì£½ì—ˆë‹¤ê°€ ë‹¤ì‹œ ë¶€í™œí•œë‹¤ëŠ” ì˜ë¯¸ë¡œ í”¼ë‹‰ìŠ¤ë¼ê³  í•©ë‹ˆë‹¤...
+//
+// ì¤‘ê°„ì— new(m_pInst) classTypeì€ Replacement Newìž…ë‹ˆë‹¤.
+// ë©”ëª¨ë¦¬ë¥¼ ìƒˆë¡œ í• ë‹¹í•˜ì§€ ì•Šê³  ìƒì„±ìžë§Œ í˜¸ì¶œí•©ë‹ˆë‹¤.
+//
+// ìƒì„±ìžì™€ ì†Œë©¸ìžëŠ” ì‹œì ìœ¼ë¡œ ì¸í•´ ê³ ì •ìž…ë‹ˆë‹¤.
+// ë”°ë¼ì„œ ìƒì„± ìž‘ì—…ì€ Init(), í•´ì œ ìž‘ì—…ì€ Release() ê°™ì€ í•¨ìˆ˜ë¥¼ ë§Œë“¤ì–´ì•¼ í•©ë‹ˆë‹¤.
+#define PHOENIX_SINGLETON(classType)\
+public:\
+	static classType* Instance()\
+	{\
+		if (m_bDestroy == true)\
+		{\
+			Create();\
+			new(m_pInst) classType;\
+			std::atexit(Destroy);\
+			m_bDestroy = true;\
+		}\
+		if (m_pInst == nullptr)\
+		{\
+			Create();\
+		}\
+		return m_pInst;\
+	}\
+private:\
+	classType() = default;\
+	classType(const classType& rhs)  = delete;\
+	classType(const classType&& rhs) = delete;\
+	~classType()\
+	{\
+		m_bDestroy = true;\
+	}\
+	classType& operator=(const classType& rhs)  = delete;\
+	classType& operator=(const classType&& rhs) = delete;\
+	static void Create()\
+	{\
+		static classType inst;\
+		m_pInst = &inst;\
+	}\
+	static void Destroy()\
+	{\
+		m_pInst->~classType();\
+	}\
+	static bool m_bDestroy;\
+	static classType* m_pInst;
+
+#define PHOENIX_SINGLETON_INIT(classType)\
+	classType* classType::m_pInst = nullptr;\
+	bool classType::m_bDestroy = false;
 
 #endif

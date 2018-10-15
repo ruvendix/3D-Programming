@@ -66,7 +66,7 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = g_pMainDX->getD3DDevice9();
+	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
 	NULLCHK(g_pD3DDevice9);
 
 	g_pCube = RXNew RX::RXCubeDX9;
@@ -114,7 +114,8 @@ HRESULT CALLBACK OnRender()
 
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DX_PI / 4.0f,
-		g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight(), 1.0f, 1000.0f);
+		static_cast<FLOAT>(g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight()),
+		1.0f, 1000.0f);
 	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// 큐브 렌더링입니다.
