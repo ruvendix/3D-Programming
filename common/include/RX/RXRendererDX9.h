@@ -30,6 +30,10 @@ namespace RX
 			m_drawCallCnt = 0;
 		}
 
+		// 리소스의 메모리풀이 D3DPOOL_DEFAULT인 것만 정리합니다.
+		// 그 외의 리소스는 정리되지 않습니다.
+		void ArrangeVideoMemory();
+
 		HRESULT CreateDevice();
 		HRESULT BeginRender();
 		HRESULT EndRender();
@@ -39,8 +43,6 @@ namespace RX
 		
 		// ====================================================================================
 		// 정점 관련
-		INT32 CalcPrimitiveCount(D3DPRIMITIVETYPE primitiveType, INT32 vertexCnt);
-
 		HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
 			const RXVertexBufferDX9& vertexBuffer);
 		HRESULT DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,

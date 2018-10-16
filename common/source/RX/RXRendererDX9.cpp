@@ -12,11 +12,13 @@
  ====================================================================================*/
 #include "PCH.h"
 #include "RXRendererDX9.h"
+#include "RXRendererDX9_Util.h"
 
 PHOENIX_SINGLETON_INIT(RX::RXRendererDX9);
 
-extern IDirect3DDevice9*  g_pD3DDevice9  = nullptr;
-extern HRESULT            g_DXResult     = S_OK;
+extern IDirect3D9*        g_pD3D9       = nullptr;
+extern IDirect3DDevice9*  g_pD3DDevice9 = nullptr;
+extern HRESULT            g_DXResult    = S_OK;
 
 namespace RX
 {
@@ -24,12 +26,19 @@ namespace RX
 	void RXRendererDX9::Init()
 	{
 		m_bLostDevice = false;
-		m_bMSAA       = false;
+		m_bMSAA       = true;
 		m_pD3D9       = nullptr;
 		m_pD3DDevice9 = nullptr;
 		m_clearColor  = DXCOLOR_TEAL;
 		m_dwBehavior  = 0;
 		m_drawCallCnt = 0;
+	}
+
+	void RXRendererDX9::ArrangeVideoMemory()
+	{
+		g_DXResult = m_pD3DDevice9->EvictManagedResources();
+		DXERR_HANDLER(g_DXResult);
+		RXLOG(false, "D3DPOOL_DEFAULT 리소스가 정리되었습니다.");
 	}
 
 	HRESULT RXRendererDX9::CreateDevice()
@@ -39,8 +48,9 @@ namespace RX
 		// DirectX9 객체를 생성합니다.
 		// 인터페이스 포인터에 인스턴화된 객체를 반환해줍니다.
 		m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
-		NULLCHK_EFAIL_RETURN(m_pD3D9, "DirectX9 객체 생성 실패!");
-		RXLOG(false, "DirectX9 객체 생성 성공!");
+		NULLCHK_RETURN_EFAIL(m_pD3D9, "DirectX9 객체 생성 실패했습니다!");
+		RXLOG(false, "DirectX9 객체 생성 성공했습니다!");
+		g_pD3D9 = m_pD3D9;
 		
 		// ====================================================================================
 		// 가상 디바이스 생성을 위한 정보를 설정해줍니다.
@@ -49,17 +59,8 @@ namespace RX
 		::ZeroMemory(&D3DPP, sizeof(D3DPP));
 
 		// ====================================================================================
-		// 가상 디바이스 생성이 가능한지 검증합니다.
-		VerifyDevice(&D3DPP);
-
-		// ====================================================================================
-		// 검증이 끝나면 나머지 정보를 채워줍니다.
+		// 검증이 필요 없는 정보부터 채워줍니다.
 		//
-		// 깊이 스텐실 버퍼 정보를 설정합니다.
-		// D3DFMT_D24S8은 깊이 버퍼 24비트, 스텐실 버퍼 8비트를 뜻합니다.
-		D3DPP.EnableAutoDepthStencil = true;
-		D3DPP.AutoDepthStencilFormat = D3DFMT_D24S8;
-
 		// 페이지 플리핑을 할 때의 효과를 설정합니다.
 		// 초반에는 D3DSWAPEFFECT_DISCARD가 가장 무난합니다.
 		D3DPP.SwapEffect = D3DSWAPEFFECT_DISCARD;
@@ -75,6 +76,10 @@ namespace RX
 		D3DPP.Windowed      = (g_pMainDX9->IsFullScreen() == false);
 		
 		// ====================================================================================
+		// 가상 디바이스 생성이 가능한지 검증합니다.
+		VerifyDevice(&D3DPP);
+
+		// ====================================================================================
 		// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 		g_DXResult = m_pD3D9->CreateDevice(
 			D3DADAPTER_DEFAULT,     // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
@@ -85,17 +90,17 @@ namespace RX
 			&m_pD3DDevice9);        // 가상 디바이스의 객체 포인터를 받을 인터페이스 포인터입니다.
 	
 		DXERR_HANDLER(g_DXResult);
-		NULLCHK_EFAIL_RETURN(m_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패!");
+		NULLCHK_RETURN_EFAIL(m_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패했습니다!");
 		g_pD3DDevice9 = m_pD3DDevice9;
 
-		RXLOG(false, "DirectX9 가상 디바이스 생성 성공!");
+		RXLOG(false, "DirectX9 가상 디바이스 생성 성공했습니다!");
 		return S_OK;
 	}
 
 	HRESULT RXRendererDX9::BeginRender()
 	{
 		m_pD3DDevice9->Clear(0, nullptr,
-			D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, m_clearColor, 1.0f, 0);
+			D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, m_clearColor, 1.0f, 0);
 		m_pD3DDevice9->BeginScene();
 		return S_OK;
 	}
@@ -123,120 +128,58 @@ namespace RX
 		// 그래픽 카드의 출력 정보를 가져옵니다.
 		if (FAILED(m_pD3D9->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mainDisplayMode)))
 		{
-			RXERRLOG_EFAIL_RETURN("그래픽 카드의 출력 정보 획득 실패!");
+			RXERRLOG_RETURN_EFAIL("그래픽 카드 정보 획득 실패했습니다!");
 		}
 
-		// 후면 버퍼의 개수를 설정합니다.
+		// 백버퍼의 개수를 설정합니다.
 		// 개수에는 0을 넣어도 1로 인식되지만 가독성을 위해 1로 설정합니다.
 		pD3DPP->BackBufferCount = 1;
 
-		// 후면 버퍼 정보를 설정합니다.
+		// 백버퍼 정보를 설정합니다.
 		// 순서대로 가로, 세로입니다.
 		// 전체 화면일 때는 디스플레이 모드 정보로 설정해줍니다.
-		bool bFullScreen = g_pMainDX9->IsFullScreen();
-		if (bFullScreen == false)
+		if (pD3DPP->Windowed == TRUE)
 		{
 			pD3DPP->BackBufferWidth  = g_pMainDX9->getClientWidth();
 			pD3DPP->BackBufferHeight = g_pMainDX9->getClientHeight();
 		}
 
-		// 후면 버퍼의 형식을 설정해줍니다.
+		// 백버퍼의 형식을 설정해줍니다.
 		pD3DPP->BackBufferFormat = mainDisplayMode.Format;
 
-		// 후면 버퍼의 주사율을 설정합니다.
+		// 백버퍼의 주사율을 설정합니다.
 		// 창 모드를 사용할 때는 D3DPRESENT_RATE_DEFAULT로 설정하면 됩니다.
-		if (bFullScreen == false)
+		if (pD3DPP->Windowed == TRUE)
 		{
 			pD3DPP->FullScreen_RefreshRateInHz = D3DPRESENT_INTERVAL_DEFAULT;
 		}
 
-		// 후면 버퍼의 페이지 플리핑 간격을 설정합니다.
+		// 백버퍼의 페이지 플리핑 간격을 설정합니다.
 		pD3DPP->PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT; // 기본은 수직동기
 
 		// 전체 화면으로 전환될 때의 처리입니다.
-		if (bFullScreen)
+		if ( (pD3DPP->Windowed == FALSE) &&
+		 	 (AdjustFullScreenInfo(pD3DPP, mainDisplayMode) == false) )
 		{
-			bool bResult = false;
-
-			// 전체 화면으로 전환될 때 사용 가능한 모드 개수를 가져옵니다.
-			// 모드란 그래픽 카드가 지원하는 해상도를 말합니다.
-			// 예를 들면 현재 모니터 해상도는 1920 X 1080이지만
-			// 그래픽 카드는 800 X 600도 지원합니다. 이런 게 모드입니다.
-			INT32 adapterCount =
-				m_pD3D9->GetAdapterModeCount(D3DADAPTER_DEFAULT, mainDisplayMode.Format);
-
-			for (INT32 i = 0; i < adapterCount; ++i)
-			{
-				D3DDISPLAYMODE subDisplayMode;
-				::ZeroMemory(&subDisplayMode, sizeof(subDisplayMode));
-
-				// 원하는 해상도 또는 형식과 호환이 되는지 검증합니다.
-				HRESULT hDXResult = m_pD3D9->EnumAdapterModes(D3DADAPTER_DEFAULT,
-					mainDisplayMode.Format, i, &subDisplayMode);
-				DXERR_HANDLER(hDXResult);
-	
-				// 현재 해상도와 전체 화면 해상도를 비교합니다.
-				if ( (subDisplayMode.Width == mainDisplayMode.Width) &&
-					 (subDisplayMode.Height == mainDisplayMode.Height) &&
-					 (subDisplayMode.RefreshRate >= mainDisplayMode.RefreshRate) )
-				{
-					pD3DPP->BackBufferWidth            = subDisplayMode.Width;
-					pD3DPP->BackBufferHeight           = subDisplayMode.Height;
-					pD3DPP->FullScreen_RefreshRateInHz = subDisplayMode.RefreshRate;
-					bResult = true;
-					break;
-				}
-			}
-
-			if (bResult == false)
-			{
-				RXERRLOG_EFAIL_RETURN("전체 화면일 때 현재 그래픽 카드가 해상도 또는 형식을 지원하지 않음!");
-			}
+			RXERRLOG_RETURN_EFAIL("전체 화면에서 그래픽 카드가 해상도 또는 형식을 지원하지 않습니다!");
 		}
 
 		// ====================================================================================
 		// 하드웨어 가속이 가능한지 검증합니다.
 		if (FAILED(m_pD3D9->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
-			pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, !bFullScreen)))
+			pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, pD3DPP->Windowed)))
 		{
-			RXERRLOG_EFAIL_RETURN("하드웨어 가속을 지원하지 않음!");
+			RXERRLOG_RETURN_EFAIL("하드웨어 가속을 지원하지 않습니다!");
 		}
 
 		// ====================================================================================
 		// MSAA(Multisample AntiAliasing)을 검증합니다.
 		// AA는 여러 기법이 있지만 가장 기본적인 건 MSAA입니다.
-		// 2, 4, 8, 16만 검증합니다.
-		if (m_bMSAA)
+		if (m_bMSAA == true)
 		{
-			DWORD dwMSAAQuality = 0;
-			INT32 MSAATable[4] =
+			if (AdjustMSAAInfo(pD3DPP) == false)
 			{
-				D3DMULTISAMPLE_16_SAMPLES,
-				D3DMULTISAMPLE_8_SAMPLES,
-				D3DMULTISAMPLE_4_SAMPLES,
-				D3DMULTISAMPLE_2_SAMPLES,
-			};
-
-			bool bResult = false;
-			for (INT32 i = 0; i < 4; ++i)
-			{
-				D3DMULTISAMPLE_TYPE type = static_cast<D3DMULTISAMPLE_TYPE>(MSAATable[i]);
-
-				if (SUCCEEDED(m_pD3D9->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
-					D3DDEVTYPE_HAL, mainDisplayMode.Format, !bFullScreen, type, &dwMSAAQuality)))
-				{
-					pD3DPP->MultiSampleType = type;
-					pD3DPP->MultiSampleQuality = dwMSAAQuality - 1;
-					bResult = true;
-					break;
-				}
-			}
-
-			if (bResult == false)
-			{
-				pD3DPP->MultiSampleType    = D3DMULTISAMPLE_NONE;
-				pD3DPP->MultiSampleQuality = 0;
-				RXERRLOG_EFAIL_RETURN("MSAA를 지원하지 않으므로 0으로 설정함!");
+				RXERRLOG_RETURN_EFAIL("MSAA를 지원하지 않으므로 0으로 설정합니다!");
 			}
 		}
 		else
@@ -269,34 +212,12 @@ namespace RX
 			m_dwBehavior = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 		}
 
-		return S_OK;
-	}
+		// ====================================================================================
+		// 깊이 스텐실버퍼 형식을 검증합니다.
+		// 일반적으로는 깊이버퍼 24비트에 스텐실버퍼 8비트를 사용합니다.
+		AdjustDepthStencilInfo(pD3DPP, 24, 8);
 
-	INT32 RXRendererDX9::CalcPrimitiveCount(D3DPRIMITIVETYPE primitiveType, INT32 vertexCnt)
-	{
-		INT32 primitiveCnt = 0;
-		switch (primitiveType)
-		{
-		case D3DPT_POINTLIST:
-			primitiveCnt = vertexCnt;
-			break;
-		case D3DPT_LINELIST:
-			primitiveCnt = vertexCnt / 2;
-			break;
-		case D3DPT_LINESTRIP:
-			primitiveCnt = vertexCnt - 1;
-			break;
-		case D3DPT_TRIANGLELIST:
-			primitiveCnt = vertexCnt / 3;
-			break;
-		case D3DPT_TRIANGLESTRIP:
-			primitiveCnt = vertexCnt - 2;
-			break;
-		case D3DPT_TRIANGLEFAN:
-			primitiveCnt = vertexCnt - 2;
-			break;
-		}
-		return primitiveCnt;
+		return S_OK;
 	}
 
 	HRESULT RXRendererDX9::DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
@@ -356,14 +277,16 @@ namespace RX
 		D3DPRESENT_PARAMETERS D3DPP;
 		::ZeroMemory(&D3DPP, sizeof(D3DPP));
 
-		VerifyDevice(&D3DPP);
-
+		// 검증이 필요 없는 정보를 설정합니다.
 		D3DPP.EnableAutoDepthStencil = true;
 		D3DPP.AutoDepthStencilFormat = D3DFMT_D24S8;
 		D3DPP.SwapEffect             = D3DSWAPEFFECT_DISCARD;
 		D3DPP.Flags                  = 0;
 		D3DPP.hDeviceWindow          = g_pMainDX9->getMainWindowHandle();
 		D3DPP.Windowed               = (g_pMainDX9->IsFullScreen() == false);
+
+		// 검증이 필요한 정보를 설정합니다.
+		VerifyDevice(&D3DPP);
 
 		m_pD3DDevice9->Reset(&D3DPP);
 		return S_OK;
@@ -377,7 +300,22 @@ namespace RX
 
 	HRESULT RXRendererDX9::Release()
 	{
-		SAFE_RELEASE(m_pD3DDevice9);
+		if (m_pD3DDevice9 != nullptr)
+		{
+			int refCnt = m_pD3DDevice9->Release();
+
+			if (refCnt > 0)
+			{
+				RXLOG(false, "DirectX9 가상 디바이스 해제 실패했습니다! 레퍼런스 카운트(%d)", refCnt);
+			}
+			else
+			{
+				RXLOG(false, "DirectX9 가상 디바이스 해제 성공했습니다!");
+			}
+
+			m_pD3DDevice9 = nullptr;
+		}
+
 		SAFE_RELEASE(m_pD3D9);
 		return S_OK;
 	}

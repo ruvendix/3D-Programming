@@ -216,7 +216,7 @@ namespace RX
 
 		if (::RegisterClassEx(&wcex) == 0)
 		{
-			RXERRLOG_EFAIL_RETURN("프로그램 초기화 실패!");
+			RXERRLOG_RETURN_EFAIL("프로그램 초기화 실패!");
 		}
 		
 		RXLOG(false, "프로그램 초기화 성공!");
@@ -267,7 +267,7 @@ namespace RX
 			::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 			nullptr, m_hInst, nullptr);
 
-		NULLCHK_EFAIL_RETURN(m_hMainWnd, "프로그램 창 생성 실패!");
+		NULLCHK_RETURN_EFAIL(m_hMainWnd, "프로그램 창 생성 실패!");
 		::ShowWindow(m_hMainWnd, SW_NORMAL);
 		::UpdateWindow(m_hMainWnd);
 		::ShowCursor(TRUE);
@@ -330,7 +330,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 업데이트 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 업데이트 실패!");
 		}
 
 		return S_OK;
@@ -340,7 +340,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 렌더 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 렌더 실패!");
 		}
 
 		return S_OK;
@@ -350,7 +350,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 릴리즈 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 릴리즈 실패!");
 		}
 		::UnregisterClass(SZ_WINDOW_CLASS, m_hInst);
 		return S_OK;
@@ -407,12 +407,12 @@ namespace RX
 			Release();
 			m_routineState = ROUTINE_STATE::FAILURE;
 			m_msgCode      = 0;
-			RXERRLOG_EFAIL_RETURN("프로그램 비정상 종료!");
+			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료!");
 		}
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 초기화 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 초기화 실패!");
 		}
 
 		if (FAILED(DriveMain()))
@@ -420,7 +420,7 @@ namespace RX
 			Release();
 			m_routineState = ROUTINE_STATE::FAILURE;
 			m_msgCode = 0;
-			RXERRLOG_EFAIL_RETURN("프로그램 비정상 종료!");
+			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료!");
 		}
 
 		Release();

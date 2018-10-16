@@ -81,15 +81,15 @@ namespace RX
 
 	HRESULT RXRenderObjectDX9::DrawPrimitive()
 	{
-		NULLCHK_EFAIL_RETURN_NOCOMENT(m_pVB);
+		NULLCHK_RETURN_EFAIL_NOCOMENT(m_pVB);
 		RXRendererDX9::Instance()->DrawPrimitive(m_primitiveType, *m_pVB);
 		return S_OK;
 	}
 
 	HRESULT RXRenderObjectDX9::DrawIndexedPrimitive()
 	{
-		NULLCHK_EFAIL_RETURN_NOCOMENT(m_pVB);
-		NULLCHK_EFAIL_RETURN_NOCOMENT(m_pIB);
+		NULLCHK_RETURN_EFAIL_NOCOMENT(m_pVB);
+		NULLCHK_RETURN_EFAIL_NOCOMENT(m_pIB);
 		RXRendererDX9::Instance()->DrawIndexedPrimitive(*m_pVB, *m_pIB);
 		return E_NOTIMPL;
 	}

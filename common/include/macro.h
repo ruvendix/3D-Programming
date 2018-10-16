@@ -96,24 +96,6 @@ if (ptr == nullptr)\
     RXERRLOG(#ptr " is nullptr!");\
 }
 
-#define NULLCHK_RETURN_NOCOMENT(ptr)\
-if (ptr == nullptr)\
-{\
-    RXERRLOG_RETURN(#ptr " is nullptr!");\
-}
-
-#define NULL_RETURN(ptr)\
-if (ptr == nullptr)\
-{\
-    return;\
-}
-
-#define NULL_OK_RETURN(ptr)\
-if (ptr == nullptr)\
-{\
-    return S_OK;\
-}
-
 #define NULLCHK_RETURN(ptr, szErr)\
 if (ptr == nullptr)\
 {\
@@ -121,17 +103,30 @@ if (ptr == nullptr)\
 	RXERRLOG_RETURN(szErr);\
 }
 
-#define NULLCHK_EFAIL_RETURN(ptr, szErr)\
+#define NULLCHK_RETURN_NOCOMENT(ptr)\
+if (ptr == nullptr)\
+{\
+    RXERRLOG_RETURN(#ptr " is nullptr!");\
+}
+
+#define NULLCHK_RETURN_FALSE(ptr)\
+if (ptr == nullptr)\
+{\
+	RXERRLOG_RETURN_FALSE(#ptr " is nullptr!");\
+    return false;\
+}
+
+#define NULLCHK_RETURN_EFAIL(ptr, szErr)\
 if (ptr == nullptr)\
 {\
     RXERRLOG(#ptr " is nullptr!");\
-	RXERRLOG_EFAIL_RETURN(szErr);\
+	RXERRLOG_RETURN_EFAIL(szErr);\
 }
 
-#define NULLCHK_EFAIL_RETURN_NOCOMENT(ptr)\
+#define NULLCHK_RETURN_EFAIL_NOCOMENT(ptr)\
 if (ptr == nullptr)\
 {\
-    RXERRLOG_EFAIL_RETURN(#ptr " is nullptr!");\
+    RXERRLOG_RETURN_EFAIL(#ptr " is nullptr!");\
 }
 
 #define NULLCHK_HEAPALLOC(ptr)\
@@ -140,8 +135,21 @@ if (ptr == nullptr)\
     RXERRLOG(#ptr " is failed in heap allocation!");\
 }
 
+#define NULL_RETURN(ptr)\
+if (ptr == nullptr)\
+{\
+    return;\
+}
+
+#define NULL_RETURN_OK(ptr)\
+if (ptr == nullptr)\
+{\
+    return S_OK;\
+}
+
 #define RXERRLOG_RETURN(szErr)       RXERRLOG(szErr); return
-#define RXERRLOG_EFAIL_RETURN(szErr) RXERRLOG(szErr); return E_FAIL
+#define RXERRLOG_RETURN_FALSE(szErr) RXERRLOG(szErr); return false
+#define RXERRLOG_RETURN_EFAIL(szErr) RXERRLOG(szErr); return E_FAIL
 
 // ====================================================================================
 // 스트링 관련 매크로입니다.

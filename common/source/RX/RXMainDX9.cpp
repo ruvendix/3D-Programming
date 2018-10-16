@@ -36,7 +36,7 @@ namespace RX
 
 		if (FAILED(InitD3D9()))
 		{			
-			RXERRLOG_EFAIL_RETURN("D3D9 초기화 실패!");
+			RXERRLOG_RETURN_EFAIL("D3D9 초기화 실패!");
 		}
 
 		return S_OK;
@@ -172,7 +172,7 @@ namespace RX
 
 			if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
 			{
-				RXERRLOG_EFAIL_RETURN("서브 렌더 실패!");
+				RXERRLOG_RETURN_EFAIL("서브 렌더 실패!");
 			}
 
 			RXRendererDX9::Instance()->EndRender();
@@ -199,7 +199,7 @@ namespace RX
 				// 이럴 경우에는 프로그램을 재실행해야 합니다.
 				if (g_DXResult == D3DERR_DEVICELOST)
 				{
-					RXERRLOG_EFAIL_RETURN("가상 디바이스가 완전히 손실되었습니다!");
+					RXERRLOG_RETURN_EFAIL("가상 디바이스가 완전히 손실되었습니다!");
 				}
 				// 가상 디바이스를 리셋할 수 있는 상황입니다.
 				// 가상 디바이스를 리셋하려면 가상 디바이스와 관련된
@@ -227,7 +227,7 @@ namespace RX
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::LOSTDEVICE)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 로스트 디바이스 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 로스트 디바이스 실패!");
 		}
 
 		RXLOG(false, "로스트 디바이스!");
@@ -240,7 +240,7 @@ namespace RX
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RESETDEVICE)].func()))
 		{
-			RXERRLOG_EFAIL_RETURN("서브 리셋 디바이스 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 리셋 디바이스 실패!");
 		}
 
 		Sleep(100);

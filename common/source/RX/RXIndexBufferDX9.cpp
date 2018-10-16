@@ -48,7 +48,7 @@ namespace RX
 			nullptr);                          // nullptr로 설정합니다.
 
 		DXERR_HANDLER(g_DXResult);
-		NULLCHK_EFAIL_RETURN(m_pIB, "인덱스 버퍼 초기화 실패!");
+		NULLCHK_RETURN_EFAIL(m_pIB, "인덱스 버퍼 초기화 실패!");
 
 		// 인덱스 버퍼에 실제로 인덱스 정보를 복사합니다.
 		// 메모리에 접근하기 때문에 메모리를 잠그고 푸는 과정이 있습니다.
