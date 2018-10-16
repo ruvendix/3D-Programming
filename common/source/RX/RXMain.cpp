@@ -216,10 +216,10 @@ namespace RX
 
 		if (::RegisterClassEx(&wcex) == 0)
 		{
-			RXERRLOG_RETURN_EFAIL("프로그램 초기화 실패!");
+			RXERRLOG_RETURN_EFAIL("프로그램 초기화 실패했습니다!");
 		}
 		
-		RXLOG(false, "프로그램 초기화 성공!");
+		RXLOG(false, "프로그램 초기화 성공했습니다!");
 		return S_OK;
 	}
 
@@ -272,7 +272,7 @@ namespace RX
 		::UpdateWindow(m_hMainWnd);
 		::ShowCursor(TRUE);
 
-		RXLOG(false, "프로그램 창 생성 성공!");
+		RXLOG(false, "프로그램 창 생성 성공했습니다!");
 		return S_OK;
 	}
 
@@ -330,7 +330,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 업데이트 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 업데이트 실패했습니다!");
 		}
 
 		return S_OK;
@@ -340,7 +340,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 렌더 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 렌더 실패했습니다!");
 		}
 
 		return S_OK;
@@ -350,7 +350,7 @@ namespace RX
 	{
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 릴리즈 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 릴리즈 실패했습니다!");
 		}
 		::UnregisterClass(SZ_WINDOW_CLASS, m_hInst);
 		return S_OK;
@@ -407,12 +407,12 @@ namespace RX
 			Release();
 			m_routineState = ROUTINE_STATE::FAILURE;
 			m_msgCode      = 0;
-			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료!");
+			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료되었습니다!");
 		}
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 초기화 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 초기화 실패했습니다!");
 		}
 
 		if (FAILED(DriveMain()))
@@ -420,11 +420,11 @@ namespace RX
 			Release();
 			m_routineState = ROUTINE_STATE::FAILURE;
 			m_msgCode = 0;
-			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료!");
+			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료되었습니다!");
 		}
 
 		Release();
-		RXLOG(false, "프로그램 정상 종료!");
+		RXLOG(false, "프로그램 정상 종료되었습니다!");
 		return S_OK;
 	}
 
@@ -449,7 +449,7 @@ namespace RX
 			SetWindowPos(m_hMainWnd, HWND_TOP, 0, 0,
 				screenWidth, screenHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
 
-			RXLOG(false, "전체 화면 모드로 전환!");
+			RXLOG(false, "전체 화면 모드로 전환되었습니다!");
 		}
 		else // 창 화면 모드
 		{
@@ -464,7 +464,7 @@ namespace RX
 				(screenHeight - (m_rtWindow.bottom - m_rtWindow.top)) / 2,
 				m_rtWindow.right, m_rtWindow.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
 
-			RXLOG(false, "창 화면 모드로 전환!");
+			RXLOG(false, "창 화면 모드로 전환되었습니다!");
 		}
 
 		AdjustClientRect();

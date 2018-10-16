@@ -47,7 +47,7 @@ namespace RX
 		const CHAR* szFile, INT32 line, const CHAR* szFunSig, const CHAR* szFormat, ...)
 	{
 		CHAR szFull[MAX_STRING_LENGTH];
-		_snprintf_s(szFull, _countof(szFull), "%s(%d) <%s> : ", szFile, line, szFunSig);
+		_snprintf_s(szFull, _countof(szFull), "%s(%d)\n<%s>\n", szFile, line, szFunSig);
 
 		CHAR szText[DEFAULT_STRING_LENGTH];
 		va_list vaList;
@@ -56,7 +56,7 @@ namespace RX
 		va_end(vaList);
 
 		strcat_s(szFull, szText);
-		strcat_s(szFull, "\n");
+		strcat_s(szFull, "\n\n");
 
 		if (eMode == PROJECT_MODE::PM_DEBUG)
 		{
@@ -128,7 +128,7 @@ namespace RX
 
 		if (szFile != nullptr)
 		{
-			_snwprintf_s(szFull, _countof(szFull), L"%s(%d) <%s> : ", szFile, line, szFunSig);
+			_snwprintf_s(szFull, _countof(szFull), L"%s(%d)\n<%s>\n", szFile, line, szFunSig);
 		}
 
 		WCHAR szText[DEFAULT_STRING_LENGTH];
@@ -138,7 +138,7 @@ namespace RX
 		va_end(vaList);
 
 		wcscat_s(szFull, szText);
-		wcscat_s(szFull, L"\n");
+		wcscat_s(szFull, L"\n\n");
 
 		if (eMode == PROJECT_MODE::PM_DEBUG)
 		{

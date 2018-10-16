@@ -172,7 +172,7 @@ namespace RX
 
 			if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
 			{
-				RXERRLOG_RETURN_EFAIL("서브 렌더 실패!");
+				RXERRLOG_RETURN_EFAIL("서브 렌더 실패했습니다!");
 			}
 
 			RXRendererDX9::Instance()->EndRender();
@@ -227,10 +227,10 @@ namespace RX
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::LOSTDEVICE)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 로스트 디바이스 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 로스트 디바이스 실패했습니다!");
 		}
 
-		RXLOG(false, "로스트 디바이스!");
+		RXLOG(false, "로스트 디바이스되었습니다!");
 		return S_OK;
 	}
 
@@ -240,12 +240,12 @@ namespace RX
 
 		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RESETDEVICE)].func()))
 		{
-			RXERRLOG_RETURN_EFAIL("서브 리셋 디바이스 실패!");
+			RXERRLOG_RETURN_EFAIL("서브 리셋 디바이스 실패했습니다!");
 		}
 
 		Sleep(100);
 
-		RXLOG(false, "리셋 디바이스!");
+		RXLOG(false, "리셋 디바이스되었습니다!");
 		return S_OK;
 	}
 

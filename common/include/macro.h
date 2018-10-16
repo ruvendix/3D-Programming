@@ -74,16 +74,20 @@ if (ptr)\
 #define WIDEN2(x)      WIDEN(x)
 #define __TFILE__      WIDEN2(__FILE__)
 #define __TFUNCTION__  WIDEN2(__FUNCTION__)
-#define __TFUNSIG__    WIDEN2(__FUNCSIG__)
+#define __TFUNCSIG__   WIDEN2(__FUNCSIG__)
 #else
 #define __TFILE__      __FILE__
 #define __TFUNCTION__  __FUNCTION__
-#define __TFUNSIG__    __FUNCSIG__
+#define __TFUNCSIG__   __FUNCSIG__
 #endif
+
+// WCHAR 전용입니다.
+#define __WFILE__     WIDEN2(__FILE__)
+#define __WFUNCTION__ WIDEN2(__FUNCTION__)
+#define __WFUNCSIG__  WIDEN2(__FUNCSIG__)
 
 // 메시지 박스만 출력합니다.
 // 프로젝트 모드에 상관없이 무조건 알려줘야 할 때 사용합니다.
-// ERRMSGBOX()는 로그로도 출력합니다.
 #if defined(_UNICODE) || defined(UNICODE)
 #define MSGBOX(szText)      RX::ShowMessageBoxImplW(L##szText)
 #else					         
@@ -147,6 +151,7 @@ if (ptr == nullptr)\
     return S_OK;\
 }
 
+// 가변인자가 지원되지 않는 매크로 함수입니다.
 #define RXERRLOG_RETURN(szErr)       RXERRLOG(szErr); return
 #define RXERRLOG_RETURN_FALSE(szErr) RXERRLOG(szErr); return false
 #define RXERRLOG_RETURN_EFAIL(szErr) RXERRLOG(szErr); return E_FAIL
@@ -159,11 +164,11 @@ if (ptr == nullptr)\
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXDEBUGLOG(szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, false, false, false,\
-			nullptr, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXDEBUGLOG(szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, false, false, false,\
-			nullptr, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#define RXDEBUGLOG __noop
@@ -175,21 +180,21 @@ if (ptr == nullptr)\
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
-			__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
 
@@ -198,20 +203,36 @@ if (ptr == nullptr)\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, L##szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true, true,\
-		__TFILE__, __LINE__, __TFUNSIG__, szFormat, __VA_ARGS__)
+		__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
+
+// CHAR 전용입니다.
+#define RXLOG_CHAR(bMessageBox, szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
+			__FILE__, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
+
+#define RXERRLOG_CHAR(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, true,\
+		__FILE__, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
+
+// WCHAR 전용입니다.
+#define RXLOG_WCHAR(bMessageBox, szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
+			__WFILE__, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
+
+#define RXERRLOG_WCHAR(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
+		__WFILE__, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
 
 // ====================================================================================
 // DirectX 관련 매크로입니다.
@@ -236,18 +257,18 @@ if (FAILED(hDXResult))\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				__TFILE__, __LINE__, __TFUNCSIG__);
 	#else
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				__TFILE__, __LINE__, __TFUNCSIG__);
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				__TFILE__, __LINE__, __TFUNCSIG__);
 	#else
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				__TFILE__, __LINE__, __TFUNCSIG__);
 	#endif
 #endif
 

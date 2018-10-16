@@ -231,4 +231,20 @@ namespace RX
 		return false;
 	}
 
+	// 모든 DXT 형식 이미지를 사용할 수 있는지 확인합니다.
+	// DXT1부터 DXT5까지 확인합니다.
+	bool CheckAvailableAllDXT(INT32 adapterIndex, D3DFORMAT surfaceFormat)
+	{
+		D3DFORMAT DXTFormat[5] = { D3DFMT_DXT1, D3DFMT_DXT2, D3DFMT_DXT3, D3DFMT_DXT4, D3DFMT_DXT5 };
+		for (INT32 i = 0; i < 5; ++i)
+		{
+			if (FAILED(g_pD3D9->CheckDeviceFormat(adapterIndex,
+				D3DDEVTYPE_HAL, surfaceFormat, D3DUSAGE_NONE, D3DRTYPE_TEXTURE, DXTFormat[i])))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
 } // namespace RX end

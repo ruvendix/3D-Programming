@@ -159,7 +159,7 @@ namespace RX
 
 		// 전체 화면으로 전환될 때의 처리입니다.
 		if ( (pD3DPP->Windowed == FALSE) &&
-		 	 (AdjustFullScreenInfo(pD3DPP, mainDisplayMode) == false) )
+			 (AdjustFullScreenInfo(D3DADAPTER_DEFAULT, pD3DPP, mainDisplayMode) == false) )
 		{
 			RXERRLOG_RETURN_EFAIL("전체 화면에서 그래픽 카드가 해상도 또는 형식을 지원하지 않습니다!");
 		}
@@ -199,16 +199,25 @@ namespace RX
 		// 그래픽 카드의 능력 정보를 가져옵니다.
 		m_pD3D9->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &D3DCaps9);
 
-		// 그래픽 카드가 TL, 정점 셰이더 1.0, 픽셀 셰이더 1.0을 지원하지 않으면
+		// 그래픽 카드가 TL을 지원하거나 정점 셰이더와 픽셀 셰이더가 1.0 이상이라면
 		// 정점 처리 방식을 소프트웨어 정점 처리로 설정합니다.
 		if ( (D3DCaps9.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) ||
-			 (D3DCaps9.VertexShaderVersion < D3DVS_VERSION(1, 0)) ||
-			 (D3DCaps9.PixelShaderVersion < D3DPS_VERSION(1, 0)))
+			 ( (D3DCaps9.VertexShaderVersion > D3DVS_VERSION(4, 0)) &&
+			   (D3DCaps9.PixelShaderVersion > D3DPS_VERSION(4, 0))) )
 		{
 			m_dwBehavior = D3DCREATE_HARDWARE_VERTEXPROCESSING;
 		}
 		else
 		{
+			// 소프트웨어 정점 처리를 사용해야 한다면 메시지 박스로
+			// 현재 그래픽 카드에 대한 정보를 간단하게 알려줍니다.
+			D3DADAPTER_IDENTIFIER9 adapterInfo;
+			::ZeroMemory(&adapterInfo, sizeof(D3DADAPTER_IDENTIFIER9));
+			g_pD3D9->GetAdapterIdentifier(D3DADAPTER_DEFAULT, D3DENUM_WHQL_LEVEL, &adapterInfo);
+			RXERRLOG_CHAR("하드웨어 정점 처리를 지원하지 않습니다!\n그래픽 카드 (%s)",
+				adapterInfo.Description);
+
+			// 소프트웨어 정점 처리로 설정합니다.
 			m_dwBehavior = D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 		}
 
