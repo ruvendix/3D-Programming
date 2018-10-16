@@ -177,7 +177,7 @@ namespace RX
 		// AA는 여러 기법이 있지만 가장 기본적인 건 MSAA입니다.
 		if (m_bMSAA == true)
 		{
-			if (AdjustMSAAInfo(pD3DPP) == false)
+			if (AdjustMSAAInfo(D3DADAPTER_DEFAULT, pD3DPP) == false)
 			{
 				RXERRLOG_RETURN_EFAIL("MSAA를 지원하지 않으므로 0으로 설정합니다!");
 			}
@@ -215,7 +215,7 @@ namespace RX
 		// ====================================================================================
 		// 깊이 스텐실버퍼 형식을 검증합니다.
 		// 일반적으로는 깊이버퍼 24비트에 스텐실버퍼 8비트를 사용합니다.
-		AdjustDepthStencilInfo(pD3DPP, 24, 8);
+		AdjustDepthStencilInfo(D3DADAPTER_DEFAULT, pD3DPP, 24, 8);
 
 		return S_OK;
 	}

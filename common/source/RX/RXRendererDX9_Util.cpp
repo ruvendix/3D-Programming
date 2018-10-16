@@ -42,7 +42,7 @@ namespace RX
 		return primitiveCnt;
 	}
 
-	bool AdjustFullScreenInfo(D3DPRESENT_PARAMETERS* pD3DPP, const D3DDISPLAYMODE& mainDisplayMode)
+	bool AdjustFullScreenInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP, const D3DDISPLAYMODE& mainDisplayMode)
 	{
 		NULLCHK_RETURN_FALSE(pD3DPP);
 
@@ -51,7 +51,7 @@ namespace RX
 		// 예를 들면 현재 모니터 해상도는 1920 X 1080이지만
 		// 그래픽 카드는 800 X 600도 지원합니다. 이런 게 모드입니다.
 		INT32 adapterCount =
-			g_pD3D9->GetAdapterModeCount(D3DADAPTER_DEFAULT, mainDisplayMode.Format);
+			g_pD3D9->GetAdapterModeCount(adapterIndex, mainDisplayMode.Format);
 
 		for (INT32 i = 0; i < adapterCount; ++i)
 		{
@@ -59,7 +59,7 @@ namespace RX
 			::ZeroMemory(&subDisplayMode, sizeof(subDisplayMode));
 
 			// 원하는 해상도 또는 형식과 호환이 되는지 검증합니다.
-			g_DXResult = g_pD3D9->EnumAdapterModes(D3DADAPTER_DEFAULT,
+			g_DXResult = g_pD3D9->EnumAdapterModes(adapterIndex,
 				pD3DPP->BackBufferFormat, i, &subDisplayMode);
 			DXERR_HANDLER(g_DXResult);
 
@@ -77,7 +77,7 @@ namespace RX
 		return false;
 	}
 
-	bool AdjustMSAAInfo(D3DPRESENT_PARAMETERS* pD3DPP)
+	bool AdjustMSAAInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP)
 	{
 		NULLCHK_RETURN_FALSE(pD3DPP);
 
@@ -97,7 +97,7 @@ namespace RX
 
 			// HAL을 지원할 때 현재 백버퍼 형식과 모드가 원하는 MSAA를 지원하는지 검증합니다.
 			// 결과는 dwMSAAQuality에 저장되는데 이용 가능한 MSAA 퀄리티 레벨 수를 알려줍니다.
-			if (SUCCEEDED(g_pD3D9->CheckDeviceMultiSampleType(D3DADAPTER_DEFAULT,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceMultiSampleType(adapterIndex,
 				D3DDEVTYPE_HAL, pD3DPP->BackBufferFormat, pD3DPP->Windowed, type, &dwMSAAQuality)))
 			{
 				// 검증이 통과되어도 원하는 MSAA와 검증된 MSAA가 다를 수 있습니다.
@@ -125,17 +125,18 @@ namespace RX
 	//
 	// CheckDepthStencilMatch()은 스텐실버퍼의 형식이 특정 모드의 렌더 타겟 형식과
 	// 호환이 가능한지 검증해주는 함수입니다.
-	bool AdjustDepthStencilInfo(D3DPRESENT_PARAMETERS* pD3DPP, INT32 DepthBits, INT32 StencilBits)
+	bool AdjustDepthStencilInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
+		INT32 DepthBits, INT32 StencilBits)
 	{
 		NULLCHK_RETURN_FALSE(pD3DPP);
 
 		if ( (DepthBits <= 16) &&
 			 (StencilBits == 0) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D16)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D16)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
