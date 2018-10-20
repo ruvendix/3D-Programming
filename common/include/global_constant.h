@@ -37,8 +37,8 @@ const INT32 MAX_FRAMESKIP           = 10;
 // 표준 라이브러리를 따라 문자열은 매크로 상수로 정의합니다.
 #define SZ_WINDOW_CLASS     _T("Default_3D_Program")
 #define SZ_PROGRAM_TITLE    _T("Default_3D_Program")
-#define SZ_NONE             _T("None")
-#define SZ_NONE_W           L"None"
-#define SZ_NONE_A           "None"
+#define SZ_NULL             _T("")
+#define SZ_NULL_W           L""
+#define SZ_NULL_A           ""
 
 #endif

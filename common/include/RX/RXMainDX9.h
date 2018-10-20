@@ -27,7 +27,7 @@ namespace RX
 		RXMain_DX9();
 		virtual ~RXMain_DX9();
 
-		virtual HRESULT InitMain()  override;
+		virtual HRESULT InitMain()     override;
 		virtual HRESULT InitD3D9();
 		virtual HRESULT DriveMain() override;
 		virtual HRESULT Release()   override;

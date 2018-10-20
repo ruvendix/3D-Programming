@@ -13,6 +13,7 @@
  ====================================================================================*/
 #include "PCH.h"
 #include "RXMain.h"
+#include "RXRendererDX9.h"
 
 HRESULT CALLBACK DefaultSubInit();
 HRESULT CALLBACK DefaultSubUpdate();
@@ -193,12 +194,12 @@ namespace RX
 		WNDCLASSEX wcex;
 		::ZeroMemory(&wcex, sizeof(wcex));
 
-		wcex.cbSize        = sizeof(wcex);
-		wcex.style         = CS_HREDRAW | CS_VREDRAW;
-		wcex.lpfnWndProc   = DefaultWndProc;
-		wcex.cbClsExtra    = 0;
-		wcex.cbWndExtra    = 0;
-		wcex.hInstance     = m_hInst;
+		wcex.cbSize      = sizeof(wcex);
+		wcex.style       = CS_HREDRAW | CS_VREDRAW;
+		wcex.lpfnWndProc = DefaultWndProc;
+		wcex.cbClsExtra  = 0;
+		wcex.cbWndExtra  = 0;
+		wcex.hInstance   = m_hInst;
 		
 		if (m_iconID != 0)
 		{
@@ -211,7 +212,7 @@ namespace RX
 
 		wcex.hCursor       = ::LoadCursor(nullptr, IDC_ARROW);
 		wcex.hbrBackground = static_cast<HBRUSH>(::GetStockObject(GRAY_BRUSH));
-		wcex.lpszMenuName  = SZ_NONE;
+		wcex.lpszMenuName  = SZ_NULL;
 		wcex.lpszClassName = SZ_WINDOW_CLASS;
 		wcex.hIconSm       = wcex.hIcon;
 

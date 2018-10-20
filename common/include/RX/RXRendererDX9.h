@@ -38,6 +38,12 @@ namespace RX
 		void DefaultRenderState();
 		void AdjustRenderState(D3DRENDERSTATETYPE state, DWORD dwValue);
 
+		// 뷰포트를 설정합니다.
+		void AdjustViewport(INT32 x, INT32 y, INT32 width, INT32 height);
+
+		// 현재 백버퍼의 서페이스를 파일로 저장합니다. (스크린샷 기능, 많이 느림...)
+		void SaveBackBufferToFile(const CHAR* szFile, D3DXIMAGE_FILEFORMAT fileFormat = D3DXIFF_JPG);
+
 		HRESULT CreateDevice();
 		HRESULT BeginRender();
 		HRESULT EndRender();
@@ -61,6 +67,7 @@ namespace RX
 			const RXVertexBufferDX9& vertexBuffer);
 		HRESULT DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,
 			const RXIndexBufferDX9& indexBuffer);
+		HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
 
 		// ====================================================================================
 		// 로스트 디바이스, 리셋 디바이스
@@ -99,16 +106,18 @@ namespace RX
 	private:
 		// ====================================================================================
 		// 기본 정보
-		INT32                m_drawCallCnt; // 프레임당 렌더링 함수 호출 횟수입니다.
-		INT32		         m_adapterIdx;  // 다중 모니터를 위한 겁니다.
-		bool                 m_bLostDevice;
-		bool                 m_bMSAA;       // 멀티 샘플링(안티얼라이징) 사용 여부입니다.
-		bool		         m_bVSync;      // 수직 동기화 여부입니다.
-		DWORD                m_dwBehavior;  // 정점 처리 방식입니다.
-		RECT                 m_rtScissor;   // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
-		IDirect3D9*          m_pD3D9;
-		IDirect3DDevice9*    m_pD3DDevice9;
-		D3DCOLOR             m_clearColor;
+		INT32                     m_drawCallCnt; // 프레임당 렌더링 함수 호출 횟수입니다.
+		INT32		              m_adapterIdx;  // 다중 모니터를 위한 겁니다.
+		bool                      m_bLostDevice;
+		bool                      m_bMSAA;       // 멀티 샘플링(안티얼라이징) 사용 여부입니다.
+		bool		              m_bVSync;      // 수직 동기화 여부입니다.
+		DWORD                     m_dwBehavior;  // 정점 처리 방식입니다.
+		RECT                      m_rtScissor;   // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
+		IDirect3D9*               m_pD3D9;       // D3D9 객체입니다.
+		IDirect3DDevice9*         m_pD3DDevice9; // D3D9 가상 디바이스입니다.
+		D3DPRESENT_PARAMETERS*    m_pD3DPP;      // D3D9 가상 디바이스의 정보입니다.
+		D3DVIEWPORT9              m_viewport9;
+		D3DCOLOR                  m_clearColor;
 	};
 
 } // namespace RX end

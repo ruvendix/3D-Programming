@@ -17,6 +17,31 @@
 
 extern RX::RXMain_DX9* g_pMainDX9 = nullptr;
 
+// 메시지 핸들러입니다.
+void OnKeyF12(); // 스크린샷을 찍습니다.
+
+LRESULT CALLBACK DefaultWndDX9Proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	DefaultWndProc(hWnd, msg, wParam, lParam);
+
+	switch (msg)
+	{
+	case WM_KEYDOWN:
+	{
+		switch (wParam)
+		{
+		case VK_F12:
+		{
+			OnKeyF12();
+			break;
+		}
+		}
+	}
+	}
+
+	return ::DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
 namespace RX
 {
 
@@ -33,6 +58,7 @@ namespace RX
 	HRESULT RXMain_DX9::InitMain()
 	{
 		RXMain::InitMain();
+		setWndProc(DefaultWndDX9Proc);
 
 		if (FAILED(InitD3D9()))
 		{			
@@ -255,3 +281,8 @@ namespace RX
 	}
 
 } // namespace RX end
+
+void OnKeyF12()
+{
+	RX::RXRendererDX9::Instance()->SaveBackBufferToFile("Test");
+}

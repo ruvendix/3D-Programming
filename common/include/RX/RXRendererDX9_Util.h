@@ -24,6 +24,7 @@ namespace RX
 	                                   INT32 depthBits, INT32 stencilBits);
 	bool         CheckAvailableAllDXT(INT32 adapterIndex, D3DFORMAT surfaceFormat);
 	const TCHAR* ConvertD3DFORMATToString(D3DFORMAT surfaceFormat);
+	const TCHAR* ConvertD3DXIMAGE_FILEFORMATToString(D3DXIMAGE_FILEFORMAT fileFormat);
 	void         PrintD3DPresentParameters(const D3DPRESENT_PARAMETERS& D3DPP);
 
 } // namespace RX end

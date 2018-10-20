@@ -19,7 +19,7 @@
 // 절대로 DLL을 사용하는 프로젝트와 전역 변수 영역이 겹치면 안 됩니다.
 namespace
 {
-	CHAR g_szLogFile[DEFAULT_STRING_LENGTH] = SZ_NONE_A;
+	CHAR g_szLogFile[DEFAULT_STRING_LENGTH] = SZ_NULL_A;
 	bool g_bInitLogFile = true;
 }
 
@@ -50,11 +50,11 @@ namespace RX
 		CHAR szFull[MAX_STRING_LENGTH];
 		if (szFile != nullptr)
 		{
-			_snprintf_s(szFull, _countof(szFull), "%s(%d)<%s>", szFile, line, szFunSig);
+			_snprintf_s(szFull, _countof(szFull), "%s (%d) <%s> ", szFile, line, szFunSig);
 		}
 		else
 		{
-			_snprintf_s(szFull, _countof(szFull), "(%d)<%s>", line, szFunSig);
+			_snprintf_s(szFull, _countof(szFull), "(%d) <%s> ", line, szFunSig);
 		}
 
 		CHAR szText[DEFAULT_STRING_LENGTH];
@@ -140,11 +140,11 @@ namespace RX
 
 		if (szFile != nullptr)
 		{
-			_snwprintf_s(szFull, _countof(szFull), L"%s(%d)<%s>", szFile, line, szFunSig);
+			_snwprintf_s(szFull, _countof(szFull), L"%s (%d) <%s> ", szFile, line, szFunSig);
 		}
 		else
 		{
-			_snwprintf_s(szFull, _countof(szFull), L"(%d)<%s>", line, szFunSig);
+			_snwprintf_s(szFull, _countof(szFull), L"(%d) <%s> ", line, szFunSig);
 		}
 
 		WCHAR szText[DEFAULT_STRING_LENGTH];
