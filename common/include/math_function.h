@@ -14,6 +14,11 @@
 
 #include "common.h"
 
+// DLL에서 DirectX9 자료형을 사용하면 아래처럼 선언해줘야 합니다.
+// 필수는 아닌데 경고를 없앨 수 있습니다.
+struct DLL_DEFINE D3DXVECTOR3;
+struct DLL_DEFINE D3DXMATRIX;
+
 namespace RX
 {
 

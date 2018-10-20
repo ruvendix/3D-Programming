@@ -21,12 +21,6 @@
 #include <d3dx9.h>
 #include <DxErr.h>
 
-// DLL에서 DirectX9 자료형을 사용하면
-// DLL을 임포트하는 프로젝트에 아래처럼 선언해줘야 합니다.
-// 필수는 아닌데 경고를 없앨 수 있습니다.
-struct DLL_DEFINE D3DXVECTOR3;
-struct DLL_DEFINE D3DXMATRIX;
-
 // ====================================================================================
 // main 루틴을 사용하기 위한 헤더 파일입니다.
 #include "RX/RXMainDX9.h"

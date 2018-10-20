@@ -81,19 +81,13 @@ HRESULT CALLBACK OnInit()
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
-
-	// 채우기 설정입니다.
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-
-	// 컬링 설정입니다.
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	RX::RXRendererDX9::Instance()->AdjustRenderState(D3DRS_LIGHTING, false);
 
 	// 정점 크기 설정입니다.
+	// FLOAT을 DWORD로 해석해야 하므로 DWORD*로 변경한 뒤에 값을 참조해야 합니다.
     FLOAT rPointSize = 20.0f;
-	g_pD3DDevice9->SetRenderState(D3DRS_POINTSIZE, *reinterpret_cast<DWORD*>(&rPointSize));
+	RX::RXRendererDX9::Instance()->AdjustRenderState(D3DRS_POINTSIZE,
+		*reinterpret_cast<DWORD*>(&rPointSize));
 
 	return S_OK;
 }
@@ -110,13 +104,7 @@ HRESULT CALLBACK OnRender()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
-
-	D3DXMATRIXA16 matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, D3DX_PI / 4.0f,
-		static_cast<FLOAT>(g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight()),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	RX::RXRendererDX9::Instance()->ApplyViewMatrix(matView);
 
 	// 큐브 렌더링입니다.
 	g_pCube->DrawCubeByVertex();

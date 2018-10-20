@@ -34,6 +34,10 @@ namespace RX
 		// 그 외의 리소스는 정리되지 않습니다.
 		void ArrangeVideoMemory();
 
+		// 렌더링 상태를 설정합니다.
+		void DefaultRenderState();
+		void AdjustRenderState(D3DRENDERSTATETYPE state, DWORD dwValue);
+
 		HRESULT CreateDevice();
 		HRESULT BeginRender();
 		HRESULT EndRender();
@@ -43,6 +47,16 @@ namespace RX
 		
 		// ====================================================================================
 		// 정점 관련
+		void ApplyWorldMatrix(const D3DXMATRIXA16& matWorld);
+		void ApplyViewMatrix(const D3DXMATRIXA16& matView);
+		void ApplyProjectionMatrix(const D3DXMATRIXA16& matProjection);
+
+		void CopyWorldMatrix(D3DXMATRIXA16* pMatWorld);
+		void CopyViewMatrix(D3DXMATRIXA16* pMatView);
+		void CopyProjectionMatrix(D3DXMATRIXA16* pMatProjection);
+
+		void DefaultProjectionMatrix();
+
 		HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
 			const RXVertexBufferDX9& vertexBuffer);
 		HRESULT DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,

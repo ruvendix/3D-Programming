@@ -12,6 +12,16 @@
 #include "PCH.h"
 #include "RXRendererDX9_Util.h"
 
+// ==================================================================================
+// 보조 매크로 함수입니다.
+#define CASE_D3DFORMAT(D3DFormat)\
+case D3DFormat:\
+{\
+	szD3DFormat = _T(#D3DFormat);\
+	break;\
+}
+// ==================================================================================
+
 namespace RX
 {
 
@@ -248,6 +258,85 @@ namespace RX
 		return true;
 	}
 
+	const TCHAR* ConvertD3DFORMATToString(D3DFORMAT surfaceFormat)
+	{
+		const TCHAR* szD3DFormat = nullptr;
+		switch (surfaceFormat)
+		{
+			CASE_D3DFORMAT(D3DFMT_UNKNOWN)
+			CASE_D3DFORMAT(D3DFMT_R8G8B8)
+			CASE_D3DFORMAT(D3DFMT_A8R8G8B8)
+			CASE_D3DFORMAT(D3DFMT_X8R8G8B8)
+			CASE_D3DFORMAT(D3DFMT_R5G6B5)
+			CASE_D3DFORMAT(D3DFMT_X1R5G5B5)
+			CASE_D3DFORMAT(D3DFMT_A1R5G5B5)
+			CASE_D3DFORMAT(D3DFMT_A4R4G4B4)
+			CASE_D3DFORMAT(D3DFMT_R3G3B2)
+			CASE_D3DFORMAT(D3DFMT_A8)
+			CASE_D3DFORMAT(D3DFMT_A8R3G3B2)
+			CASE_D3DFORMAT(D3DFMT_X4R4G4B4)
+			CASE_D3DFORMAT(D3DFMT_A2B10G10R10)
+			CASE_D3DFORMAT(D3DFMT_A8B8G8R8)
+			CASE_D3DFORMAT(D3DFMT_X8B8G8R8)
+			CASE_D3DFORMAT(D3DFMT_G16R16)
+			CASE_D3DFORMAT(D3DFMT_A2R10G10B10)
+			CASE_D3DFORMAT(D3DFMT_A16B16G16R16)			
+			CASE_D3DFORMAT(D3DFMT_A8P8)
+			CASE_D3DFORMAT(D3DFMT_P8)			
+			CASE_D3DFORMAT(D3DFMT_L8)
+			CASE_D3DFORMAT(D3DFMT_A8L8)
+			CASE_D3DFORMAT(D3DFMT_A4L4)			
+			CASE_D3DFORMAT(D3DFMT_V8U8)
+			CASE_D3DFORMAT(D3DFMT_L6V5U5)
+			CASE_D3DFORMAT(D3DFMT_X8L8V8U8)
+			CASE_D3DFORMAT(D3DFMT_Q8W8V8U8)
+			CASE_D3DFORMAT(D3DFMT_V16U16)
+			CASE_D3DFORMAT(D3DFMT_A2W10V10U10)			
+			CASE_D3DFORMAT(D3DFMT_UYVY)
+			CASE_D3DFORMAT(D3DFMT_R8G8_B8G8)
+			CASE_D3DFORMAT(D3DFMT_YUY2)
+			CASE_D3DFORMAT(D3DFMT_G8R8_G8B8)
+			CASE_D3DFORMAT(D3DFMT_DXT1)
+			CASE_D3DFORMAT(D3DFMT_DXT2)
+			CASE_D3DFORMAT(D3DFMT_DXT3)
+			CASE_D3DFORMAT(D3DFMT_DXT4)
+			CASE_D3DFORMAT(D3DFMT_DXT5)			
+			CASE_D3DFORMAT(D3DFMT_D16_LOCKABLE)
+			CASE_D3DFORMAT(D3DFMT_D32)
+			CASE_D3DFORMAT(D3DFMT_D15S1)
+			CASE_D3DFORMAT(D3DFMT_D24S8)
+			CASE_D3DFORMAT(D3DFMT_D24X8)
+			CASE_D3DFORMAT(D3DFMT_D24X4S4)
+			CASE_D3DFORMAT(D3DFMT_D16)			
+			CASE_D3DFORMAT(D3DFMT_D32F_LOCKABLE)
+			CASE_D3DFORMAT(D3DFMT_D24FS8)			
+			CASE_D3DFORMAT(D3DFMT_D32_LOCKABLE)
+			CASE_D3DFORMAT(D3DFMT_S8_LOCKABLE)			
+			CASE_D3DFORMAT(D3DFMT_L16)			
+			CASE_D3DFORMAT(D3DFMT_VERTEXDATA)
+			CASE_D3DFORMAT(D3DFMT_INDEX16)
+			CASE_D3DFORMAT(D3DFMT_INDEX32)			
+			CASE_D3DFORMAT(D3DFMT_Q16W16V16U16)			
+			CASE_D3DFORMAT(D3DFMT_MULTI2_ARGB8)
+			CASE_D3DFORMAT(D3DFMT_R16F)
+			CASE_D3DFORMAT(D3DFMT_G16R16F)
+			CASE_D3DFORMAT(D3DFMT_A16B16G16R16F)
+			CASE_D3DFORMAT(D3DFMT_R32F)
+			CASE_D3DFORMAT(D3DFMT_G32R32F)
+			CASE_D3DFORMAT(D3DFMT_A32B32G32R32F)			
+			CASE_D3DFORMAT(D3DFMT_CxV8U8)
+			CASE_D3DFORMAT(D3DFMT_A1)
+			CASE_D3DFORMAT(D3DFMT_A2B10G10R10_XR_BIAS)
+			CASE_D3DFORMAT(D3DFMT_BINARYBUFFER)
+		default:
+		{
+			szD3DFormat = _T("It does not exist format");
+			break;
+		}
+		}
+		return szD3DFormat;
+	}
+
 	// 어댑터 인덱스는 HMONITOR가 달라져도 그대로 유지될 수 있습니다.
 	// 반대로 HMONITOR가 같아도 어댑터 인덱스는 변경될 수 있습니다.
 	INT32 FindAdapterIndex(const HWND hWnd)
@@ -262,6 +351,26 @@ namespace RX
 		}
 
 		return -1;
+	}
+
+	void PrintD3DPresentParameters(const D3DPRESENT_PARAMETERS& D3DPP)
+	{
+		RXLOG("=============================================");
+		RXLOG("BackBufferWidth(%d)", D3DPP.BackBufferWidth);
+		RXLOG("BackBufferHeight(%d)", D3DPP.BackBufferHeight);
+		RXLOG("BackBufferFormat(%s)", ConvertD3DFORMATToString(D3DPP.BackBufferFormat));
+		RXLOG("BackBufferCount(%d)", D3DPP.BackBufferCount);
+		RXLOG("MultiSampleType(%d)", D3DPP.MultiSampleType);
+		RXLOG("MultiSampleQuality(%d)", D3DPP.MultiSampleQuality);
+		RXLOG("SwapEffect(%d)", D3DPP.SwapEffect);
+		RXLOG("hDeviceWindow(%p)", D3DPP.hDeviceWindow);
+		RXLOG("Windowed(%s)", (D3DPP.Windowed) ? _T("창 화면"): _T("전체 화면"));
+		RXLOG("EnableAutoDepthStencil(%d)", D3DPP.EnableAutoDepthStencil);
+		RXLOG("AutoDepthStencilFormat(%s)", ConvertD3DFORMATToString(D3DPP.AutoDepthStencilFormat));
+		RXLOG("Flags(%d)", D3DPP.Flags);
+		RXLOG("FullScreen_RefreshRateInHz(%d)", D3DPP.FullScreen_RefreshRateInHz);
+		RXLOG("PresentationInterval(%d)", D3DPP.PresentationInterval);
+		RXLOG("=============================================");
 	}
 
 } // namespace RX end

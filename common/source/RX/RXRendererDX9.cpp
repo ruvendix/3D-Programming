@@ -45,6 +45,29 @@ namespace RX
 		RXLOG("D3DPOOL_DEFAULT 리소스가 정리되었습니다.");
 	}
 
+	void RXRendererDX9::DefaultRenderState()
+	{
+		// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
+		// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
+		// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
+		m_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
+
+		// 채우기 설정입니다.
+		//m_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+		//m_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		m_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+
+		// 컬링 설정입니다.
+		//m_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+		//m_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+		m_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	}
+
+	void RXRendererDX9::AdjustRenderState(D3DRENDERSTATETYPE state, DWORD dwValue)
+	{
+		m_pD3DDevice9->SetRenderState(state, dwValue);
+	}
+
 	HRESULT RXRendererDX9::CreateDevice()
 	{
 		Init();
@@ -74,8 +97,8 @@ namespace RX
 		D3DPP.Flags = 0;
 
 		// 프로그램 창 정보를 설정합니다.
-		// 프로그램 창 핸들과 창 모드 여부를 설정해주면 됩니다.
-		// 나중에 전체 화면도 설정하게 되지만 초반에는 창 모드만 사용합니다.
+		// 프로그램 창 핸들과 창 화면 여부를 설정해주면 됩니다.
+		// 나중에 전체 화면도 설정하게 되지만 초반에는 창 화면만 사용합니다.
 		D3DPP.hDeviceWindow = g_pMainDX9->getMainWindowHandle();
 		D3DPP.Windowed      = (g_pMainDX9->IsFullScreen() == false);
 		
@@ -111,7 +134,8 @@ namespace RX
 
 	HRESULT RXRendererDX9::EndRender()
 	{
-		m_pD3DDevice9->EndScene();
+		g_DXResult = m_pD3DDevice9->EndScene();
+		DXERR_HANDLER(g_DXResult);
 		return S_OK;
 	}
 
@@ -156,7 +180,7 @@ namespace RX
 		pD3DPP->BackBufferFormat = mainDisplayMode.Format;
 
 		// 백버퍼의 주사율을 설정합니다.
-		// 창 모드를 사용할 때는 D3DPRESENT_RATE_DEFAULT로 설정하면 됩니다.
+		// 창 화면을 사용할 때는 D3DPRESENT_RATE_DEFAULT로 설정하면 됩니다.
 		if (pD3DPP->Windowed == TRUE)
 		{
 			pD3DPP->FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
@@ -250,42 +274,89 @@ namespace RX
 		// 일반적으로는 깊이버퍼 24비트에 스텐실버퍼 8비트를 사용합니다.
 		AdjustDepthStencilInfo(m_adapterIdx, pD3DPP, 24, 8);
 
+		// 현재까지 설정된 정보를 로그로 출력합니다.
+		PrintD3DPresentParameters(*pD3DPP);
 		return S_OK;
+	}
+
+	void RXRendererDX9::ApplyWorldMatrix(const D3DXMATRIXA16& matWorld)
+	{
+		g_DXResult = m_pD3DDevice9->SetTransform(D3DTS_WORLD, &matWorld);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::ApplyViewMatrix(const D3DXMATRIXA16& matView)
+	{
+		g_DXResult = m_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::ApplyProjectionMatrix(const D3DXMATRIXA16& matProjection)
+	{
+		g_DXResult = m_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::CopyWorldMatrix(D3DXMATRIXA16* pMatWorld)
+	{
+		g_DXResult = m_pD3DDevice9->GetTransform(D3DTS_WORLD, pMatWorld);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::CopyViewMatrix(D3DXMATRIXA16* pMatView)
+	{
+		g_DXResult = m_pD3DDevice9->GetTransform(D3DTS_VIEW, pMatView);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::CopyProjectionMatrix(D3DXMATRIXA16* pMatProjection)
+	{
+		g_DXResult = m_pD3DDevice9->GetTransform(D3DTS_PROJECTION, pMatProjection);
+		DXERR_HANDLER(g_DXResult);
+	}
+
+	void RXRendererDX9::DefaultProjectionMatrix()
+	{
+		D3DXMATRIXA16 matProjection;
+		D3DXMatrixPerspectiveFovLH(&matProjection, D3DX_PI / 4.0f,
+			static_cast<FLOAT>(g_pMainDX9->getClientWidth() / g_pMainDX9->getClientHeight()),
+			1.0f, 1000.0f);
+		ApplyProjectionMatrix(matProjection);
 	}
 
 	HRESULT RXRendererDX9::DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
 		const RXVertexBufferDX9& vertexBuffer)
 	{
-		g_pD3DDevice9->SetFVF(VertexInfo::FORMAT);
-		g_pD3DDevice9->SetStreamSource(
+		m_pD3DDevice9->SetFVF(VertexInfo::FORMAT);
+		m_pD3DDevice9->SetStreamSource(
 			0,                    // 스트림 넘버는 0으로 설정합니다.
 			vertexBuffer.getVB(), // 정점 버퍼를 설정해줍니다.
 			0,                    // 오프셋은 0으로 설정합니다.
 			sizeof(VertexInfo));  // 보폭(Stride)은 FVF로 생성한 크기와 일치해야 합니다.
 
-		g_pD3DDevice9->DrawPrimitive(
+		m_pD3DDevice9->DrawPrimitive(
 			primitiveType, // 렌더링 형식을 설정합니다.
 			0,             // 오프셋은 0으로 설정합니다.
 			// 프리미티브 개수입니다.
 			CalcPrimitiveCount(primitiveType, vertexBuffer.getVertexCount()));
-
+		
 		return S_OK;
 	}
 
 	HRESULT RXRendererDX9::DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,
 		const RXIndexBufferDX9& indexBuffer)
 	{
-		g_pD3DDevice9->SetFVF(VertexInfo::FORMAT);
-		g_pD3DDevice9->SetStreamSource(
+		m_pD3DDevice9->SetFVF(VertexInfo::FORMAT);
+		m_pD3DDevice9->SetStreamSource(
 			0,                    // 스트림 넘버는 0으로 설정합니다.
 			vertexBuffer.getVB(), // 정점 버퍼를 설정해줍니다.
 			0,                    // 오프셋은 0으로 설정합니다.
 			sizeof(VertexInfo));  // 보폭(Stride)은 FVF로 생성한 크기와 일치해야 합니다.
 
 		// 인덱스 버퍼를 가상 디바이스에 적용해줍니다.
-		g_pD3DDevice9->SetIndices(indexBuffer.getIB());
+		m_pD3DDevice9->SetIndices(indexBuffer.getIB());
 
-		g_pD3DDevice9->DrawIndexedPrimitive(
+		m_pD3DDevice9->DrawIndexedPrimitive(
 			D3DPT_TRIANGLELIST, // 렌더링 형식을 설정합니다.
 			0,                  // 정점 버퍼에서 시작할 정점 인덱스를 설정합니다. (0으로 설정)
 			0,                  // 시작할 인덱스를 설정합니다. (0으로 설정)

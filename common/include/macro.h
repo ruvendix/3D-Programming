@@ -179,21 +179,21 @@ if (ptr == nullptr)\
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, false, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, false, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXLOG(szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, false, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXLOG(szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, false, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
 
@@ -202,21 +202,21 @@ if (ptr == nullptr)\
 #if defined(_UNICODE) || defined(UNICODE)
 #define RXMSGBOXLOG(szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 #else
 #define RXMSGBOXLOG(szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 #endif
 #else
 #if defined(_UNICODE) || defined(UNICODE)
 #define RXMSGBOXLOG(szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 #else
 #define RXMSGBOXLOG(szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true, false,\
-			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 #endif
 #endif
 
@@ -225,36 +225,36 @@ if (ptr == nullptr)\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true, true,\
-		__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
 	#define RXERRLOG(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true, true,\
-		__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #endif
 
 // CHAR 전용입니다.
 #define RXLOG_CHAR(bMessageBox, szFormat, ...)\
 		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
-			__FILE__, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
 
 #define RXERRLOG_CHAR(szFormat, ...) RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__FILE__, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __FUNCSIG__, szFormat, __VA_ARGS__)
 
 // WCHAR 전용입니다.
 #define RXLOG_WCHAR(bMessageBox, szFormat, ...)\
 		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
-			__WFILE__, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
+			nullptr, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
 
 #define RXERRLOG_WCHAR(szFormat, ...) RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, true,\
-		__WFILE__, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
+		nullptr, __LINE__, __WFUNCSIG__, L##szFormat, __VA_ARGS__)
 
 // ====================================================================================
 // DirectX 관련 매크로입니다.
@@ -279,18 +279,18 @@ if (FAILED(hDXResult))\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNCSIG__);
+				nullptr, __LINE__, __TFUNCSIG__);
 	#else
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNCSIG__);
+				nullptr, __LINE__, __TFUNCSIG__);
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplW(hDXResult, PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNCSIG__);
+				nullptr, __LINE__, __TFUNCSIG__);
 	#else
 	#define DXERR_HANDLER_IMPL(hDXResult) RX::DXErrorHandlerImplA(hDXResult, PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNCSIG__);
+				nullptr, __LINE__, __TFUNCSIG__);
 	#endif
 #endif
 
@@ -308,18 +308,18 @@ if (FAILED(hDXResult))\
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				nullptr, __LINE__, __TFUNSIG__);
 	#else
 	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplW(PROJECT_MODE::PM_DEBUG,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				nullptr, __LINE__, __TFUNSIG__);
 #endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
 	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				nullptr, __LINE__, __TFUNSIG__);
 	#else
 	#define WIN32ERR_HANDLER() RX::Win32LastErrorHandlerImplA(PROJECT_MODE::PM_RELEASE,\
-				__TFILE__, __LINE__, __TFUNSIG__);
+				nullptr, __LINE__, __TFUNSIG__);
 	#endif
 #endif
 

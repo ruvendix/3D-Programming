@@ -44,7 +44,12 @@ namespace RX
 
 	HRESULT RXMain_DX9::InitD3D9()
 	{
-		return (RXRendererDX9::Instance()->CreateDevice());
+		HRESULT reuslt = RXRendererDX9::Instance()->CreateDevice();
+		RXRendererDX9::Instance()->DefaultRenderState();
+
+		// 투영행렬은 한번만 초기화해도 됩니다.
+		RXRendererDX9::Instance()->DefaultProjectionMatrix();
+		return reuslt;
 	}
 
 	HRESULT RXMain_DX9::DriveMain()

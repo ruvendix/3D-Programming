@@ -38,5 +38,7 @@ const INT32 MAX_FRAMESKIP           = 10;
 #define SZ_WINDOW_CLASS     _T("Default_3D_Program")
 #define SZ_PROGRAM_TITLE    _T("Default_3D_Program")
 #define SZ_NONE             _T("None")
+#define SZ_NONE_W           L"None"
+#define SZ_NONE_A           "None"
 
 #endif

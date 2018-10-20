@@ -19,7 +19,8 @@
 // 절대로 DLL을 사용하는 프로젝트와 전역 변수 영역이 겹치면 안 됩니다.
 namespace
 {
-	CHAR g_szLogFile[DEFAULT_STRING_LENGTH];
+	CHAR g_szLogFile[DEFAULT_STRING_LENGTH] = SZ_NONE_A;
+	bool g_bInitLogFile = true;
 }
 
 namespace RX
@@ -47,7 +48,14 @@ namespace RX
 		const CHAR* szFile, INT32 line, const CHAR* szFunSig, const CHAR* szFormat, ...)
 	{
 		CHAR szFull[MAX_STRING_LENGTH];
-		_snprintf_s(szFull, _countof(szFull), "%s(%d)\n<%s>\n", szFile, line, szFunSig);
+		if (szFile != nullptr)
+		{
+			_snprintf_s(szFull, _countof(szFull), "%s(%d)<%s>", szFile, line, szFunSig);
+		}
+		else
+		{
+			_snprintf_s(szFull, _countof(szFull), "(%d)<%s>", line, szFunSig);
+		}
 
 		CHAR szText[DEFAULT_STRING_LENGTH];
 		va_list vaList;
@@ -56,7 +64,7 @@ namespace RX
 		va_end(vaList);
 
 		strcat_s(szFull, szText);
-		strcat_s(szFull, "\n\n");
+		strcat_s(szFull, "\n");
 
 		if (eMode == PROJECT_MODE::PM_DEBUG)
 		{
@@ -77,9 +85,13 @@ namespace RX
 
 		// 파일이나 서버에 로그를 남기는 루틴이 오면 됩니다.
 		if ( (bFile == true) &&
-			 (strlen(g_szLogFile) <= 0) )
+			 (g_bInitLogFile == true) )
 		{
+			g_bInitLogFile = false;
+
 			// 시스템 시간을 이용해서 현재 시간을 구합니다.
+			// 로그 파일을 중간에 삭제할 경우 프로그램을 실행했을 때의
+			// 시간으로 다시 로그 파일을 생성합니다.
 			SYSTEMTIME sysTime;
 			::ZeroMemory(&sysTime, sizeof(sysTime));
 			WCHAR szCurTime[DEFAULT_STRING_LENGTH];
@@ -98,9 +110,9 @@ namespace RX
 			::CreateDirectoryA("Log", nullptr);
 
 #if defined(DEBUG) | defined(_DEBUG)
-			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\Debug_Program(%s).log", szTemp);
+			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\RXDebug(%s).log", szTemp);
 #else
-			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\Program(%s).log", szTemp);
+			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\RX(%s).log", szTemp);
 #endif
 		}
 
@@ -128,7 +140,11 @@ namespace RX
 
 		if (szFile != nullptr)
 		{
-			_snwprintf_s(szFull, _countof(szFull), L"%s(%d)\n<%s>\n", szFile, line, szFunSig);
+			_snwprintf_s(szFull, _countof(szFull), L"%s(%d)<%s>", szFile, line, szFunSig);
+		}
+		else
+		{
+			_snwprintf_s(szFull, _countof(szFull), L"(%d)<%s>", line, szFunSig);
 		}
 
 		WCHAR szText[DEFAULT_STRING_LENGTH];
@@ -138,7 +154,7 @@ namespace RX
 		va_end(vaList);
 
 		wcscat_s(szFull, szText);
-		wcscat_s(szFull, L"\n\n");
+		wcscat_s(szFull, L"\n");
 
 		if (eMode == PROJECT_MODE::PM_DEBUG)
 		{
@@ -157,11 +173,14 @@ namespace RX
 			}
 		}
 
-		// 파일이나 서버에 로그를 남기는 루틴이 오면 됩니다.
 		if ( (bFile == true) &&
-			 (strlen(g_szLogFile) <= 0) )
+			 (g_bInitLogFile == true) )
 		{
+			g_bInitLogFile = false;
+			
 			// 시스템 시간을 이용해서 현재 시간을 구합니다.
+			// 로그 파일을 중간에 삭제할 경우 프로그램을 실행했을 때의
+			// 시간으로 다시 로그 파일을 생성합니다.
 			SYSTEMTIME sysTime;
 			::ZeroMemory(&sysTime, sizeof(sysTime));
 			WCHAR szCurTime[DEFAULT_STRING_LENGTH];
@@ -180,22 +199,19 @@ namespace RX
 			::CreateDirectoryA("Log", nullptr);
 
 #if defined(DEBUG) | defined(_DEBUG)
-			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\Debug_Program(%s).log", szTemp);
+			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\RXDebug(%s).log", szTemp);
 #else
-			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\Program(%s).log", szTemp);
+			_snprintf_s(g_szLogFile, _countof(g_szLogFile), "Log\\RX(%s).log", szTemp);
 #endif
 		}
 
 		// 파일에 뭔가를 쓰려면 파일 스트림을 열고 닫아야 합니다.
 		// Win32 API로도 파일 핸들로 스트림을 열고 닫습니다.
 		// 단 한 줄을 쓰더라도 파일 스트림을 열고 닫아야 합니다.
-		if (szFile != nullptr)
-		{
-			FILE* pLog = nullptr;
-			fopen_s(&pLog, g_szLogFile, "at");
-			fwprintf(pLog, szFull);
-			fclose(pLog);
-		}
+		FILE* pLog = nullptr;
+		fopen_s(&pLog, g_szLogFile, "at");
+		fwprintf(pLog, szFull);
+		fclose(pLog);
 
 		if (bError)
 		{
