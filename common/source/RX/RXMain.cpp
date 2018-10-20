@@ -139,6 +139,7 @@ namespace RX
 
 		m_bFullScreen               = false;
 		m_hMainWnd                  = nullptr;
+		m_hMainMonitor              = nullptr;
 		m_hInst                     = nullptr;
 		m_routineState              = ROUTINE_STATE::NORMAL;
 		m_msgCode                   = 0;
@@ -178,9 +179,9 @@ namespace RX
 		for (INT32 i = 0; i < SubFuncInfo::MAX_SUBFUNC; ++i)
 		{
 			// subFunc가 nullptr이 아니면 이미 등록된 상태입니다.
-			if (m_subFunc[i].func == nullptr)
+			if (m_subFunc[i].subFunc == nullptr)
 			{
-				m_subFunc[i].func = subFuncTable[i];
+				m_subFunc[i].subFunc = subFuncTable[i];
 			}
 		}
 
@@ -219,7 +220,7 @@ namespace RX
 			RXERRLOG_RETURN_EFAIL("프로그램 초기화 실패했습니다!");
 		}
 		
-		RXLOG(false, "프로그램 초기화 성공했습니다!");
+		RXLOG("프로그램 초기화 성공했습니다!");
 		return S_OK;
 	}
 
@@ -267,12 +268,15 @@ namespace RX
 			::GetDesktopWindow(), // 바탕화면을 부모 창으로 설정합니다.
 			nullptr, m_hInst, nullptr);
 
-		NULLCHK_RETURN_EFAIL(m_hMainWnd, "프로그램 창 생성 실패!");
+		NULLCHK_RETURN_EFAIL(m_hMainWnd, "프로그램 창 생성 실패했습니다!");
 		::ShowWindow(m_hMainWnd, SW_NORMAL);
 		::UpdateWindow(m_hMainWnd);
 		::ShowCursor(TRUE);
 
-		RXLOG(false, "프로그램 창 생성 성공했습니다!");
+		m_hMainMonitor = FindCurrentMonitorHandle(m_hMainWnd);
+		NULLCHK_RETURN_EFAIL(m_hMainMonitor, "주모니터가 없습니다!")
+
+		RXLOG("프로그램 창 생성 성공했습니다!");
 		return S_OK;
 	}
 
@@ -328,7 +332,7 @@ namespace RX
 
 	HRESULT RXMain::Update()
 	{
-		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::UPDATE)].subFunc()))
 		{
 			RXERRLOG_RETURN_EFAIL("서브 업데이트 실패했습니다!");
 		}
@@ -338,7 +342,7 @@ namespace RX
 
 	HRESULT RXMain::Render()
 	{
-		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RENDER)].subFunc()))
 		{
 			RXERRLOG_RETURN_EFAIL("서브 렌더 실패했습니다!");
 		}
@@ -348,7 +352,7 @@ namespace RX
 
 	HRESULT RXMain::Release()
 	{
-		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::RELEASE)].subFunc()))
 		{
 			RXERRLOG_RETURN_EFAIL("서브 릴리즈 실패했습니다!");
 		}
@@ -410,7 +414,7 @@ namespace RX
 			RXERRLOG_RETURN_EFAIL("프로그램 비정상 종료되었습니다!");
 		}
 
-		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].func()))
+		if (FAILED(m_subFunc[static_cast<INT32>(SUBFUNC_TYPE::INIT)].subFunc()))
 		{
 			RXERRLOG_RETURN_EFAIL("서브 초기화 실패했습니다!");
 		}
@@ -424,7 +428,7 @@ namespace RX
 		}
 
 		Release();
-		RXLOG(false, "프로그램 정상 종료되었습니다!");
+		RXLOG("프로그램 정상 종료되었습니다!");
 		return S_OK;
 	}
 
@@ -449,7 +453,7 @@ namespace RX
 			SetWindowPos(m_hMainWnd, HWND_TOP, 0, 0,
 				screenWidth, screenHeight, SWP_NOZORDER | SWP_SHOWWINDOW);
 
-			RXLOG(false, "전체 화면 모드로 전환되었습니다!");
+			RXLOG("전체 화면 모드로 전환되었습니다!");
 		}
 		else // 창 화면 모드
 		{
@@ -464,7 +468,7 @@ namespace RX
 				(screenHeight - (m_rtWindow.bottom - m_rtWindow.top)) / 2,
 				m_rtWindow.right, m_rtWindow.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
 
-			RXLOG(false, "창 화면 모드로 전환되었습니다!");
+			RXLOG("창 화면 모드로 전환되었습니다!");
 		}
 
 		AdjustClientRect();

@@ -86,9 +86,12 @@ namespace RX
 		// ====================================================================================
 		// 기본 정보
 		INT32                m_drawCallCnt; // 프레임당 렌더링 함수 호출 횟수입니다.
+		INT32		         m_adapterIdx;  // 다중 모니터를 위한 겁니다.
 		bool                 m_bLostDevice;
-		bool                 m_bMSAA;       // 멀티 샘플링(안티 얼라이징) 사용 여부입니다.
+		bool                 m_bMSAA;       // 멀티 샘플링(안티얼라이징) 사용 여부입니다.
+		bool		         m_bVSync;      // 수직 동기화 여부입니다.
 		DWORD                m_dwBehavior;  // 정점 처리 방식입니다.
+		RECT                 m_rtScissor;   // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
 		IDirect3D9*          m_pD3D9;
 		IDirect3DDevice9*    m_pD3DDevice9;
 		D3DCOLOR             m_clearColor;

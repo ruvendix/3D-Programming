@@ -44,6 +44,7 @@ namespace RX
 		INT32 line, const CHAR* szFunSig);
 
 	DLL_DEFINE void DrawLineWin32(HDC hDC, INT32 startX, INT32 startY, INT32 endX, INT32 endY);
+	DLL_DEFINE HMONITOR FindCurrentMonitorHandle(const HWND hWnd);
 
 } // namespace RX end
 

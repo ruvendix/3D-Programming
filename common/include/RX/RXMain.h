@@ -67,6 +67,11 @@ namespace RX
 			return m_hMainWnd;
 		}
 
+		HMONITOR getMainMonitorHandle() const noexcept
+		{
+			return m_hMainMonitor;
+		}
+
 		RECT getClientRect() const noexcept
 		{
 			return m_rtClient;
@@ -94,9 +99,9 @@ namespace RX
 			::SetWindowLongPtr(m_hMainWnd, GWLP_WNDPROC, reinterpret_cast<LONG>(wndProc));
 		}
 
-		void setSubFunc(SubFunc func, SUBFUNC_TYPE type)
+		void setSubFunc(SubFunc subFunc, SUBFUNC_TYPE type)
 		{
-			m_subFunc[static_cast<INT32>(type)].func = func;
+			m_subFunc[static_cast<INT32>(type)].subFunc = subFunc;
 		}
 
 		void setFullScreen(bool bFullScreen)
@@ -109,6 +114,7 @@ namespace RX
 		// 기본 정보
 		bool             m_bFullScreen;
 		HWND             m_hMainWnd;
+		HMONITOR         m_hMainMonitor;
 		HINSTANCE        m_hInst;
 		ROUTINE_STATE    m_routineState;
 		INT32            m_msgCode;

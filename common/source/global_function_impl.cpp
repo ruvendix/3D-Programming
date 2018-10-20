@@ -300,6 +300,34 @@ namespace RX
 		::LineTo(hDC, endX, endY);
 	}
 
+	DLL_DEFINE HMONITOR FindCurrentMonitorHandle(const HWND hWnd)
+	{
+		static bool bInit = true;
+		static MonitorFromWindowFunc monitorFromWindowFunc = nullptr;
+		HMONITOR hMonitor = nullptr;
+
+		if (bInit == true)
+		{
+			bInit = false;
+			HMODULE hModule = ::GetModuleHandle(_T("USER32"));
+			if (hModule != nullptr)
+			{
+				monitorFromWindowFunc =
+					reinterpret_cast<MonitorFromWindowFunc>(::GetProcAddress(hModule, "MonitorFromWindow"));
+			}
+		}
+
+		if (monitorFromWindowFunc != nullptr)
+		{
+			// MONITOR_DEFAULTTOPRIMARY는 주모니터를 알아낼 수 있고,
+			// MONITOR_DEFAULTTONEAREST는 현재 윈도우 핸들과 가장 가까운 모니터를 알아낼 수 있습니다.
+			hMonitor =
+				monitorFromWindowFunc(hWnd, MONITOR_DEFAULTTONEAREST);
+		}
+
+		return hMonitor;
+	}
+
 	DLL_DEFINE void Win32LastErrorHandlerImplW(PROJECT_MODE eMode, const WCHAR* szFileName,
 		INT32 line, const WCHAR* szFunSig)
 	{

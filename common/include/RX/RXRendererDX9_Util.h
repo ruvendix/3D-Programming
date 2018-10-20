@@ -15,13 +15,14 @@
 namespace RX
 {
 
-	INT32 CalcPrimitiveCount(D3DPRIMITIVETYPE primitiveType, INT32 vertexCnt);
-	bool AdjustFullScreenInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
-		const D3DDISPLAYMODE& mainDisplayMode);
-	bool AdjustMSAAInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP);
-	bool AdjustDepthStencilInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
-		INT32 depthBits, INT32 stencilBits);
-	bool CheckAvailableAllDXT(INT32 adapterIndex, D3DFORMAT surfaceFormat);
+	INT32       CalcPrimitiveCount(D3DPRIMITIVETYPE primitiveType, INT32 vertexCnt);
+	INT32       FindAdapterIndex(const HWND hWnd);
+	bool        AdjustFullScreenInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
+		                             const D3DDISPLAYMODE& mainDisplayMode);
+	bool        AdjustMSAAInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP);
+	bool        AdjustDepthStencilInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
+	                                   INT32 depthBits, INT32 stencilBits);
+	bool        CheckAvailableAllDXT(INT32 adapterIndex, D3DFORMAT surfaceFormat);
 
 } // namespace RX end
 

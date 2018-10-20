@@ -13,6 +13,15 @@
 #ifndef GLOBAL_TYPE_H__
 #define GLOBAL_TYPE_H__
 
+
+ // ====================================================================================
+ // 함수 포인터 형식입니다.
+typedef HRESULT(CALLBACK* SubFunc)();
+typedef HMONITOR(CALLBACK* MonitorFromWindowFunc)(HWND, DWORD);
+
+
+// ====================================================================================
+// 공용체입니다.
 enum class PROJECT_MODE : INT32
 {
 	PM_DEBUG = 0,
@@ -37,18 +46,21 @@ enum class SUBFUNC_TYPE : INT32
 	MAX,
 };
 
-typedef HRESULT(CALLBACK* SubFunc)();
+
+// ====================================================================================
+// 구조체입니다.
 
 // 서브 루틴 타입과 함수는 1:1 맞춤입니다.
 struct SubFuncInfo
 {
 	const static INT32 MAX_SUBFUNC = static_cast<INT32>(SUBFUNC_TYPE::MAX);
-	SubFunc func;
+	SubFunc subFunc;
 
 	void Reset()
 	{
-		func = nullptr;
+		subFunc = nullptr;
 	}
 };
+
 
 #endif

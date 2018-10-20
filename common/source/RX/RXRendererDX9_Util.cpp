@@ -42,7 +42,8 @@ namespace RX
 		return primitiveCnt;
 	}
 
-	bool AdjustFullScreenInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP, const D3DDISPLAYMODE& mainDisplayMode)
+	bool AdjustFullScreenInfo(INT32 adapterIndex, D3DPRESENT_PARAMETERS* pD3DPP,
+		const D3DDISPLAYMODE& mainDisplayMode)
 	{
 		NULLCHK_RETURN_FALSE(pD3DPP);
 
@@ -104,7 +105,7 @@ namespace RX
 				// 이럴 때는 검증된 MSAA로 설정합니다. 따라서 검증된 MSAA가 우선입니다.
 				if (pD3DPP->MultiSampleType != type)
 				{
-					RXLOG(false, "원하는 MSAA(%d)와 검증된 MSAA(%d)가 달라서 검증된 MSAA로 대체됩니다.",
+					RXLOG("원하는 MSAA(%d)와 검증된 MSAA(%d)가 달라서 검증된 MSAA로 대체됩니다.",
 						pD3DPP->MultiSampleType, type);
 				}
 
@@ -149,10 +150,10 @@ namespace RX
 		if ( (DepthBits <= 15) &&
 			 (StencilBits == 1) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D15S1)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D15S1)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
@@ -165,10 +166,10 @@ namespace RX
 		if ( (DepthBits <= 24) &&
 			 (StencilBits == 0) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24X8)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D24X8)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
@@ -181,10 +182,10 @@ namespace RX
 		if ( (DepthBits <= 24) &&
 			 (StencilBits <= 8) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24S8)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D24S8)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
@@ -197,10 +198,10 @@ namespace RX
 		if ( (DepthBits <= 24) &&
 			 (StencilBits <= 4) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D24X4S4)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D24X4S4)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
@@ -213,10 +214,10 @@ namespace RX
 		if ( (DepthBits <= 32) &&
 			 (StencilBits == 0) )
 		{
-			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+			if (SUCCEEDED(g_pD3D9->CheckDeviceFormat(adapterIndex, D3DDEVTYPE_HAL,
 				pD3DPP->BackBufferFormat, D3DUSAGE_DEPTHSTENCIL, D3DRTYPE_SURFACE, D3DFMT_D32)))
 			{
-				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+				if (SUCCEEDED(g_pD3D9->CheckDepthStencilMatch(adapterIndex, D3DDEVTYPE_HAL,
 					pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, D3DFMT_D32)))
 				{
 					pD3DPP->EnableAutoDepthStencil = TRUE;
@@ -245,6 +246,22 @@ namespace RX
 			}
 		}
 		return true;
+	}
+
+	// 어댑터 인덱스는 HMONITOR가 달라져도 그대로 유지될 수 있습니다.
+	// 반대로 HMONITOR가 같아도 어댑터 인덱스는 변경될 수 있습니다.
+	INT32 FindAdapterIndex(const HWND hWnd)
+	{
+		const INT32 adapterCnt = static_cast<INT32>(g_pD3D9->GetAdapterCount());
+		for (INT32 i = 0; i < adapterCnt; ++i)
+		{
+			if (RX::FindCurrentMonitorHandle(hWnd) == g_pD3D9->GetAdapterMonitor(i))
+			{
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 } // namespace RX end

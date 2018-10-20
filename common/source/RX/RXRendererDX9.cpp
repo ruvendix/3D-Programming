@@ -26,19 +26,23 @@ namespace RX
 	void RXRendererDX9::Init()
 	{
 		m_bLostDevice = false;
-		m_bMSAA       = true;
+		m_bMSAA       = false;
+		m_bVSync      = false;
 		m_pD3D9       = nullptr;
 		m_pD3DDevice9 = nullptr;
 		m_clearColor  = DXCOLOR_TEAL;
+		m_adapterIdx  = 0;
 		m_dwBehavior  = 0;
 		m_drawCallCnt = 0;
+
+		::SetRect(&m_rtScissor, 0, 0, 0, 0);
 	}
 
 	void RXRendererDX9::ArrangeVideoMemory()
 	{
 		g_DXResult = m_pD3DDevice9->EvictManagedResources();
 		DXERR_HANDLER(g_DXResult);
-		RXLOG(false, "D3DPOOL_DEFAULT 리소스가 정리되었습니다.");
+		RXLOG("D3DPOOL_DEFAULT 리소스가 정리되었습니다.");
 	}
 
 	HRESULT RXRendererDX9::CreateDevice()
@@ -49,7 +53,7 @@ namespace RX
 		// 인터페이스 포인터에 인스턴화된 객체를 반환해줍니다.
 		m_pD3D9 = Direct3DCreate9(D3D_SDK_VERSION);
 		NULLCHK_RETURN_EFAIL(m_pD3D9, "DirectX9 객체 생성 실패했습니다!");
-		RXLOG(false, "DirectX9 객체 생성 성공했습니다!");
+		RXLOG("DirectX9 객체 생성 성공했습니다!");
 		g_pD3D9 = m_pD3D9;
 		
 		// ====================================================================================
@@ -82,7 +86,7 @@ namespace RX
 		// ====================================================================================
 		// 가상 디바이스 생성을 위한 정보를 설정했으므로 가상 디바이스를 생성해줍니다.
 		g_DXResult = m_pD3D9->CreateDevice(
-			D3DADAPTER_DEFAULT,     // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
+			m_adapterIdx,           // 어댑터를 뜻하는데 모니터 개수라고 생각하면 됩니다.
 			D3DDEVTYPE_HAL,         // HAL Device를 사용하겠다는 것입니다.
 			D3DPP.hDeviceWindow,    // 가상 디바이스의 타겟 프로그램 창을 의미합니다.
 			m_dwBehavior,           // 정점 처리를 그래픽 카드에게 맡긴다는 뜻입니다.
@@ -93,7 +97,7 @@ namespace RX
 		NULLCHK_RETURN_EFAIL(m_pD3DDevice9, "DirectX9 가상 디바이스 생성 실패했습니다!");
 		g_pD3DDevice9 = m_pD3DDevice9;
 
-		RXLOG(false, "DirectX9 가상 디바이스 생성 성공했습니다!");
+		RXLOG("DirectX9 가상 디바이스 생성 성공했습니다!");
 		return S_OK;
 	}
 
@@ -125,8 +129,12 @@ namespace RX
 		D3DDISPLAYMODE mainDisplayMode;
 		::ZeroMemory(&mainDisplayMode, sizeof(mainDisplayMode));
 
+		// 어댑터 인덱스를 찾습니다.
+		m_adapterIdx = FindAdapterIndex(g_pMainDX9->getMainWindowHandle());
+		RXLOG("현재 어댑터 인덱스 : %d", m_adapterIdx);
+
 		// 그래픽 카드의 출력 정보를 가져옵니다.
-		if (FAILED(m_pD3D9->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &mainDisplayMode)))
+		if (FAILED(m_pD3D9->GetAdapterDisplayMode(m_adapterIdx, &mainDisplayMode)))
 		{
 			RXERRLOG_RETURN_EFAIL("그래픽 카드 정보 획득 실패했습니다!");
 		}
@@ -151,22 +159,27 @@ namespace RX
 		// 창 모드를 사용할 때는 D3DPRESENT_RATE_DEFAULT로 설정하면 됩니다.
 		if (pD3DPP->Windowed == TRUE)
 		{
-			pD3DPP->FullScreen_RefreshRateInHz = D3DPRESENT_INTERVAL_DEFAULT;
+			pD3DPP->FullScreen_RefreshRateInHz = D3DPRESENT_RATE_DEFAULT;
 		}
 
 		// 백버퍼의 페이지 플리핑 간격을 설정합니다.
 		pD3DPP->PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT; // 기본은 수직동기
 
+		if (pD3DPP->PresentationInterval == D3DPRESENT_INTERVAL_DEFAULT)
+		{
+			m_bVSync = true;
+		}
+
 		// 전체 화면으로 전환될 때의 처리입니다.
 		if ( (pD3DPP->Windowed == FALSE) &&
-			 (AdjustFullScreenInfo(D3DADAPTER_DEFAULT, pD3DPP, mainDisplayMode) == false) )
+			 (AdjustFullScreenInfo(m_adapterIdx, pD3DPP, mainDisplayMode) == false) )
 		{
 			RXERRLOG_RETURN_EFAIL("전체 화면에서 그래픽 카드가 해상도 또는 형식을 지원하지 않습니다!");
 		}
 
 		// ====================================================================================
 		// 하드웨어 가속이 가능한지 검증합니다.
-		if (FAILED(m_pD3D9->CheckDeviceType(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL,
+		if (FAILED(m_pD3D9->CheckDeviceType(m_adapterIdx, D3DDEVTYPE_HAL,
 			pD3DPP->BackBufferFormat, pD3DPP->BackBufferFormat, pD3DPP->Windowed)))
 		{
 			RXERRLOG_RETURN_EFAIL("하드웨어 가속을 지원하지 않습니다!");
@@ -177,7 +190,7 @@ namespace RX
 		// AA는 여러 기법이 있지만 가장 기본적인 건 MSAA입니다.
 		if (m_bMSAA == true)
 		{
-			if (AdjustMSAAInfo(D3DADAPTER_DEFAULT, pD3DPP) == false)
+			if (AdjustMSAAInfo(m_adapterIdx, pD3DPP) == false)
 			{
 				RXERRLOG_RETURN_EFAIL("MSAA를 지원하지 않으므로 0으로 설정합니다!");
 			}
@@ -197,14 +210,25 @@ namespace RX
 		::ZeroMemory(&D3DCaps9, sizeof(D3DCaps9));
 
 		// 그래픽 카드의 능력 정보를 가져옵니다.
-		m_pD3D9->GetDeviceCaps(D3DADAPTER_DEFAULT, D3DDEVTYPE_HAL, &D3DCaps9);
+		m_pD3D9->GetDeviceCaps(m_adapterIdx, D3DDEVTYPE_HAL, &D3DCaps9);
 
-		// 그래픽 카드가 TL을 지원하거나 정점 셰이더와 픽셀 셰이더가 1.0 이상이라면
+		// 그래픽 카드가 TL(Transformation And Lighting)을 지원하거나
+		// 정점 셰이더와 픽셀 셰이더가 1.0 이상이라면
 		// 정점 처리 방식을 소프트웨어 정점 처리로 설정합니다.
 		if ( (D3DCaps9.DevCaps & D3DDEVCAPS_HWTRANSFORMANDLIGHT) ||
-			 ( (D3DCaps9.VertexShaderVersion > D3DVS_VERSION(4, 0)) &&
-			   (D3DCaps9.PixelShaderVersion > D3DPS_VERSION(4, 0))) )
+			 ( (D3DCaps9.VertexShaderVersion > D3DVS_VERSION(1, 0)) &&
+			   (D3DCaps9.PixelShaderVersion > D3DPS_VERSION(1, 0))) )
 		{
+			// D3DPS_VERSION()은 (0xFFFF0000|((_Major)<<8)|(_Minor))인데
+			// _Major를 1바이트만큼 왼쪽으로 밀고 _Minor와 OR 연산합니다.
+			// 그 다음 0xFFFF0000과 OR 연산하는데 하위 2바이트가 핵심입니다.
+			// 상위 2바이트는 1로 만드는데 실제 버전 확인은 하위 2바이트입니다.
+			// D3DPS_VERSION(1, 1)은 0xFFFF0101이 됩니다. 즉, 픽셀 셰이더 1.1을 의미합니다.
+			//
+			// 다른 방식으로 알아내려면 PixelShaderVersion >> 8을 해서 _Minor를 날려버리고
+			// 0xFF와 AND 연산해서 최하위 바이트만 뽑아냅니다.
+			// _Minor는 PixelShaderVersion & 0xFF해서 최하위 바이트만 뽑아냅니다.
+			// 즉, _Major와 _Minor를 분리하는 방법입니다.
 			m_dwBehavior = D3DCREATE_HARDWARE_VERTEXPROCESSING;
 		}
 		else
@@ -213,7 +237,7 @@ namespace RX
 			// 현재 그래픽 카드에 대한 정보를 간단하게 알려줍니다.
 			D3DADAPTER_IDENTIFIER9 adapterInfo;
 			::ZeroMemory(&adapterInfo, sizeof(D3DADAPTER_IDENTIFIER9));
-			g_pD3D9->GetAdapterIdentifier(D3DADAPTER_DEFAULT, D3DENUM_WHQL_LEVEL, &adapterInfo);
+			g_pD3D9->GetAdapterIdentifier(m_adapterIdx, D3DENUM_WHQL_LEVEL, &adapterInfo);
 			RXERRLOG_CHAR("하드웨어 정점 처리를 지원하지 않습니다!\n그래픽 카드 (%s)",
 				adapterInfo.Description);
 
@@ -224,7 +248,7 @@ namespace RX
 		// ====================================================================================
 		// 깊이 스텐실버퍼 형식을 검증합니다.
 		// 일반적으로는 깊이버퍼 24비트에 스텐실버퍼 8비트를 사용합니다.
-		AdjustDepthStencilInfo(D3DADAPTER_DEFAULT, pD3DPP, 24, 8);
+		AdjustDepthStencilInfo(m_adapterIdx, pD3DPP, 24, 8);
 
 		return S_OK;
 	}
@@ -315,11 +339,11 @@ namespace RX
 
 			if (refCnt > 0)
 			{
-				RXLOG(false, "DirectX9 가상 디바이스 해제 실패했습니다! 레퍼런스 카운트(%d)", refCnt);
+				RXLOG("DirectX9 가상 디바이스 해제 실패했습니다! 레퍼런스 카운트(%d)", refCnt);
 			}
 			else
 			{
-				RXLOG(false, "DirectX9 가상 디바이스 해제 성공했습니다!");
+				RXLOG("DirectX9 가상 디바이스 해제 성공했습니다!");
 			}
 
 			m_pD3DDevice9 = nullptr;

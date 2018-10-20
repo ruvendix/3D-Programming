@@ -175,27 +175,49 @@ if (ptr == nullptr)\
 #endif
 
 // 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
-// 메시지 박스 출력 지원, 일반 메시지 박스만 지원합니다.
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
+	#define RXLOG(szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, false, true, false,\
 			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
-	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, bMessageBox, true, false,\
+	#define RXLOG(szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, false, true, false,\
 			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
 #else
 	#if defined(_UNICODE) || defined(UNICODE)
-	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
+	#define RXLOG(szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, false, true, false,\
 			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
 	#else
-	#define RXLOG(bMessageBox, szFormat, ...)\
-		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, bMessageBox, true, false,\
+	#define RXLOG(szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, false, true, false,\
 			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
 	#endif
+#endif
+
+// RXLOG()에 메시지 박스 기능이 추가된 함수입니다.
+#if defined(DEBUG) || defined(_DEBUG)
+#if defined(_UNICODE) || defined(UNICODE)
+#define RXMSGBOXLOG(szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_DEBUG, true, true, false,\
+			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+#else
+#define RXMSGBOXLOG(szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_DEBUG, true, true, false,\
+			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+#endif
+#else
+#if defined(_UNICODE) || defined(UNICODE)
+#define RXMSGBOXLOG(szFormat, ...)\
+		RX::RXLogImplW(PROJECT_MODE::PM_RELEASE, true, true, false,\
+			__TFILE__, __LINE__, __TFUNCSIG__, L##szFormat, __VA_ARGS__)
+#else
+#define RXMSGBOXLOG(szFormat, ...)\
+		RX::RXLogImplA(PROJECT_MODE::PM_RELEASE, true, true, false,\
+			__TFILE__, __LINE__, __TFUNCSIG__, szFormat, __VA_ARGS__)
+#endif
 #endif
 
 // 서식 문자열 지원, 디버그 모드에서는 디버그 출력창에도 출력
