@@ -40,9 +40,10 @@ namespace RX
 		HRESULT Render(FLOAT rInterpolation);
 
 		// ====================================================================================
-		// 로스트 디바이스, 리셋 디바이스
+		// 가상 디바이스 상태에 따른 처리 함수
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
+		HRESULT OnRecreateDevice();
 
 	protected:
 		// ====================================================================================

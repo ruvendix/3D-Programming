@@ -39,6 +39,31 @@ namespace RX
 		::ZeroMemory(&m_viewport9, sizeof(m_viewport9));
 	}
 
+	void RXRendererDX9::ResetD3DPP()
+	{
+		// ====================================================================================
+		// 가상 디바이스의 기본 정보를 설정합니다.
+		// 일반적으로 Present Parameters를 줄여서 PP라고 선언합니다.
+		SAFE_DELTE(m_pD3DPP);
+		m_pD3DPP = RXNew D3DPRESENT_PARAMETERS;
+		NULLCHK_HEAPALLOC(m_pD3DPP);
+		::ZeroMemory(m_pD3DPP, sizeof(D3DPRESENT_PARAMETERS));
+
+		// 페이지 플리핑을 할 때의 효과를 설정합니다.
+		// 초반에는 D3DSWAPEFFECT_DISCARD가 가장 무난합니다.
+		m_pD3DPP->SwapEffect = D3DSWAPEFFECT_DISCARD;
+		
+		// 특수한 플래그를 설정합니다.
+		// 딱히 사용할 플래그가 없으니 0으로 설정합니다.
+		m_pD3DPP->Flags = D3DFLAG_NONE;
+
+		// 프로그램 창 정보를 설정합니다.
+		// 프로그램 창 핸들과 창 화면 여부를 설정해주면 됩니다.
+		// 나중에 전체 화면도 설정하게 되지만 초반에는 창 화면만 사용합니다.
+		m_pD3DPP->hDeviceWindow = g_pMainDX9->getMainWindowHandle();
+		m_pD3DPP->Windowed      = (g_pMainDX9->IsFullScreen() == false);
+	}
+
 	void RXRendererDX9::ArrangeVideoMemory()
 	{
 		g_DXResult = m_pD3DDevice9->EvictManagedResources();
@@ -181,26 +206,7 @@ namespace RX
 		
 		// ====================================================================================
 		// 가상 디바이스 생성을 위한 정보를 설정해줍니다.
-		// 일반적으로 Present Parameters를 줄여서 PP라고 선언합니다.
-		m_pD3DPP = RXNew D3DPRESENT_PARAMETERS;
-		NULLCHK_HEAPALLOC(m_pD3DPP);
-
-		// ====================================================================================
-		// 검증이 필요 없는 정보부터 채워줍니다.
-		//
-		// 페이지 플리핑을 할 때의 효과를 설정합니다.
-		// 초반에는 D3DSWAPEFFECT_DISCARD가 가장 무난합니다.
-		m_pD3DPP->SwapEffect = D3DSWAPEFFECT_DISCARD;
-
-		// 특수한 플래그를 설정합니다.
-		// 딱히 사용할 플래그가 없으니 0으로 설정합니다.
-		m_pD3DPP->Flags = D3DFLAG_NONE;
-
-		// 프로그램 창 정보를 설정합니다.
-		// 프로그램 창 핸들과 창 화면 여부를 설정해주면 됩니다.
-		// 나중에 전체 화면도 설정하게 되지만 초반에는 창 화면만 사용합니다.
-		m_pD3DPP->hDeviceWindow = g_pMainDX9->getMainWindowHandle();
-		m_pD3DPP->Windowed      = (g_pMainDX9->IsFullScreen() == false);
+		ResetD3DPP();
 		
 		// ====================================================================================
 		// 가상 디바이스 생성이 가능한지 검증합니다.
@@ -493,22 +499,31 @@ namespace RX
 	HRESULT RXRendererDX9::OnResetDevice()
 	{
 		// 검증이 필요 없는 정보를 설정합니다.
-		m_pD3DPP->hDeviceWindow = g_pMainDX9->getMainWindowHandle();
-		m_pD3DPP->Windowed      = (g_pMainDX9->IsFullScreen() == false);
+		ResetD3DPP();
 
 		// 검증이 필요한 정보를 설정합니다.
 		VerifyDevice(m_pD3DPP);
 
-		RXLOG("백버퍼(%d, %d) 클라(%d, %d)",
-			m_pD3DPP->BackBufferWidth, m_pD3DPP->BackBufferHeight,
-			g_pMainDX9->getClientWidth(), g_pMainDX9->getClientHeight());
+		if (m_pD3DPP->Windowed == FALSE)
+		{
+			m_pD3DPP->BackBufferCount = 0;
+		}
 
 		// 가상 디바이스를 리셋해주고 정보를 다시 설정해줍니다.
+		// 현재 가상 디바이스를 리셋 또는 재생성시 프로그램 창이
+		// 무조건 최상위로 오는 현상이 있는데... 확인 중입니다.
 		m_pD3DDevice9->Reset(m_pD3DPP);
 		RXRendererDX9::Instance()->DefaultRenderState();
 
 		// 투영행렬을 다시 초기화해줍니다.
 		RXRendererDX9::Instance()->DefaultProjectionMatrix();
+		return S_OK;
+	}
+
+	HRESULT RXRendererDX9::OnRecreateDevice()
+	{
+		Release();
+		CreateDevice();
 		return S_OK;
 	}
 

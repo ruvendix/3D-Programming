@@ -16,8 +16,6 @@
 
 #include "common.h"
 
-LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
 namespace RX
 {
 

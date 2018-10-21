@@ -14,33 +14,9 @@
  ====================================================================================*/
 #include "PCH.h"
 #include "RXMainDX9.h"
+#include "RXWindowProcedure.h"
 
 extern RX::RXMain_DX9* g_pMainDX9 = nullptr;
-
-// 메시지 핸들러입니다.
-void OnKeyF12(); // 스크린샷을 찍습니다.
-
-LRESULT CALLBACK DefaultWndDX9Proc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	DefaultWndProc(hWnd, msg, wParam, lParam);
-
-	switch (msg)
-	{
-	case WM_KEYDOWN:
-	{
-		switch (wParam)
-		{
-		case VK_F12:
-		{
-			OnKeyF12();
-			break;
-		}
-		}
-	}
-	}
-
-	return ::DefWindowProc(hWnd, msg, wParam, lParam);
-}
 
 namespace RX
 {
@@ -58,7 +34,7 @@ namespace RX
 	HRESULT RXMain_DX9::InitMain()
 	{
 		RXMain::InitMain();
-		setWndProc(DefaultWndDX9Proc);
+		setWndProc(DefaultWndProcDX9);
 
 		if (FAILED(InitD3D9()))
 		{			
@@ -212,9 +188,9 @@ namespace RX
 		g_DXResult = RXRendererDX9::Instance()->Present();
 
 		// 로스트 디바이스는 자주 발생할 수 있으므로 따로 에러 핸들러를 하지 않습니다.
-		if (g_DXResult == D3DERR_DEVICELOST)
+		if ( (g_DXResult == D3DERR_DEVICELOST) ||
+			 (g_DXResult == D3DERR_DEVICENOTRESET) )
 		{
-			RXERRLOG("가상 디바이스 손실 발생!");
 			RXRendererDX9::Instance()->setLostDevice(true);
 			::SleepEx(100, TRUE); // 가상 디바이스가 손실되었다면 잠깐 CPU를 풀어줍니다.
 		}
@@ -227,10 +203,12 @@ namespace RX
 			if (FAILED(g_DXResult = g_pD3DDevice9->TestCooperativeLevel()))
 			{
 				// 가상 디바이스가 완전히 손실되어서 리셋할 수 없는 상황입니다.
-				// 이럴 경우에는 프로그램을 재실행해야 합니다.
+				// 이럴 경우에는 가상 디바이스를 해제하고 재생성해야 합니다.
 				if (g_DXResult == D3DERR_DEVICELOST)
 				{
 					RXERRLOG_RETURN_EFAIL("가상 디바이스가 완전히 손실되었습니다!");
+					OnLostDevice();
+					OnRecreateDevice();
 				}
 				// 가상 디바이스를 리셋할 수 있는 상황입니다.
 				// 가상 디바이스를 리셋하려면 가상 디바이스와 관련된
@@ -261,7 +239,7 @@ namespace RX
 			RXERRLOG_RETURN_EFAIL("서브 로스트 디바이스 실패했습니다!");
 		}
 
-		RXLOG("로스트 디바이스되었습니다!");
+		RXLOG("가상 디바이스가 손실되었습니다!");
 		return S_OK;
 	}
 
@@ -276,7 +254,14 @@ namespace RX
 
 		::SleepEx(100, TRUE);
 
-		RXLOG("리셋 디바이스되었습니다!");
+		RXLOG("가상 디바이스를 재설정했습니다!");
+		return S_OK;
+	}
+
+	HRESULT RXMain_DX9::OnRecreateDevice()
+	{
+		RXRendererDX9::Instance()->OnResetDevice();
+		RXLOG("가상 디바이스를 재생성했습니다!");
 		return S_OK;
 	}
 

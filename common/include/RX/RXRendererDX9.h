@@ -25,6 +25,7 @@ namespace RX
 		PHOENIX_SINGLETON(RXRendererDX9);
 	public:
 		void Init();
+		void ResetD3DPP(); // 검증이 필요 없는 기본 정보를 설정합니다.
 		void ResetDrawCallCount()
 		{
 			m_drawCallCnt = 0;
@@ -70,9 +71,10 @@ namespace RX
 		HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
 
 		// ====================================================================================
-		// 로스트 디바이스, 리셋 디바이스
+		// 가상 디바이스 상태에 따른 처리 함수
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
+		HRESULT OnRecreateDevice();
 
 		bool IsLostDevice() const noexcept
 		{
