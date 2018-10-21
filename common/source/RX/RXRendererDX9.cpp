@@ -499,6 +499,10 @@ namespace RX
 		// 검증이 필요한 정보를 설정합니다.
 		VerifyDevice(m_pD3DPP);
 
+		RXLOG("백버퍼(%d, %d) 클라(%d, %d)",
+			m_pD3DPP->BackBufferWidth, m_pD3DPP->BackBufferHeight,
+			g_pMainDX9->getClientWidth(), g_pMainDX9->getClientHeight());
+
 		// 가상 디바이스를 리셋해주고 정보를 다시 설정해줍니다.
 		m_pD3DDevice9->Reset(m_pD3DPP);
 		RXRendererDX9::Instance()->DefaultRenderState();

@@ -27,7 +27,6 @@ void OnCreate();
 void OnClose();
 void OnDestroy();
 void OnKeyEscape();
-void OnChangeSize();
 void OnMouseLButtonDown(LPARAM lParam);
 void OnMouseRButtonDown(LPARAM lParam);
 void OnMouseMove();
@@ -79,7 +78,6 @@ LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	}
 	case WM_SIZE:
 	{
-		OnChangeSize();
 		break;
 	}
 	case WM_LBUTTONDOWN:
@@ -227,10 +225,6 @@ namespace RX
 
 	HRESULT RXMain::CreateProgramWindow()
 	{
-		// 클라이언트 영역의 크기를 설정해줍니다.
-		RECT rtClient = { 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT };
-		::CopyRect(&m_rtClient, &rtClient);
-
 		DWORD dwStyle;
 		if (m_bFullScreen)
 		{
@@ -244,11 +238,10 @@ namespace RX
 		// 클라이언트 영역의 크기를 조정해줍니다.
 		// 프레임 윈도우를 포함해서 순수하게 클라이언트 영역의 크기만 계산합니다.
 		// 즉, 기존 창의 크기보다 더 커집니다.
-		::AdjustWindowRect(&rtClient, dwStyle, FALSE);
-		::CopyRect(&m_rtWindow, &rtClient);
+		AdjustProgramRange(DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
 
-		INT fullClientWidth  = rtClient.right - rtClient.left;
-		INT fullClientHeight = rtClient.bottom - rtClient.top;
+		INT32 fullClientWidth  = m_rtWindow.right - m_rtWindow.left;
+		INT32 fullClientHeight = m_rtWindow.bottom - m_rtWindow.top;
 
 		// 현재 모니터 해상도에 설정된 값을 가져옵니다.
 		// 현재 설정된 해상도가 1920 X 1080이라면
@@ -363,19 +356,22 @@ namespace RX
 
 	HRESULT RXMain::ResizeResolution(INT32 clientWidth, INT32 clientHeight)
 	{
-		INT32 screenWidth  = GetSystemMetrics(SM_CXSCREEN);
-		INT32 screenHeight = GetSystemMetrics(SM_CYSCREEN);
+		AdjustProgramRange(clientWidth, clientHeight);
 
-		RECT rtClient = { 0, 0, clientWidth, clientHeight };
-		::CopyRect(&m_rtClient, &rtClient);
-		::AdjustWindowRect(&rtClient, WS_OVERLAPPEDWINDOW, FALSE);
-		::CopyRect(&m_rtWindow, &rtClient);
+		// 현재 모니터 해상도에 설정된 값을 가져옵니다.
+		// 현재 설정된 해상도가 1920 X 1080이라면
+		// screenWidth에는 1920이 screenHeight에는 1080이 대입됩니다.
+		INT32 screenWidth      = GetSystemMetrics(SM_CXSCREEN);
+		INT32 screenHeight     = GetSystemMetrics(SM_CYSCREEN);
+
+		INT32 fullClientWidth  = m_rtWindow.right - m_rtWindow.left;
+		INT32 fullClientHeight = m_rtWindow.bottom - m_rtWindow.top;
 
 		SetWindowLongPtr(m_hMainWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 		SetWindowPos(m_hMainWnd, HWND_TOP,
-			(screenWidth - (rtClient.right - rtClient.left)) / 2,
-			(screenHeight - (rtClient.bottom - rtClient.top)) / 2,
-			rtClient.right, rtClient.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
+			(screenWidth - (m_rtWindow.right - m_rtWindow.left)) / 2,
+			(screenHeight - (m_rtWindow.bottom - m_rtWindow.top)) / 2,
+			m_rtWindow.right, m_rtWindow.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
 		
 		return S_OK;
 	}
@@ -385,12 +381,21 @@ namespace RX
 		::SetWindowText(m_hMainWnd, szTitle);
 	}
 
-	void RXMain::AdjustClientRect()
+	void RXMain::AdjustProgramRange(INT32 width, INT32 height)
 	{
-		RECT rtClient;
-		GetClientRect(m_hMainWnd, &rtClient);
-		::SetRect(&m_rtClient, 0, 0,
-			rtClient.right - rtClient.left, rtClient.bottom - rtClient.top);
+		RECT rtClient = { 0, 0, width, height };
+		::CopyRect(&m_rtClient, &rtClient);
+
+		// 원하는 클라이언트 영역을 넘겨주면 프로그램 윈도우 등을 포함해서
+		// 전체 영역을 재조정합니다. 즉, 기존 영역보다 더 커집니다.
+		// 재조정된 영역은 클라이언트 영역이 아닌 윈도우 영역이므로 주의해야 합니다.
+		::AdjustWindowRect(&rtClient, WS_OVERLAPPEDWINDOW, FALSE);
+
+		::CopyRect(&m_rtWindow, &rtClient);
+
+		RXLOG("클라(%d, %d, %d, %d) 윈도우(%d, %d, %d, %d)",
+			m_rtClient.left, m_rtClient.right, m_rtClient.top, m_rtClient.bottom,
+			m_rtWindow.left, m_rtWindow.right, m_rtWindow.top, m_rtWindow.bottom);
 	}
 
 	HRESULT RXMain::RunMainRoutine(HINSTANCE hInst, INT32 iconID)
@@ -458,21 +463,23 @@ namespace RX
 		}
 		else // 창 화면 모드
 		{
-			// AdjustWindowRect()가 호출되면 WM_GETMINMAXINFO가 발생하므로
-			// 전체 화면 -> 창 화면일 때는 클라이언트 영역 조절할 때 주의해야 합니다.
-			// * 무한루프가 되므로 코드 주석 처리
-			//::AdjustWindowRect(&rtClient, WS_OVERLAPPEDWINDOW, false);
+			// 창 화면에서만 클라이언트 영역과 윈도우 영역을 재조정합니다.
+			// 전체 화면일 때는 영역 크기를 재조정할 필요가 없습니다.
+			//AdjustProgramRange(DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
+
+			RECT clientRt;
+			::SetRect(&clientRt, 0, 0, DEFAULT_CLIENT_WIDTH, DEFAULT_CLIENT_HEIGHT);
+			AdjustWindowRect(&clientRt, WS_OVERLAPPEDWINDOW, false);
 
 			SetWindowLongPtr(m_hMainWnd, GWL_STYLE, WS_OVERLAPPEDWINDOW);
 			SetWindowPos(m_hMainWnd, HWND_TOP,
-				(screenWidth - (m_rtWindow.right - m_rtWindow.left)) / 2,
-				(screenHeight - (m_rtWindow.bottom - m_rtWindow.top)) / 2,
-				m_rtWindow.right, m_rtWindow.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
+				(screenWidth - (clientRt.right - clientRt.left)) / 2,
+				(screenHeight - (clientRt.bottom - clientRt.top)) / 2,
+				clientRt.right, clientRt.bottom, SWP_NOZORDER | SWP_SHOWWINDOW);
 
 			RXLOG("창 화면 모드로 전환되었습니다!");
 		}
 
-		AdjustClientRect();
 		return S_OK;
 	}
 
@@ -531,12 +538,6 @@ void OnKeyEscape()
 	RXDEBUGLOG("ESC 키를 눌렀습니다.");
 }
 
-// 창 크기 변경이 끝났을 때 처리됩니다.
-void OnChangeSize()
-{
-	g_pThis->AdjustClientRect();
-}
-
 void OnMouseLButtonDown(LPARAM lParam)
 {
 	//MSGBOX("마우스 왼쪽 버튼 클릭!");
@@ -555,7 +556,11 @@ void OnMouseMove()
 }
 
 // 창 크기 변경이 시작될 때 항상 처리됩니다.
-// 창 화면 -> 전체 화면일 때는 처리되지 않습니다.
+// (창 화면 -> 전체 화면)일 때는 처리되지 않습니다.
+//
+// 참고로 AdjustWindowRect()가 호출되면 WM_GETMINMAXINFO가 발생하므로
+// (전체 화면 -> 창 화면)일 때는 클라이언트 영역 조절할 때 주의해야 합니다.
+// 즉, 무한루프가 되므로 주의해야 합니다.
 void OnGetMinMaxInfo(LPARAM lParam)
 {
 	MINMAXINFO* pMinMax = reinterpret_cast<MINMAXINFO*>(lParam);

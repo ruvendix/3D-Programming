@@ -40,7 +40,10 @@ namespace RX
 		virtual HRESULT ToggleFullScreenMode(bool bFullScreen = false);
 
 		void ChangeProgramTitle(const TCHAR* szTitle);
-		void AdjustClientRect();
+
+		// 원하는 클라이언트 해상도를 넣으면
+		// 윈도우 영역까지 계산해서 적용해줍니다.
+		void AdjustProgramRange(INT32 width, INT32 height);
 
 		bool IsFullScreen() const noexcept
 		{

@@ -216,7 +216,7 @@ namespace RX
 		{
 			RXERRLOG("가상 디바이스 손실 발생!");
 			RXRendererDX9::Instance()->setLostDevice(true);
-			Sleep(100); // 가상 디바이스가 손실되었다면 잠깐 CPU를 풀어줍니다.
+			::SleepEx(100, TRUE); // 가상 디바이스가 손실되었다면 잠깐 CPU를 풀어줍니다.
 		}
 
 		// 가상 디바이스가 손실되었다면 처리해줍니다.
@@ -274,7 +274,7 @@ namespace RX
 			RXERRLOG_RETURN_EFAIL("서브 리셋 디바이스 실패했습니다!");
 		}
 
-		Sleep(100);
+		::SleepEx(100, TRUE);
 
 		RXLOG("리셋 디바이스되었습니다!");
 		return S_OK;
