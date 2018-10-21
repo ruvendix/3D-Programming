@@ -52,7 +52,7 @@ namespace RX
 
 		DXERR_HANDLER(g_DXResult);
 		NULLCHK_RETURN_EFAIL(m_pVB, "정점 버퍼 초기화 실패!");
-
+		
 		// 정점 버퍼에 실제로 정점 정보를 복사합니다.
 		// 메모리에 접근하기 때문에 메모리를 잠그고 푸는 과정이 있습니다.
 		void* pVertexData = nullptr;

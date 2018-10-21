@@ -16,7 +16,6 @@
 #define RXMAINDX9_H_
 
 #include "RXMain.h"
-#include "RXFrame.h"
 
 namespace RX
 {
@@ -44,11 +43,6 @@ namespace RX
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
 		HRESULT OnRecreateDevice();
-
-	protected:
-		// ====================================================================================
-		// 기본 정보
-		RXFrame m_frame;
 	};
 
 } // namespace RX end

@@ -3,27 +3,28 @@
  * Copyright (C) Ruvendix. All Rights Reserved.
  *
  * <작성 날짜>
- * 2018-08-12
+ * 2018-10-21
  *
  * <파일 내용>
- * 프레임을 다루는 클래스입니다.
- * 현재는 가변 프레임용으로 사용되고 있습니다.
+ * 프로그램의 프레임을 관리하는 매니저입니다.
+ * 단순히 FPS를 측정하는 것 말고도 FPS에 따른 딜레이도 줄 수 있습니다.
+ * 기본 설정은 수직동기 기준의 (가변 프레임 + 프레임 스키핑)입니다.
  *
  ====================================================================================*/
-#ifndef RXFRAME_H_
-#define RXFRAME_H_
+#ifndef RXPROGRAMFPSMGR_H_
+#define RXPROGRAMFPSMGR_H_
 
 #include "../common.h"
-#include "RXTime.h"
+#include "RXTimer.h"
 
 namespace RX
 {
 
-	class DLL_DEFINE RXFrame
+	class DLL_DEFINE RXProgramFPSMgr
 	{
+		PHOENIX_SINGLETON_CTOR(RXProgramFPSMgr);
 	public:
-		RXFrame();
-		virtual ~RXFrame();
+		RXProgramFPSMgr();
 
 		void InitFrame();
 		void UpdateFrame();
@@ -38,10 +39,10 @@ namespace RX
 	private:
 		// ====================================================================================
 		// 기본 정보
-		INT32     m_frameCnt;
-		FLOAT     m_frameSec;
-		DWORD     m_FPS;
-		RXTime    m_frameTime;
+		INT32      m_frameCnt;
+		FLOAT      m_frameSec;
+		DWORD      m_FPS;
+		RXTimer    m_frameTimer;
 	};
 
 } // namespace RX end

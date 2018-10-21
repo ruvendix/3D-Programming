@@ -15,6 +15,7 @@
 #include "PCH.h"
 #include "RXMainDX9.h"
 #include "RXWindowProcedure.h"
+#include "RXProgramFPSMgr.h"
 
 extern RX::RXMain_DX9* g_pMainDX9 = nullptr;
 
@@ -121,7 +122,7 @@ namespace RX
 
 				// 렌더링을 완료하면 프레임 카운트가 1증가 됩니다.
 				// 렌더링은 많은 연산이 필요하므로 프레임 기준이 됩니다.
-				m_frame.UpdateFrame();
+				RXProgramFPSMgr::Instance()->UpdateFrame();
 
 				if (m_routineState == ROUTINE_STATE::FAILURE)
 				{

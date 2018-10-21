@@ -297,12 +297,6 @@ if (FAILED(hDXResult))\
 // ====================================================================================
 // 그 외의 매크로입니다.
 //
-#if defined(_UNICODE) || defined(UNICODE)
-#define Win32LastErrorHandler Win32LastErrorHandlerImplW()
-#else
-#define Win32LastErrorHandler Win32LastErrorHandlerImplA()
-#endif
-
 // 파일, 라인, 에러 이름, 에러 내용
 // GetLastError()를 이용한 Win32 API의 에러 핸들러입니다.
 #if defined(DEBUG) || defined(_DEBUG)
@@ -371,6 +365,46 @@ private:\
 	static bool m_bDestroy;\
 	static classType* m_pInst;
 
+// 피닉스 싱글톤의 생성자 재정의가 가능한 매크로 함수입니다.
+#define PHOENIX_SINGLETON_CTOR(classType)\
+public:\
+	static classType* Instance()\
+	{\
+		if (m_bDestroy == true)\
+		{\
+			Create();\
+			new(m_pInst) classType;\
+			std::atexit(Destroy);\
+			m_bDestroy = true;\
+		}\
+		if (m_pInst == nullptr)\
+		{\
+			Create();\
+		}\
+		return m_pInst;\
+	}\
+private:\
+	classType(const classType& rhs)  = delete;\
+	classType(const classType&& rhs) = delete;\
+	~classType()\
+	{\
+		m_bDestroy = true;\
+	}\
+	classType& operator=(const classType& rhs)  = delete;\
+	classType& operator=(const classType&& rhs) = delete;\
+	static void Create()\
+	{\
+		static classType inst;\
+		m_pInst = &inst;\
+	}\
+	static void Destroy()\
+	{\
+		m_pInst->~classType();\
+	}\
+	static bool m_bDestroy;\
+	static classType* m_pInst;
+
+// 피닉스 싱글톤의 멤버변수 초기화 매크로 함수입니다.
 #define PHOENIX_SINGLETON_INIT(classType)\
 	classType* classType::m_pInst = nullptr;\
 	bool classType::m_bDestroy = false;
