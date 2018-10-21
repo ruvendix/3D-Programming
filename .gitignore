@@ -36,3 +36,6 @@
 *.idb
 *.tlog
 Test/Debug_Program 
+
+# Etc
+*.log
