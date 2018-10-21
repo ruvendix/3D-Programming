@@ -18,8 +18,7 @@ namespace RX
 	RXTime::RXTime()
 	{
 		m_dwStartTime = 0;
-		m_dwEndTime = 0;
-		m_dwIntervalTime = 0;
+		m_dwEndTime   = 0;
 	}
 
 	RXTime::~RXTime()

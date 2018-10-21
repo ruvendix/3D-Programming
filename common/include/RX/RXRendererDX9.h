@@ -66,8 +66,8 @@ namespace RX
 
 		HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
 			const RXVertexBufferDX9& vertexBuffer);
-		HRESULT DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,
-			const RXIndexBufferDX9& indexBuffer);
+		HRESULT DrawIdxedPrimitive(const RXVertexBufferDX9& vertexBuffer,
+			const RXIndexBufferDX9& IndexBuffer);
 		HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
 
 		// ====================================================================================

@@ -86,11 +86,11 @@ namespace RX
 		return S_OK;
 	}
 
-	HRESULT RXRenderObjectDX9::DrawIndexedPrimitive()
+	HRESULT RXRenderObjectDX9::DrawIdxedPrimitive()
 	{
 		NULLCHK_RETURN_EFAIL_NOCOMENT(m_pVB);
 		NULLCHK_RETURN_EFAIL_NOCOMENT(m_pIB);
-		RXRendererDX9::Instance()->DrawIndexedPrimitive(*m_pVB, *m_pIB);
+		RXRendererDX9::Instance()->DrawIdxedPrimitive(*m_pVB, *m_pIB);
 		return E_NOTIMPL;
 	}
 

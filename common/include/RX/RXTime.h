@@ -33,15 +33,18 @@ namespace RX
 			m_dwEndTime = ::timeGetTime();
 		}
 
-		DWORD CalcTimeInterval()
-		{
-			m_dwIntervalTime = m_dwEndTime - m_dwStartTime;
-			return m_dwIntervalTime; // 밀리세컨드 단위, 1000이 1초
-		}
-
 		void SubstituteStartTimeWithEndTime()
 		{
 			m_dwStartTime = m_dwEndTime;
+		}
+
+		DWORD CalcDeltaSecond()
+		{
+			// 밀리세컨드 단위, 1000이 1초
+			FLOAT rDeltaSec = ((m_dwEndTime - m_dwStartTime) * 0.0001f);
+
+			m_dwEndTime = m_dwStartTime;
+			return rDeltaSec;
 		}
 
 		// ====================================================================================
@@ -56,17 +59,11 @@ namespace RX
 			return m_dwEndTime;
 		}
 
-		DWORD getIntervalTime() const noexcept
-		{
-			return m_dwIntervalTime;
-		}
-
 	private:
 		// ====================================================================================
 		// 기본 정보
 		DWORD    m_dwStartTime;
 		DWORD    m_dwEndTime;
-		DWORD    m_dwIntervalTime;
 	};
 
 } // namespace RX end

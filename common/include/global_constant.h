@@ -26,12 +26,14 @@ const INT32 D3DFLAG_NONE  = 0;
 // 프레임 카운트에만 사용되고
 // 실제 프레임은 시간으로 측정되기 때문에
 // 가변 프레임으로 작동합니다.
-//const INT32 FRAME_COUNT_THIRTY = 30;
-//const INT32 FRAME_COUNT_SIXTY  = 60;
+//const INT32 FRAME_Cnt_THIRTY = 30;
+//const INT32 FRAME_Cnt_SIXTY  = 60;
 
 const INT32 UPDATE_FRAME_PER_SECOND = 25; // 렌더링을 제외한 게임 정보 갱신 FPS
 const INT32 FRAME_SKIP_TIME         = 1000 / UPDATE_FRAME_PER_SECOND;
 const INT32 MAX_FRAMESKIP           = 10;
+
+const FLOAT ONE_SECOND = 1.0f;
 
 // 문자열은 미리 컴파일된 헤더 파일에서 중복 정의로 인식하므로
 // 표준 라이브러리를 따라 문자열은 매크로 상수로 정의합니다.

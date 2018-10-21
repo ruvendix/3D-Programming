@@ -33,7 +33,7 @@ namespace RX
 		void InsertIndex(WORD first, WORD second, WORD third);
 
 		HRESULT DrawPrimitive();
-		HRESULT DrawIndexedPrimitive();
+		HRESULT DrawIdxedPrimitive();
 
 		// ====================================================================================
 		// Setter

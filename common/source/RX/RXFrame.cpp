@@ -18,8 +18,9 @@ namespace RX
 
 	RXFrame::RXFrame()
 	{
-		m_frameCount = 0;
-		m_FPS        = 0;
+		m_frameSec = 0.0f;
+		m_frameCnt = 0;
+		m_FPS      = 0;
 	}
 
 	RXFrame::~RXFrame()
@@ -30,26 +31,28 @@ namespace RX
 	void RXFrame::InitFrame()
 	{
 		m_frameTime.SubstituteStartTimeWithEndTime();
-		m_frameCount = 0;
+		m_frameSec = 0.0f;
+		m_frameCnt = 0;
 	}
 
 	void RXFrame::UpdateFrame()
 	{
 		// 프레임 카운트가 0일 때만 시작 시간을 측정합니다.
-		if (m_frameCount == 0)
+		if (m_frameCnt == 0)
 		{
 			m_frameTime.MeasureStartTime();
 		}
 
 		m_frameTime.MeasureEndTime();
-		++m_frameCount;
+		m_frameSecond += m_frameTime.CalcDeltaSecond();
+		++m_frameCnt;
 
 		// 1초가 넘어가면 프레임 체크
-		if (m_frameTime.CalcTimeInterval() >= CLOCKS_PER_SEC)
+		if (m_frameSecond >= ONE_SECOND)
 		{
 			// FPS = 프레임 카운트 / 1초
-			m_FPS = m_frameCount * CLOCKS_PER_SEC / m_frameTime.getIntervalTime();
-			//RXDEBUGLOG("현재 프레임 카운트 %d, FPS : %d", m_frameCount, m_FPS);
+			m_FPS = static_cast<INT32>(m_frameCnt / m_frameSecond);
+			RXDEBUGLOG("현재 프레임 카운트 %d, FPS : %d", m_frameCnt, m_FPS);
 			InitFrame();
 		}
 	}

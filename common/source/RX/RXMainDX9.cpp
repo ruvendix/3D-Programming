@@ -62,7 +62,7 @@ namespace RX
 		bool m_bDriveFailure = false;
 
 		DWORD nextGameTime    = ::timeGetTime();
-		INT32 updateCallCount = 0;
+		INT32 updateCallCnt = 0;
 		FLOAT rRenderingInterpolation = 0.0f;
 
 		for ( ; ; )
@@ -88,7 +88,7 @@ namespace RX
 			}
 			else
 			{
-				updateCallCount = 0;
+				updateCallCnt = 0;
 
 				// 업데이트 루틴은 FPS에 영향을 받습니다.
 				// 25 정도로 해주면 좋습니다.
@@ -97,7 +97,7 @@ namespace RX
 				// 반면에 아무리 느린 하드웨어라 해도 업데이트를 MAX_FRAMESKIP만큼 한 뒤에
 				// 렌더링하므로 어느 정도 게임 속도는 보장됩니다.
 				while ( (::timeGetTime() > nextGameTime) &&
-					    (updateCallCount < MAX_FRAMESKIP) )
+					    (updateCallCnt < MAX_FRAMESKIP) )
 				{
 					if (RXRendererDX9::Instance()->IsLostDevice() == false)
 					{
@@ -105,9 +105,9 @@ namespace RX
 					}
 
 					nextGameTime += FRAME_SKIP_TIME; // 1000 / 25 = 40 => 0.04초의 간격
-					++updateCallCount;
+					++updateCallCnt;
 
-					//RXDEBUGLOG("업데이트 호출 수 : %d", updateCallCount);
+					//RXDEBUGLOG("업데이트 호출 수 : %d", updateCallCnt);
 				}
 
 				// 이쪽은 하드웨어에 따라 성능 차이가 심합니다.

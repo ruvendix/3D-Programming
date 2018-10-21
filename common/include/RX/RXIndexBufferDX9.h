@@ -15,7 +15,7 @@
 #include "common.h"
 
 // 인덱스의 구조를 설정합니다.
-struct IndexInfo
+struct IdxInfo
 {
 	WORD triangleIndices[3];
 	static const D3DFORMAT FORMAT = D3DFMT_INDEX16; // 인덱스 형식은 2바이트입니다.
@@ -45,15 +45,15 @@ namespace RX
 			return m_triangleCnt;
 		}
 
-		INT32 getIndexCount() const noexcept
+		INT32 getIdxCount() const noexcept
 		{
-			return m_indexCnt;
+			return m_IdxCnt;
 		}
 
 	private:
 		INT32                     m_triangleCnt;
-		INT32                     m_indexCnt;
-		std::vector<IndexInfo>    m_vecIndex;
+		INT32                     m_IdxCnt;
+		std::vector<IdxInfo>    m_vecIdx;
 		IDirect3DIndexBuffer9*    m_pIB;
 	};
 

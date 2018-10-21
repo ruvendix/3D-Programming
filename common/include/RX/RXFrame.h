@@ -38,8 +38,8 @@ namespace RX
 	private:
 		// ====================================================================================
 		// 기본 정보
-		INT32     m_frameCount;
-		INT32     m_framePerSecond;
+		INT32     m_frameCnt;
+		FLOAT     m_frameSec;
 		DWORD     m_FPS;
 		RXTime    m_frameTime;
 	};

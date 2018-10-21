@@ -453,8 +453,8 @@ namespace RX
 		return S_OK;
 	}
 
-	HRESULT RXRendererDX9::DrawIndexedPrimitive(const RXVertexBufferDX9& vertexBuffer,
-		const RXIndexBufferDX9& indexBuffer)
+	HRESULT RXRendererDX9::DrawIdxedPrimitive(const RXVertexBufferDX9& vertexBuffer,
+		const RXIndexBufferDX9& IndexBuffer)
 	{
 		m_pD3DDevice9->SetFVF(VertexInfo::FORMAT);
 		m_pD3DDevice9->SetStreamSource(
@@ -464,7 +464,7 @@ namespace RX
 			sizeof(VertexInfo));  // 보폭(Stride)은 FVF로 생성한 크기와 일치해야 합니다.
 
 		// 인덱스 버퍼를 가상 디바이스에 적용해줍니다.
-		m_pD3DDevice9->SetIndices(indexBuffer.getIB());
+		m_pD3DDevice9->SetIndices(IndexBuffer.getIB());
 
 		g_DXResult = m_pD3DDevice9->DrawIndexedPrimitive(
 			D3DPT_TRIANGLELIST, // 렌더링 형식을 설정합니다.
@@ -472,7 +472,7 @@ namespace RX
 			0,                  // 시작할 인덱스를 설정합니다. (0으로 설정)
 			vertexBuffer.getVertexCount(), // 정점 개수를 설정합니다.
 			0,                  // 인덱스 버퍼의 오프셋입니다. (0으로 설정)
-			indexBuffer.getTriangleCount()); // 프리미티브 개수입니다.
+			IndexBuffer.getTriangleCount()); // 프리미티브 개수입니다.
 		DXERR_HANDLER(g_DXResult);
 
 		// 인덱스 버퍼의 프리미티브 개수는

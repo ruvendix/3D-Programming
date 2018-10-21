@@ -179,7 +179,7 @@ namespace RX
 
 	void RXCubeDX9::DrawCubeByIndex()
 	{
-		DrawIndexedPrimitive();
+		DrawIdxedPrimitive();
 	}
 
 } // namespace RX end
