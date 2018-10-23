@@ -15,10 +15,14 @@
 
 #include "global_function.h"
 
+ // ====================================================================================
+ // 비트 관련 매크로입니다.
+#define ON_BIT(data, value) (data |= value)
+#define OFF_BIT(data, value) (data &= ~value)
+
 // ====================================================================================
 // 동적 할당, Release, LostDevice, ResetDevice 관련 매크로입니다.
 // 동적 할당 영역은 _NORMAL_BLOCK으로 설정합니다.
-//
 #if defined(DEBUG) | defined(_DEBUG)
 #define RXNew new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #else
@@ -68,7 +72,6 @@ if (ptr)\
 
 // ====================================================================================
 // 메시지 박스 관련 매크로입니다.
-//
 #if defined(_UNICODE) || defined(UNICODE)
 #define WIDEN(x)       L##x
 #define WIDEN2(x)      WIDEN(x)
@@ -158,7 +161,7 @@ if (ptr == nullptr)\
 
 // ====================================================================================
 // 스트링 관련 매크로입니다.
-//
+
 // 디버그 모드만 작동, 릴리즈 모드는 X
 #if defined(DEBUG) || defined(_DEBUG)
 	#if defined(_UNICODE) || defined(UNICODE)
@@ -258,7 +261,7 @@ if (ptr == nullptr)\
 
 // ====================================================================================
 // DirectX 관련 매크로입니다.
-//
+
 #define DXCOLOR_WHITE   D3DCOLOR_ARGB(255, 255, 255, 255) // 흰색
 #define DXCOLOR_BLACK   D3DCOLOR_ARGB(255,   0,   0,   0) // 검은색
 #define DXCOLOR_RED     D3DCOLOR_ARGB(255, 255,   0,   0) // 빨간색
@@ -296,7 +299,7 @@ if (FAILED(hDXResult))\
 
 // ====================================================================================
 // 그 외의 매크로입니다.
-//
+
 // 파일, 라인, 에러 이름, 에러 내용
 // GetLastError()를 이용한 Win32 API의 에러 핸들러입니다.
 #if defined(DEBUG) || defined(_DEBUG)

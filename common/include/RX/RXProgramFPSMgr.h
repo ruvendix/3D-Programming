@@ -37,12 +37,10 @@ namespace RX
 		}
 
 	private:
-		// ====================================================================================
-		// 기본 정보
-		INT32      m_frameCnt;
-		FLOAT      m_frameSec;
-		DWORD      m_FPS;
-		RXTimer    m_frameTimer;
+		INT32   m_frameCnt;   // 프레임 개수입니다.
+		FLOAT   m_frameSec;   // 프레임 누적 시간입니다.
+		DWORD   m_FPS;        // 초당 프레임 개수입니다. (Frame Per Second)
+		RXTimer m_frameTimer; // 프레임을 측정하기 위한 타이머입니다.
 	};
 
 } // namespace RX end

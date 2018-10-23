@@ -43,9 +43,9 @@ namespace RX
 		}
 
 	private:
-		RX::RXVertexBufferDX9* m_pVB;
-		RX::RXIndexBufferDX9*  m_pIB;
-		D3DPRIMITIVETYPE       m_primitiveType;
+		RX::RXVertexBufferDX9* m_pVB;           // 정점 버퍼입니다.
+		RX::RXIndexBufferDX9*  m_pIB;           // 인덱스 버퍼입니다.
+		D3DPRIMITIVETYPE       m_primitiveType; // 렌더링 방식입니다.
 	};
 
 } // namespace RX end

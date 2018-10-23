@@ -51,10 +51,10 @@ namespace RX
 		}
 
 	private:
-		INT32                     m_triangleCnt;
-		INT32                     m_IdxCnt;
-		std::vector<IdxInfo>    m_vecIdx;
-		IDirect3DIndexBuffer9*    m_pIB;
+		INT32                  m_triangleCnt; // 폴리곤의 개수입니다.
+		INT32                  m_IdxCnt;      // 인덱스의 개수입니다. 속도를 위해 미리 저장해둡니다.
+		std::vector<IdxInfo>   m_vecIdx;      // 인덱스 정보입니다.
+		IDirect3DIndexBuffer9* m_pIB;         // DX9 인덱스 버퍼입니다.
 	};
 
 } // namespace RX end

@@ -48,9 +48,9 @@ namespace RX
 		}
 
 	private:
-		INT32                      m_vertexCnt; // 속도를 위해 미리 저장해둡니다.
-		std::vector<VertexInfo>    m_vecVertex;
-		IDirect3DVertexBuffer9*    m_pVB;
+		INT32                   m_vertexCnt; // 정점 개수입니다. 속도를 위해 미리 저장해둡니다.
+		std::vector<VertexInfo> m_vecVertex; // 정점 정보입니다.
+		IDirect3DVertexBuffer9* m_pVB;       // DX9 정점 버퍼입니다.
 	};
 
 } // namespace RX end
