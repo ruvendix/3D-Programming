@@ -22,6 +22,9 @@ struct DLL_DEFINE D3DXMATRIX;
 namespace RX
 {
 
+	// ∞¢µµ
+	DLL_DEFINE FLOAT AdjustAngle(FLOAT rAngle);
+
 	// ∫§≈Õ
 	DLL_DEFINE void ZeroVector(D3DXVECTOR3* pV);
 	DLL_DEFINE void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ);

@@ -44,10 +44,9 @@ extern HRESULT           g_DXResult    = S_OK;
 // ====================================================================================
 // 함수 선언부입니다.
 HRESULT CALLBACK OnInit();
+HRESULT CALLBACK OnUpdate();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
-HRESULT CALLBACK OnLost();
-HRESULT CALLBACK OnReset();
 
 // 큐브를 생성하는 함수입니다.
 // 큐브는 점 2개만 있으면 생성할 수 있습니다.
@@ -77,8 +76,9 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 
 	g_pMainDX = RXNew RX::RXMain_DX9;
 	NULLCHK(g_pMainDX);
-	
+
 	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
 	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
 	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
@@ -141,6 +141,67 @@ HRESULT CALLBACK OnInit()
 	return S_OK;
 }
 
+// 업데이트 함수입니다.
+// 렌더링에 영향을 주거나 프로그램에 영향을 주는
+// 정보들을 매프레임마다 업데이트합니다.
+HRESULT CALLBACK OnUpdate()
+{
+	static FLOAT rAngleZ = 0.0f;
+	static FLOAT rAngleX = 0.0f;
+	static FLOAT rAngleY = 0.0f;
+
+	if (::GetAsyncKeyState('A'))
+	{
+		rAngleZ += 4.0f;
+	}
+
+	if (::GetAsyncKeyState('D'))
+	{
+		rAngleZ -= 4.0f;
+	}
+
+	if (::GetAsyncKeyState('W'))
+	{
+		rAngleX += 4.0f;
+	}
+
+	if (::GetAsyncKeyState('S'))
+	{
+		rAngleX -= 4.0f;
+	}
+
+	if (::GetAsyncKeyState('Q'))
+	{
+		rAngleY += 4.0f;
+	}
+
+	if (::GetAsyncKeyState('E'))
+	{
+		rAngleY -= 4.0f;
+	}
+
+	if (::GetAsyncKeyState('R'))
+	{
+		rAngleZ = 0.0f;
+		rAngleX = 0.0f;
+		rAngleY = 0.0f;
+	}
+
+	// 각도 보정
+	rAngleZ = RX::AdjustAngle(rAngleZ);
+	rAngleX = RX::AdjustAngle(rAngleX);
+	rAngleY = RX::AdjustAngle(rAngleY);
+
+	// 회전행렬입니다. 순서는 Z -> X -> Y입니다.
+	// 즉, Roll -> Pitch -> Yaw입니다.
+	D3DXMATRIXA16 matRot;
+	D3DXMatrixRotationYawPitchRoll(&matRot,
+		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
+	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+
+	return S_OK;
+}
+
 // 렌더링 함수입니다.
 // 실제 렌더링 작업인 Draw Call이 처리됩니다.
 // Draw Call은 프레임당 호출되는 렌더링 함수를 뜻하는데 호출되는 빈도수를
@@ -191,8 +252,8 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	}
 
 	InsertBaseVertex(rPoint1, rPoint2);
-	InitOnlyCubeVertex(rPoint1, rPoint2);
-	//InitCubeVertexAndIndex(rPoint1, rPoint2);
+	//InitOnlyCubeVertex(rPoint1, rPoint2);
+	InitCubeVertexAndIndex(rPoint1, rPoint2);
 
 	INT32 vertexCnt = g_vecVertexData.size();
 	if (vertexCnt > 0)
@@ -283,10 +344,9 @@ void InsertBaseVertex(FLOAT rPoint1, FLOAT rPoint2)
 // 삼각형 2개는 정점 6개입니다. 면이 6개이므로 필요한 정점은 36개!
 void InitOnlyCubeVertex(FLOAT rPoint1, FLOAT rPoint2)
 {
-	CustomVertex vertex;
-
 	// ===============================================
 	// 정면 삼각형 2개
+	CustomVertex vertex;
 	vertex.vPos    = g_baseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
@@ -444,9 +504,9 @@ void InitOnlyCubeVertex(FLOAT rPoint1, FLOAT rPoint2)
 // 인덱스를 이용해서 렌더링할 것이므로 필요한 인덱스는 36개!
 void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 {
-	CustomVertex vertex;
-
+	// ===============================================
 	// 인덱스일 때는 정점 8개면 됩니다.
+	CustomVertex vertex;
 	vertex.vPos    = g_baseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
@@ -479,10 +539,10 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	CustomIndex index;
 	// ===============================================
 	// 인덱스 설정입니다.
 	// 정면 삼각형 2개
+	CustomIndex index;
 	index.index = 0;
 	g_vecIndexData.push_back(index);
 
