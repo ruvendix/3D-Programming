@@ -109,10 +109,17 @@ HRESULT CALLBACK OnInit()
 	// 큐브를 확인하기 위해서는 와이어프레임 모드로 바꿔야 합니다.
 	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+
+	// 정점 크기 설정입니다.
+	// FLOAT을 DWORD로 해석해야 하므로 DWORD*로 변경한 뒤에 값을 참조해야 합니다.
+	//FLOAT rPointSize = 20.0f;
+	//g_pD3DDevice9->SetRenderState(D3DRS_POINTSIZE, *reinterpret_cast<DWORD*>(&rPointSize));
 		
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
 	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	// 뷰행렬을 설정합니다.
