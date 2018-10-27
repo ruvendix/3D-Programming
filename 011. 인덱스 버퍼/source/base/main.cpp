@@ -32,7 +32,7 @@ namespace
 	RX::RXMain_DX9*           g_pMainDX       = nullptr;
 	IDirect3DVertexBuffer9*   g_pVertexBuffer = nullptr;
 	IDirect3DIndexBuffer9*    g_pIndexBuffer  = nullptr;
-	D3DXVECTOR3               g_baseVertex[8];
+	D3DXVECTOR3               g_vBaseVertex[8];
 	std::vector<CustomVertex> g_vecVertexData;
 	std::vector<CustomIndex>  g_vecIndexData;
 }
@@ -323,19 +323,19 @@ void InsertBaseVertex(FLOAT rPoint1, FLOAT rPoint2)
 	// 먼저 정점 8개부터 구해놓는 게 편합니다.
 	// 각 부분을 주석으로 표시해놓을게요.
 	// ===============================================
-	::ZeroMemory(g_baseVertex, sizeof(D3DXVECTOR3) * _countof(g_baseVertex));
+	::ZeroMemory(g_vBaseVertex, sizeof(D3DXVECTOR3) * _countof(g_vBaseVertex));
 
 	// 윗면 정점 4개
-	RX::SetVector(&g_baseVertex[0], rPoint2 - rDistance, rPoint2, rPoint2 - rDistance); // 0
-	RX::SetVector(&g_baseVertex[1], rPoint2, rPoint2, rPoint2 - rDistance);             // 1
-	RX::SetVector(&g_baseVertex[2], rPoint2, rPoint2, rPoint2);                         // 2
-	RX::SetVector(&g_baseVertex[3], rPoint2 - rDistance, rPoint2, rPoint2);             // 3
+	RX::SetVector(&g_vBaseVertex[0], rPoint2 - rDistance, rPoint2, rPoint2 - rDistance); // 0
+	RX::SetVector(&g_vBaseVertex[1], rPoint2, rPoint2, rPoint2 - rDistance);             // 1
+	RX::SetVector(&g_vBaseVertex[2], rPoint2, rPoint2, rPoint2);                         // 2
+	RX::SetVector(&g_vBaseVertex[3], rPoint2 - rDistance, rPoint2, rPoint2);             // 3
 
 	// 아랫면 정점 4개
-	RX::SetVector(&g_baseVertex[4], rPoint1, rPoint1, rPoint1);                         // 4
-	RX::SetVector(&g_baseVertex[5], rPoint1 + rDistance, rPoint1, rPoint1);             // 5
-	RX::SetVector(&g_baseVertex[6], rPoint1 + rDistance, rPoint1, rPoint1 + rDistance); // 6
-	RX::SetVector(&g_baseVertex[7], rPoint1, rPoint1, rPoint1 + rDistance);             // 7
+	RX::SetVector(&g_vBaseVertex[4], rPoint1, rPoint1, rPoint1);                         // 4
+	RX::SetVector(&g_vBaseVertex[5], rPoint1 + rDistance, rPoint1, rPoint1);             // 5
+	RX::SetVector(&g_vBaseVertex[6], rPoint1 + rDistance, rPoint1, rPoint1 + rDistance); // 6
+	RX::SetVector(&g_vBaseVertex[7], rPoint1, rPoint1, rPoint1 + rDistance);             // 7
 }
 
 // 정점 36개 설정합니다.
@@ -347,152 +347,152 @@ void InitOnlyCubeVertex(FLOAT rPoint1, FLOAT rPoint2)
 	// ===============================================
 	// 정면 삼각형 2개
 	CustomVertex vertex;
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[1];
+	vertex.vPos    = g_vBaseVertex[1];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 	// ===============================================
 	// 왼쪽 측면 삼각형 2개
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[7];
+	vertex.vPos    = g_vBaseVertex[7];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 	// ===============================================
 	// 오른쪽 측면 삼각형 2개
-	vertex.vPos    = g_baseVertex[1];
+	vertex.vPos    = g_vBaseVertex[1];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 	// ===============================================
 	// 윗면 삼각형 2개
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[1];
+	vertex.vPos    = g_vBaseVertex[1];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 	// ===============================================
 	// 아랫면 삼각형 2개
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[7];
+	vertex.vPos    = g_vBaseVertex[7];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 	// ===============================================
 	// 뒷면 삼각형 2개
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 	// -----------------------------------------------
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[7];
+	vertex.vPos    = g_vBaseVertex[7];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
@@ -507,35 +507,35 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 	// ===============================================
 	// 인덱스일 때는 정점 8개면 됩니다.
 	CustomVertex vertex;
-	vertex.vPos    = g_baseVertex[0];
+	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[1];
+	vertex.vPos    = g_vBaseVertex[1];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[2];
+	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[3];
+	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[4];
+	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[5];
+	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[6];
+	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
 	g_vecVertexData.push_back(vertex);
 
-	vertex.vPos    = g_baseVertex[7];
+	vertex.vPos    = g_vBaseVertex[7];
 	vertex.dwColor = DXCOLOR_GREEN;
 	g_vecVertexData.push_back(vertex);
 

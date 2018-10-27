@@ -28,6 +28,8 @@ namespace RX
 	// บคลอ
 	DLL_DEFINE void ZeroVector(D3DXVECTOR3* pV);
 	DLL_DEFINE void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ);
+	DLL_DEFINE D3DXVECTOR3 CalcNormalVector(const D3DXVECTOR3& vBase,
+		const D3DXVECTOR3& v1, const D3DXVECTOR3& v2);
 
 	// วเทฤ
 	DLL_DEFINE void ZeroMatrix(D3DXMATRIXA16* pMat);
