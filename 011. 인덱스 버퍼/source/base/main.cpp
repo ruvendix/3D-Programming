@@ -252,8 +252,8 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	}
 
 	InsertBaseVertex(rPoint1, rPoint2);
-	//InitOnlyCubeVertex(rPoint1, rPoint2);
-	InitCubeVertexAndIndex(rPoint1, rPoint2);
+	InitOnlyCubeVertex(rPoint1, rPoint2);
+	//InitCubeVertexAndIndex(rPoint1, rPoint2);
 
 	INT32 vertexCnt = g_vecVertexData.size();
 	if (vertexCnt > 0)
