@@ -14,7 +14,7 @@
 
 #include "common.h"
 
-void             BaseWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+ROUTINE_RETURN_TYPE BaseWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DefaultWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK DefaultWndProcDX9(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -27,6 +27,8 @@ void OnMouseLButtonDown(LPARAM lParam);
 void OnMouseRButtonDown(LPARAM lParam);
 void OnMouseMove();
 void OnGetMinMaxInfo(LPARAM lParam);
+void OnNoneClientHitTest();
+void OnEraseBackGround();
 
 // 윈도우 전용 메시지 핸들러입니다.
 void OnMaximize();

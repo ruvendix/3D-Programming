@@ -35,6 +35,16 @@ enum class ROUTINE_STATE : INT32
 	EXIT,
 };
 
+// 루틴 스테이트와 비슷한데
+// 이것은 함수 단위로 반환 상태를 판단할 때 사용됩니다.
+// 모든 함수에 사용되는 건 특수 함수에만 사용됩니다.
+enum class ROUTINE_RETURN_TYPE : INT32
+{
+	SUCCESS = 0,
+	FAILURE,
+	EXIT,
+};
+
 enum class SUBFUNC_TYPE : INT32
 {
 	INIT,
