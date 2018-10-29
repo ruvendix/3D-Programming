@@ -54,6 +54,7 @@ namespace
 	D3DXVECTOR3 g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
 
 	D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
+	D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
 	D3DXMATRIXA16 g_matAll; // 월드행렬과 결합하기 위한 전체변환행렬
 
 	DWORD g_dwNormalVectorRenderingFlag = 0;
@@ -149,18 +150,17 @@ HRESULT CALLBACK OnInit()
 	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 투영행렬을 설정합니다.
-	D3DXMATRIXA16 matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+	D3DXMatrixPerspectiveFovLH(&g_matProjection, (D3DX_PI / 4.0f),
 		static_cast<FLOAT>((g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight())),
 		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 
 	// 정점 정보 초기화입니다.
 	::ZeroMemory(g_vTriangleNormal, sizeof(D3DXVECTOR3) * 12);
 
 	// 전역행렬 초기화입니다.
 	D3DXMatrixIdentity(&g_matAll);
-	g_matViewAndProjection = matView * matProjection;
+	g_matViewAndProjection = matView * g_matProjection;
 
 	// 선을 그리는 객체를 생성합니다.
 	D3DXCreateLine(g_pD3DDevice9, &g_pLine);
@@ -270,8 +270,33 @@ void InputKeyboard()
 		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 
+	static D3DXVECTOR3 vEye(4.0f, 4.0f, -4.0f);   // 카메라의 위치
+	static D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
+	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
+
+	D3DXMATRIXA16 matTest;
+	g_pD3DDevice9->GetTransform(D3DTS_VIEW, &matTest);
+	D3DXVECTOR3 vTest;
+	vTest.x = matTest._13;
+	vTest.y = matTest._23;
+	vTest.z = matTest._33;
+
+	if (::GetAsyncKeyState('Y') & 0x8000)
+	{
+		vEye += vTest * 0.1f;
+	}
+
+	if (::GetAsyncKeyState('H') & 0x8000)
+	{
+		vEye -= vTest * 0.1f;
+	}
+
+	D3DXMATRIXA16 matView;
+	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
+	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+
 	// 전체변환행렬을 구합니다.
-	g_matAll = matRot * g_matViewAndProjection;
+	g_matAll = matRot * matView * g_matProjection;
 
 	// 법선벡터 형식을 선택합니다.
 	if (::GetAsyncKeyState('Z') & 0x8000)
@@ -333,7 +358,7 @@ void CalcTriangleNormal()
 void RenderNormalVector()
 {
 	D3DXVECTOR3 vList[2];
-	
+
 	if (IS_BIT(g_dwNormalVectorRenderingFlag, NORMAL_VECTOR_RENDERING_VERTEX))
 	{
 		INT32 normalVectorTable[6][4] =
@@ -453,11 +478,11 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	INT32 vertexCnt = g_vecVertexData.size();
 	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
 		sizeof(CustomVertex) * vertexCnt, // 정점 총 용량
-		D3DUSAGE_NONE,        // 정점 버퍼의 용도
+		D3DUSAGE_WRITEONLY,   // 정점 버퍼의 용도
 		CustomVertex::format, // 정점 형식
 		D3DPOOL_MANAGED,      // 원하는 메모리풀
 		&g_pVertexBuffer,     // 정점 버퍼의 주소
-			nullptr);             // 안 쓰는 파라미터
+		nullptr); // 안 쓰는 파라미터
 	DXERR_HANDLER(g_DXResult);
 	NULLCHK_RETURN(g_pVertexBuffer, "정점 버퍼 생성 실패했습니다!");
 
@@ -480,7 +505,7 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	INT32 indexCnt = g_vecIndexData.size();
 	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(
 		sizeof(CustomIndex) * indexCnt, // 인덱스 총 용량
-		D3DUSAGE_NONE,       // 인덱스 버퍼의 용도
+		D3DUSAGE_WRITEONLY,  // 인덱스 버퍼의 용도
 		CustomIndex::format, // 인덱스 형식
 		D3DPOOL_MANAGED,     // 원하는 메모리풀
 		&g_pIndexBuffer,     // 인덱스 버퍼의 주소
