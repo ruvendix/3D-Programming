@@ -26,7 +26,7 @@ namespace RX
 	public:
 		RXProgramFPSMgr();
 
-		void InitFrame();
+		// 전체 프레임을 업데이트합니다.
 		void UpdateFrame();
 		
 		// ====================================================================================
