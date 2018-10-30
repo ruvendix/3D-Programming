@@ -21,6 +21,7 @@
 namespace RX
 {
 
+	// ======================================================================================
 	// 유니코드 버전입니다.
 	DLL_DEFINE void RXDebugLogImplW(const WCHAR* szText);
 	DLL_DEFINE void RXLogImplW(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
@@ -32,6 +33,7 @@ namespace RX
 	DLL_DEFINE void Win32LastErrorHandlerImplW(PROJECT_MODE eMode, const WCHAR* szFileName,
 		INT32 line, const WCHAR* szFunSig);
 
+	// ======================================================================================
 	// 멀티바이트 버전입니다.
 	DLL_DEFINE void RXDebugLogImplA(const CHAR* szText);
 	DLL_DEFINE void RXLogImplA(PROJECT_MODE eMode, bool bMessageBox, bool bFile, bool bError,
@@ -45,6 +47,10 @@ namespace RX
 
 	DLL_DEFINE void DrawLineWin32(HDC hDC, INT32 startX, INT32 startY, INT32 endX, INT32 endY);
 	DLL_DEFINE HMONITOR FindCurrentMonitorHandle(const HWND hWnd);
+
+	// ======================================================================================
+	// 그 외의 함수입니다.
+	DLL_DEFINE void ShowMouseCursor(bool bShow);
 
 } // namespace RX end
 

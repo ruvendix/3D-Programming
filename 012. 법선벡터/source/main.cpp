@@ -151,7 +151,7 @@ HRESULT CALLBACK OnInit()
 
 	// 투영행렬을 설정합니다.
 	D3DXMatrixPerspectiveFovLH(&g_matProjection, (D3DX_PI / 4.0f),
-		static_cast<FLOAT>((g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight())),
+		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
 		1.0f, 1000.0f);
 	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 
@@ -167,6 +167,9 @@ HRESULT CALLBACK OnInit()
 
 	// 삼각형에서의 법선벡터를 구합니다.
 	CalcTriangleNormal();
+
+	// 마우스 커서를 보여줍니다.
+	RX::ShowMouseCursor(true);
 
 	return S_OK;
 }
@@ -270,33 +273,8 @@ void InputKeyboard()
 		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 
-	static D3DXVECTOR3 vEye(4.0f, 4.0f, -4.0f);   // 카메라의 위치
-	static D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
-	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
-
-	D3DXMATRIXA16 matTest;
-	g_pD3DDevice9->GetTransform(D3DTS_VIEW, &matTest);
-	D3DXVECTOR3 vTest;
-	vTest.x = matTest._13;
-	vTest.y = matTest._23;
-	vTest.z = matTest._33;
-
-	if (::GetAsyncKeyState('Y') & 0x8000)
-	{
-		vEye += vTest * 0.1f;
-	}
-
-	if (::GetAsyncKeyState('H') & 0x8000)
-	{
-		vEye -= vTest * 0.1f;
-	}
-
-	D3DXMATRIXA16 matView;
-	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
-
 	// 전체변환행렬을 구합니다.
-	g_matAll = matRot * matView * g_matProjection;
+	g_matAll = matRot * g_matViewAndProjection;
 
 	// 법선벡터 형식을 선택합니다.
 	if (::GetAsyncKeyState('Z') & 0x8000)
