@@ -43,3 +43,4 @@ Test/Debug_Program
 *.ipdb
 *.res
 *.opendb
+/002. DirectX9 기본 프로그램/Debug/*.res
