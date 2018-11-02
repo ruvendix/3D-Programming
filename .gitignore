@@ -28,7 +28,6 @@
 *.out
 *.app
 *.db
-.opendb
 *.ipch
 *.idb
 *.tlog
@@ -43,3 +42,4 @@ Test/Debug_Program
 *.iobj
 *.ipdb
 *.res
+*.opendb
