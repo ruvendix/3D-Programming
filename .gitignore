@@ -42,3 +42,4 @@ Test/Debug_Program
 /Bin/Release/*.ipdb
 /Bin/Release64/*.iobj
 /Bin/Release64/*.ipdb
+/002. DirectX9 기본 프로그램/Debug/Win32/*.res
