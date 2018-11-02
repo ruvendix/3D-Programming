@@ -28,7 +28,7 @@
 *.out
 *.app
 *.db
-.vs/3D-Programming/v15/Browse.VC.opendb
+.opendb
 *.ipch
 *.idb
 *.tlog
@@ -36,10 +36,10 @@ Test/Debug_Program
 
 # Etc
 *.log
-/.vs/3D-Programming/v15/*.db-shm
-/.vs/3D-Programming/v15/*.db-wal
-/Bin/Release/*.iobj
-/Bin/Release/*.ipdb
-/Bin/Release64/*.iobj
-/Bin/Release64/*.ipdb
-/002. DirectX9 기본 프로그램/Debug/Win32/*.res
+*.db-shm
+*.db-wal
+*.iobj
+*.ipdb
+*.iobj
+*.ipdb
+*.res
