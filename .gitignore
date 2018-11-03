@@ -27,9 +27,6 @@
 # Executables
 *.out
 *.app
-*.db
-*.ipch
-*.idb
 *.tlog
 Test/Debug_Program 
 
@@ -37,10 +34,10 @@ Test/Debug_Program
 *.log
 *.db-shm
 *.db-wal
+*.idb
+*.ipch
 *.iobj
 *.ipdb
-*.iobj
-*.ipdb
+*.db
 *.res
 *.opendb
-/002. DirectX9 기본 프로그램/Debug/*.res
