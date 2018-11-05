@@ -1,41 +1,14 @@
 #include "base_project.h"
-#include "global_variable_declaration.h"
 #include "main.h"
-
-
-// ====================================================================================
-// 매크로 정의부입니다.
-
-// FVF(Flexible Vertex Format) 형식을 설정합니다.
-// DirectX9에서는 FVF 설정이 필요합니다.
-// 아래에 있는 뜻은 변환되기 전의 공간좌표와 색상을 사용하겠다는 뜻입니다.
-// D3DFVF_XYZRHW에서 D3DFVF_XYZ로 변경됩니다.
-#define CUSTOM_FVF (D3DFVF_XYZ | D3DFVF_DIFFUSE)
-
-
-// ====================================================================================
-// 구조체 및 공용체 선언부입니다.
-
-// 정점의 형식을 설정합니다.
-// x, y, z, diffuse로 설정합니다.
-// 변환되기 전이므로 rhw는 없습니다.
-struct CustomVertex
-{
-	D3DXVECTOR3 vPos;    // v는 vector의 약자입니다. 공간좌표를 뜻합니다.
-	DWORD       dwColor; // 정점의 색상을 의미합니다. Diffuse는 분산이라는 뜻입니다.
-};
+#include "global_variable_declaration.h"
 
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-namespace
-{
-	RX::RXMain_DX9*         g_pMainDX       = nullptr;
-	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-}
-
-extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_DXResult   = S_OK;
+RX::RXMain_DX9*         g_pMainDX       = nullptr;
+IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
+HRESULT                 g_DXResult      = S_OK;
 
 
 // ====================================================================================
@@ -88,7 +61,7 @@ HRESULT CALLBACK OnInit()
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.
 	// 프로그램의 정중앙이 원점(0, 0, 0)이 되므로
 	// 기본 카메라에 맞게 좌표를 설정해야 합니다.
-	CustomVertex vertices[3] =
+	VertexP3D vertices[3] =
 	{
 		{ {  0.0f,  0.2f , 0.0f }, DXCOLOR_RED   },
 	    { {  0.2f, -0.2f , 0.0f }, DXCOLOR_GREEN },
@@ -97,12 +70,12 @@ HRESULT CALLBACK OnInit()
 
 	// 정점 버퍼를 생성합니다.
 	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
-		sizeof(CustomVertex) * 3, // 정점 버퍼의 크기입니다.
-		0,                        // 사용법인데 일반적으로는 0입니다.
-		CUSTOM_FVF,               // FVF 형식입니다.
-		D3DPOOL_MANAGED,          // 메모리풀 설정입니다.
-		&g_pVertexBuffer,         // 정점 버퍼의 포인터를 넘깁니다.
-		nullptr);                 // nullptr로 설정합니다.
+		sizeof(VertexP3D) * 3, // 정점 버퍼의 크기입니다.
+		0,                     // 사용법인데 일반적으로는 0입니다.
+		VertexP3D::format,     // FVF 형식입니다.
+		D3DPOOL_MANAGED,       // 메모리풀 설정입니다.
+		&g_pVertexBuffer,      // 정점 버퍼의 포인터를 넘깁니다.
+		nullptr);              // nullptr로 설정합니다.
 
 	DXERR_HANDLER(g_DXResult);
 	NULLCHK_RETURN_EFAIL(g_pVertexBuffer, "정점 버퍼 초기화 실패!");
@@ -111,12 +84,28 @@ HRESULT CALLBACK OnInit()
 	// 메모리에 접근하기 때문에 메모리를 잠그고 푸는 과정이 있습니다.
 	void* pVertexData = nullptr;
 	g_pVertexBuffer->Lock(
-		0,                        // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
-		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 크기를 넘겨줍니다.
-		&pVertexData,             // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
-		0);                       // 잠금 플래그인데 0으로 설정합니다.
-	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 3);
+		0,                     // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
+		sizeof(VertexP3D) * 3, // 복사할 정점 정보의 크기를 넘겨줍니다.
+		&pVertexData,          // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
+		0);                    // 잠금 플래그인데 0으로 설정합니다.
+	::CopyMemory(pVertexData, vertices, sizeof(VertexP3D) * 3);
 	g_pVertexBuffer->Unlock();
+
+	// 뷰행렬을 설정합니다.
+	D3DXVECTOR3 vEye(0.0f, 0.0f, -2.0f);   // 카메라의 위치
+	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
+	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
+
+	D3DXMATRIXA16 matView;
+	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
+	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+
+	// 투영행렬을 설정합니다.
+	D3DXMATRIXA16 matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
+		1.0f, 1000.0f);
+	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
@@ -145,12 +134,12 @@ HRESULT CALLBACK OnRender()
 	// 이동행렬을 테스트합니다.
 	//TranslationTest(0.4f, 0.4f, 0.0f);
 
-	g_pD3DDevice9->SetFVF(CUSTOM_FVF);
+	g_pD3DDevice9->SetFVF(VertexP3D::format);
 	g_pD3DDevice9->SetStreamSource(
-		0,                     // 스트림 넘버인데 0으로 설정합니다.
-		g_pVertexBuffer,       // 정점 버퍼를 설정해줍니다.
-		0,                     // 오프셋인데 0으로 설정합니다.
-		sizeof(CustomVertex)); // 보폭(Stride)을 의미하는데 FVF로 생성한 크기와 일치해야 합니다.
+		0,                  // 스트림 넘버인데 0으로 설정합니다.
+		g_pVertexBuffer,    // 정점 버퍼를 설정해줍니다.
+		0,                  // 오프셋인데 0으로 설정합니다.
+		sizeof(VertexP3D)); // 보폭(Stride)을 의미하는데 FVF로 생성한 크기와 일치해야 합니다.
 	
 	g_pD3DDevice9->DrawPrimitive(
 		D3DPT_TRIANGLELIST, // 렌더링 형식을 설정합니다.

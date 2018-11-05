@@ -1,6 +1,6 @@
 #include "base_project.h"
-#include "global_variable_declaration.h"
 #include "main.h"
+#include "global_variable_declaration.h"
 
 
 // ====================================================================================
@@ -21,20 +21,16 @@ struct CustomVertex
 {
 	D3DXVECTOR3 vPos;    // v는 vector의 약자입니다. 공간좌표를 뜻합니다.
 	float       rRHW;    // RHW는 Reciprocal Homogeneous W의 약자입니다. 동차좌표를 뜻합니다.
-	DWORD       dwColor; // 정점의 색상을 의미합니다. Diffuse는 분산이라는 뜻입니다.
+	DWORD       dwColor; // 정점의 색상을 의미합니다. Diffuse는 확산이라는 뜻입니다.
 };
 
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-namespace
-{
-	RX::RXMain_DX9*         g_pMainDX       = nullptr;
-	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-}
-
-extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_DXResult   = S_OK;
+RX::RXMain_DX9*         g_pMainDX       = nullptr;
+IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
+HRESULT                 g_DXResult      = S_OK;
 
 
 // ====================================================================================

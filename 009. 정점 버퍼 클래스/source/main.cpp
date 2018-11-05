@@ -1,26 +1,19 @@
 #include "base_project.h"
-#include "global_variable_declaration.h"
 #include "main.h"
-
-// ====================================================================================
-// 매크로 정의부입니다.
-
-
-// ====================================================================================
-// 구조체 및 공용체 선언부입니다.
+#include "global_variable_declaration.h"
 
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
+RX::RXMain_DX9*   g_pMainDX     = nullptr;
+IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+HRESULT           g_DXResult    = S_OK;
+
 namespace
 {
-	RX::RXMain_DX9*        g_pMainDX = nullptr;
 	RX::RXVertexBufferDX9* g_pVB1    = nullptr;
 	RX::RXVertexBufferDX9* g_pVB2    = nullptr;
 }
-
-extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_DXResult   = S_OK;
 
 
 // ====================================================================================
@@ -101,6 +94,22 @@ HRESULT CALLBACK OnInit()
 	g_pVB2->InsertVertex(-0.6f, -0.6f, 0.0f, DXCOLOR_BLUE);
 
 	g_pVB2->CreateVertexBuffer();
+
+	// 뷰행렬을 설정합니다.
+	D3DXVECTOR3 vEye(0.0f, 0.0f, -2.0f);   // 카메라의 위치
+	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
+	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
+
+	D3DXMATRIXA16 matView;
+	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
+	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+
+	// 투영행렬을 설정합니다.
+	D3DXMATRIXA16 matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
+		1.0f, 1000.0f);
+	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데

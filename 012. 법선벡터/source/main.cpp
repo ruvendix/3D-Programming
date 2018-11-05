@@ -1,7 +1,6 @@
 #include "base_project.h"
-#include "global_variable_declaration.h"
 #include "main.h"
-#include "RX\RXCubeDX9.h"
+#include "global_variable_declaration.h"
 
 // 큐브 정점 인덱스입니다.
 // 각 정점 인덱스를 보고 소스 코드랑 맞춰보세요.
@@ -22,46 +21,24 @@
 #define NORMAL_VECTOR_RENDERING_PLANE    0x0100
 
 // ====================================================================================
-// 구조체 및 공용체 선언부입니다.
-
-// 정점 정보입니다.
-struct CustomVertex
-{
-	D3DXVECTOR3 vPos;    // 위치
-	DWORD       dwColor; // 색상
-	const static DWORD format = D3DFVF_XYZ | D3DFVF_DIFFUSE; // 형식
-};
-
-// 인덱스 정보입니다.
-struct CustomIndex
-{
-	WORD index; // 인덱스값
-	const static D3DFORMAT format = D3DFMT_INDEX16; // 형식은 2바이트를 사용합니다.
-};
-
-// ====================================================================================
 // 전역 변수 선언부입니다.
-namespace
-{
-	RX::RXMain_DX9*           g_pMainDX       = nullptr;
-	IDirect3DVertexBuffer9*   g_pVertexBuffer = nullptr;
-	IDirect3DIndexBuffer9*    g_pIndexBuffer  = nullptr;
-	D3DXVECTOR3               g_vBaseVertex[8];
-	std::vector<CustomVertex> g_vecVertexData;
-	std::vector<CustomIndex>  g_vecIndexData;
+IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
+RX::RXMain_DX9*         g_pMainDX       = nullptr;
+IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+IDirect3DIndexBuffer9*  g_pIndexBuffer  = nullptr;
+ID3DXLine*              g_pLine         = nullptr;     // 선을 그리기 위한 것
+D3DXVECTOR3 g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
 
-	ID3DXLine*  g_pLine = nullptr;     // 선을 그리기 위한 것
-	D3DXVECTOR3 g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
+D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
+D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
+D3DXMATRIXA16 g_matAll; // 월드행렬과 결합하기 위한 전체변환행렬
 
-	D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
-	D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
-	D3DXMATRIXA16 g_matAll; // 월드행렬과 결합하기 위한 전체변환행렬
+DWORD   g_dwNormalVectorRenderingFlag = 0;
+HRESULT g_DXResult = S_OK;
 
-	DWORD g_dwNormalVectorRenderingFlag = 0;
-}
-
-extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_DXResult    = S_OK;
+std::vector<VertexP3D> g_vecP3D;
+std::vector<Index16>   g_vecIndex16;
+D3DXVECTOR3            g_vBaseVertex[8];
 
 
 // ====================================================================================
@@ -189,12 +166,12 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetFVF(CustomVertex::format); // 정점 형식 연결
+	g_pD3DDevice9->SetFVF(VertexP3D::format); // 정점 형식 연결
 	g_pD3DDevice9->SetStreamSource(
-		0,                     // 사용할 스트림 인덱스
-		g_pVertexBuffer,       // 연결할 정점 버퍼
-		0,                     // 정점 버퍼의 오프셋
-		sizeof(CustomVertex)); // 정점 용량
+		0,                  // 사용할 스트림 인덱스
+		g_pVertexBuffer,    // 연결할 정점 버퍼
+		0,                  // 정점 버퍼의 오프셋
+		sizeof(VertexP3D)); // 정점 용량
 
 	g_pD3DDevice9->SetIndices(g_pIndexBuffer); // 인덱스 버퍼 연결
 	g_pD3DDevice9->DrawIndexedPrimitive(
@@ -326,9 +303,9 @@ void CalcTriangleNormal()
 	INT32 index = -1;
 	for (INT32 i = 0; i < 12; ++i)
 	{
-		D3DXVECTOR3 v1 = g_vBaseVertex[g_vecIndexData[++index].index];
-		D3DXVECTOR3 v2 = g_vBaseVertex[g_vecIndexData[++index].index];
-		D3DXVECTOR3 v3 = g_vBaseVertex[g_vecIndexData[++index].index];
+		D3DXVECTOR3 v1 = g_vBaseVertex[g_vecIndex16[++index].index];
+		D3DXVECTOR3 v2 = g_vBaseVertex[g_vecIndex16[++index].index];
+		D3DXVECTOR3 v3 = g_vBaseVertex[g_vecIndex16[++index].index];
 		g_vTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
 	}
 }
@@ -453,13 +430,13 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	InsertBaseVertex(rPoint1, rPoint2);
 	InitCubeVertexAndIndex(rPoint1, rPoint2);
 
-	INT32 vertexCnt = g_vecVertexData.size();
+	INT32 vertexCnt = g_vecP3D.size();
 	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
-		sizeof(CustomVertex) * vertexCnt, // 정점 총 용량
-		D3DUSAGE_WRITEONLY,   // 정점 버퍼의 용도
-		CustomVertex::format, // 정점 형식
-		D3DPOOL_MANAGED,      // 원하는 메모리풀
-		&g_pVertexBuffer,     // 정점 버퍼의 주소
+		sizeof(VertexP3D) * vertexCnt, // 정점 총 용량
+		D3DUSAGE_WRITEONLY, // 정점 버퍼의 용도
+		VertexP3D::format,  // 정점 형식
+		D3DPOOL_MANAGED,    // 원하는 메모리풀
+		&g_pVertexBuffer,   // 정점 버퍼의 주소
 		nullptr); // 안 쓰는 파라미터
 	DXERR_HANDLER(g_DXResult);
 	NULLCHK_RETURN(g_pVertexBuffer, "정점 버퍼 생성 실패했습니다!");
@@ -467,41 +444,41 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	void* pVertexData = nullptr;
 	g_pVertexBuffer->Lock(
 		0, // 락을 시작할 오프셋
-		sizeof(CustomVertex) * vertexCnt, // 락을 할 정점 총 용량
+		sizeof(VertexP3D) * vertexCnt, // 락을 할 정점 총 용량
 		&pVertexData,  // 락된 메모리의 위치
 		D3DFLAG_NONE); // 락 플래그
 
 	// 벡터를 이렇게 복사할 수 있는데 표준 정의입니다.
 	// 즉, 벡터는 연속된 메모리라는 보장이 있는 건데
 	// 만약 불안하다면 배열로 변경해도 괜찮습니다.
-	::CopyMemory(pVertexData, &g_vecVertexData[0], sizeof(CustomVertex) * vertexCnt);
+	::CopyMemory(pVertexData, &g_vecP3D[0], sizeof(VertexP3D) * vertexCnt);
 
 	g_pVertexBuffer->Unlock();
 
 	// ================================================================================
 	
-	INT32 indexCnt = g_vecIndexData.size();
+	INT32 indexCnt = g_vecIndex16.size();
 	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(
-		sizeof(CustomIndex) * indexCnt, // 인덱스 총 용량
-		D3DUSAGE_WRITEONLY,  // 인덱스 버퍼의 용도
-		CustomIndex::format, // 인덱스 형식
-		D3DPOOL_MANAGED,     // 원하는 메모리풀
-		&g_pIndexBuffer,     // 인덱스 버퍼의 주소
-		nullptr);            // 안 쓰는 파라미터
+		sizeof(Index16) * indexCnt, // 인덱스 총 용량
+		D3DUSAGE_WRITEONLY, // 인덱스 버퍼의 용도
+		Index16::format,    // 인덱스 형식
+		D3DPOOL_MANAGED,    // 원하는 메모리풀
+		&g_pIndexBuffer,    // 인덱스 버퍼의 주소
+		nullptr);           // 안 쓰는 파라미터
 	DXERR_HANDLER(g_DXResult);
 	NULLCHK_RETURN(g_pIndexBuffer, "인덱스 버퍼 생성 실패했습니다!");
 
 	void* pIndexData = nullptr;
 	g_pIndexBuffer->Lock(
 		0, // 락을 시작할 오프셋
-		sizeof(CustomIndex) * indexCnt, // 락을 할 인덱스 총 용량
+		sizeof(Index16) * indexCnt, // 락을 할 인덱스 총 용량
 		&pIndexData,   // 락된 메모리의 위치
 		D3DFLAG_NONE); // 락 플래그
 
 	// 벡터를 이렇게 복사할 수 있는데 표준 정의입니다.
 	// 즉, 벡터는 연속된 메모리라는 보장이 있는 건데
 	// 만약 불안하다면 배열로 변경해도 괜찮습니다.
-	::CopyMemory(pIndexData, &g_vecIndexData[0], sizeof(CustomIndex) * indexCnt);
+	::CopyMemory(pIndexData, &g_vecIndex16[0], sizeof(Index16) * indexCnt);
 
 	g_pIndexBuffer->Unlock();
 }
@@ -538,155 +515,155 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 {
 	// ===============================================
 	// 인덱스일 때는 정점 8개면 됩니다.
-	CustomVertex vertex;
+	VertexP3D vertex;
 	vertex.vPos    = g_vBaseVertex[0];
 	vertex.dwColor = DXCOLOR_RED;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[1];
 	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[2];
 	vertex.dwColor = DXCOLOR_BLUE;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[3];
 	vertex.dwColor = DXCOLOR_RED;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[4];
 	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[5];
 	vertex.dwColor = DXCOLOR_BLUE;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[6];
 	vertex.dwColor = DXCOLOR_RED;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	vertex.vPos    = g_vBaseVertex[7];
 	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecVertexData.push_back(vertex);
+	g_vecP3D.push_back(vertex);
 
 	// ===============================================
 	// 인덱스 설정입니다.
 	// 정면 삼각형 2개
-	CustomIndex index;
+	Index16 index;
 	index.index = 0;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 1;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 5;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 0;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 5;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 4;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// ===============================================
 	// 왼쪽 측면 삼각형 2개	
 	index.index = 0;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 4;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 3;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 3;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 4;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 7;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// ===============================================
 	// 오른쪽 측면 삼각형 2개
 	index.index = 1;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 2;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 5;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 2;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 6;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 5;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// ===============================================
 	// 윗면 삼각형 2개
 	index.index = 0;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 3;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 2;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 0;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 2;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 1;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// ===============================================
 	// 아랫면 삼각형 2개
 	index.index = 4;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 6;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 7;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 4;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 5;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 6;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// ===============================================
 	// 뒷면 삼각형 2개
 	index.index = 3;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 6;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 2;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 	// -----------------------------------------------
 	index.index = 3;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 7;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	index.index = 6;
-	g_vecIndexData.push_back(index);
+	g_vecIndex16.push_back(index);
 
 	// 인덱스 버퍼로 큐브 하나를 렌더링하기 위해 정점 8개가 필요합니다.
 	// 정점 8개를 이용해서 그리는 순서를 인덱스에 넣어주면 됩니다.

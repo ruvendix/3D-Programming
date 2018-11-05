@@ -1,26 +1,19 @@
 #include "base_project.h"
-#include "global_variable_declaration.h"
 #include "main.h"
+#include "global_variable_declaration.h"
 #include "RX/RX3DAxisDX9.h"
-
-// ====================================================================================
-// 매크로 정의부입니다.
-
-
-// ====================================================================================
-// 구조체 및 공용체 선언부입니다.
 
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
+RX::RXMain_DX9*   g_pMainDX     = nullptr;
+IDirect3DDevice9* g_pD3DDevice9 = nullptr;
+HRESULT           g_DXResult    = S_OK;
+
 namespace
 {
-	RX::RXMain_DX9*  g_pMainDX = nullptr;
 	RX::RX3DAxisDX9* g_p3DAxis = nullptr;
 }
-
-extern IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-extern HRESULT           g_DXResult    = S_OK;
 
 
 // ====================================================================================
