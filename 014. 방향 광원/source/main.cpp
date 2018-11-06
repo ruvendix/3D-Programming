@@ -128,12 +128,12 @@ HRESULT CALLBACK OnInit()
 	D3DXVec3Normalize(&vDir, &vDir);
 	g_directionalLight.Direction = vDir;
 
-	// 광원은 8개까지 설치 가능합니다.
+	// 광원은 여러 개 설치 가능합니다.
 	// 하나만 설치하므로 0번 인덱스의 광원을 활성화시킵니다.
-	g_pD3DDevice9->LightEnable(0, TRUE);
+	g_pD3DDevice9->LightEnable(99, TRUE);
 
 	// 광원을 가상 디바이스에 등록해줍니다.
-	g_pD3DDevice9->SetLight(0, &g_directionalLight);
+	g_pD3DDevice9->SetLight(100, &g_directionalLight);
 
 	// 재질을 빨강으로 초기화합니다.
 	::ZeroMemory(&g_mtrl, sizeof(g_mtrl));
