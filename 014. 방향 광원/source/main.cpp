@@ -18,6 +18,7 @@ DWORD   g_dwNormalVectorRenderingFlag = 0;
 HRESULT g_DXResult = S_OK;
 
 std::vector<VertexP3D> g_vecP3D;
+std::vector<VertexP3N> g_vecP3N;
 std::vector<Index16>   g_vecIndex16;
 D3DXVECTOR3            g_vBaseVertex[8];
 D3DXVECTOR3            g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
@@ -25,6 +26,10 @@ D3DXVECTOR3            g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
 // 재질은 빛의 반사 및 흡수를 설정하는 개념입니다.
 // 검정(0.0f)부터 흰색(1.0f)까지 색상의 비율을 설정할 수 있습니다.
 D3DXMATERIAL g_mtrl;
+
+// 광원 구조체입니다.
+// 이번에는 방향 광원으로 사용합니다.
+D3DLIGHT9 g_directionalLight;
 
 
 // ====================================================================================
@@ -75,7 +80,7 @@ HRESULT CALLBACK OnInit()
 	CreateCube(-1.0f, 1.0f);
 
 	// 뷰행렬을 설정합니다.
-	D3DXVECTOR3 vEye(4.0f, 4.0f, -4.0f);   // 카메라의 위치
+	D3DXVECTOR3 vEye(0.0f, 0.0f, -8.0f);   // 카메라의 위치
 	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
 	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
 
@@ -96,9 +101,6 @@ HRESULT CALLBACK OnInit()
 	// 선을 그리는 객체를 생성합니다.
 	D3DXCreateLine(g_pD3DDevice9, &g_pLine);
 
-	// 삼각형에서의 법선벡터를 구합니다.
-	CalcTriangleNormal();
-
 	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
 
@@ -114,11 +116,29 @@ HRESULT CALLBACK OnInit()
 	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
-	// 조명을 확인하기 위해 전역 주변광을 설정합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_AMBIENT, DXCOLOR_WHITE);
+	// 법선벡터를 자동으로 계산해주는 설정입니다.
+	// 단! 이 설정을 이용하게 되면 사양을 좀 탑니다...
+	// 디폴트는 FALSE입니다.
+	g_pD3DDevice9->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
-	// 재질을 초기화합니다.
+	// 광원을 초기화합니다.
+	g_directionalLight.Type = D3DLIGHT_DIRECTIONAL;
+	g_directionalLight.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
+	D3DXVECTOR3 vDir = { 1.0f, 0.0f, 0.0f };
+	D3DXVec3Normalize(&vDir, &vDir);
+	g_directionalLight.Direction = vDir;
+
+	// 광원은 8개까지 설치 가능합니다.
+	// 하나만 설치하므로 0번 인덱스의 광원을 활성화시킵니다.
+	g_pD3DDevice9->LightEnable(0, TRUE);
+
+	// 광원을 가상 디바이스에 등록해줍니다.
+	g_pD3DDevice9->SetLight(0, &g_directionalLight);
+
+	// 재질을 빨강으로 초기화합니다.
 	::ZeroMemory(&g_mtrl, sizeof(g_mtrl));
+	g_mtrl.MatD3D.Diffuse.r = 1.0f;
 
 	return S_OK;
 }
@@ -133,40 +153,40 @@ HRESULT CALLBACK OnUpdate()
 	// 빨강 ===============================
 	if (::GetAsyncKeyState('T') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.r += 0.05f;
+		//g_mtrl.MatD3D.Ambient.r += 0.05f;
 	}
 
 	if (::GetAsyncKeyState('Y') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.r -= 0.05f;
+		//g_mtrl.MatD3D.Ambient.r -= 0.05f;
 	}
 	// ====================================
 
 	// 초록 ===============================
 	if (::GetAsyncKeyState('U') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.g += 0.05f;
+		//g_mtrl.MatD3D.Ambient.g += 0.05f;
 	}
 
 	if (::GetAsyncKeyState('I') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.g -= 0.05f;
+		//g_mtrl.MatD3D.Ambient.g -= 0.05f;
 	}
 	// ====================================
 
 	// 파랑 ===============================
 	if (::GetAsyncKeyState('O') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.b += 0.05f;
+		//g_mtrl.MatD3D.Ambient.b += 0.05f;
 	}
 
 	if (::GetAsyncKeyState('P') & 0x8000)
 	{
-		g_mtrl.MatD3D.Ambient.b -= 0.05f;
+		//g_mtrl.MatD3D.Ambient.b -= 0.05f;
 	}
 	// ====================================
 
-	AdjustColorRange(&g_mtrl.MatD3D.Ambient);
+	//AdjustColorRange(&g_mtrl.MatD3D.Ambient);
 
 	return S_OK;
 }
@@ -182,12 +202,12 @@ HRESULT CALLBACK OnRender()
 	// 따라서 재질을 자주 바꾸면서 렌더링해야 합니다.
 	g_pD3DDevice9->SetMaterial(&g_mtrl.MatD3D);
 
-	g_pD3DDevice9->SetFVF(VertexP3D::format); // 정점 형식 연결
+	g_pD3DDevice9->SetFVF(VertexP3N::format); // 정점 형식 연결
 	g_pD3DDevice9->SetStreamSource(
 		0,                  // 사용할 스트림 인덱스
 		g_pVertexBuffer,    // 연결할 정점 버퍼
 		0,                  // 정점 버퍼의 오프셋
-		sizeof(VertexP3D)); // 정점 용량
+		sizeof(VertexP3N)); // 정점 용량
 
 	g_pD3DDevice9->SetIndices(g_pIndexBuffer); // 인덱스 버퍼 연결
 	g_pD3DDevice9->DrawIndexedPrimitive(

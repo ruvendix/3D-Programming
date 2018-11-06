@@ -147,25 +147,25 @@ void RenderNormalVector()
 		{
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][0]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][1]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][2]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][3]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -200,7 +200,7 @@ void RenderNormalVector()
 					g_vBaseVertex[normalVectorTable[i][1]] +
 					g_vBaseVertex[normalVectorTable[i][2]]) / 3.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[i];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -230,7 +230,7 @@ void RenderNormalVector()
 					g_vBaseVertex[normalVectorTable[i][2]] +
 					g_vBaseVertex[normalVectorTable[i][3]]) / 4.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -247,11 +247,11 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	InsertBaseVertex(rPoint1, rPoint2);
 	InitCubeVertexAndIndex(rPoint1, rPoint2);
 
-	INT32 vertexCnt = g_vecP3D.size();
+	INT32 vertexCnt = g_vecP3N.size();
 	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
-		sizeof(VertexP3D) * vertexCnt, // 정점 총 용량
+		sizeof(VertexP3N) * vertexCnt, // 정점 총 용량
 		D3DUSAGE_WRITEONLY, // 정점 버퍼의 용도
-		VertexP3D::format,  // 정점 형식
+		VertexP3N::format,  // 정점 형식
 		D3DPOOL_MANAGED,    // 원하는 메모리풀
 		&g_pVertexBuffer,   // 정점 버퍼의 주소
 		nullptr); // 안 쓰는 파라미터
@@ -261,14 +261,14 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	void* pVertexData = nullptr;
 	g_pVertexBuffer->Lock(
 		0, // 락을 시작할 오프셋
-		sizeof(VertexP3D) * vertexCnt, // 락을 할 정점 총 용량
+		sizeof(VertexP3N) * vertexCnt, // 락을 할 정점 총 용량
 		&pVertexData,  // 락된 메모리의 위치
 		D3DFLAG_NONE); // 락 플래그
 
 	// 벡터를 이렇게 복사할 수 있는데 표준 정의입니다.
 	// 즉, 벡터는 연속된 메모리라는 보장이 있는 건데
 	// 만약 불안하다면 배열로 변경해도 괜찮습니다.
-	::CopyMemory(pVertexData, &g_vecP3D[0], sizeof(VertexP3D) * vertexCnt);
+	::CopyMemory(pVertexData, &g_vecP3N[0], sizeof(VertexP3N) * vertexCnt);
 
 	g_pVertexBuffer->Unlock();
 
@@ -332,38 +332,31 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 {
 	// ===============================================
 	// 인덱스일 때는 정점 8개면 됩니다.
-	VertexP3D vertex;
+	// 미리 계산해둔 정점
+	VertexP3N vertex;
 	vertex.vPos = g_vBaseVertex[0];
-	vertex.dwColor = DXCOLOR_RED;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[1];
-	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[2];
-	vertex.dwColor = DXCOLOR_BLUE;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[3];
-	vertex.dwColor = DXCOLOR_RED;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[4];
-	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[5];
-	vertex.dwColor = DXCOLOR_BLUE;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[6];
-	vertex.dwColor = DXCOLOR_RED;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	vertex.vPos = g_vBaseVertex[7];
-	vertex.dwColor = DXCOLOR_GREEN;
-	g_vecP3D.push_back(vertex);
+	g_vecP3N.push_back(vertex);
 
 	// ===============================================
 	// 인덱스 설정입니다.
@@ -486,4 +479,13 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 	// 정점 8개를 이용해서 그리는 순서를 인덱스에 넣어주면 됩니다.
 	// 인덱스 버퍼는 D3DPT_TRIANGLELIST가 기본이고 폴리곤 개수를 설정해줘야 합니다.
 	// 큐브 하나를 렌더링하기 위해서는 폴리곤이 최소 12개 필요합니다.
+
+	// 삼각형에서의 법선벡터를 구합니다.
+	CalcTriangleNormal();
+
+	INT32 size = g_vecP3N.size();
+	for (INT32 i = 0; i < size; ++i)
+	{
+		g_vecP3N[i].vN = g_vTriangleNormal[2];
+	}
 }

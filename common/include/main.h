@@ -37,6 +37,7 @@
 // 정점의 형식을 설정합니다.
 // P4 => Position4 (X, Y, Z, RHW) 2D 좌표계로 변형된 좌표
 // P3 => Position3 (X, Y, Z)      3D 좌표계의 좌표
+// N  => Normal (X, Y, Z)         법선벡터
 // D  => Diffuse                  확산(색상)
 // S  => Specular                 반사
 
@@ -54,6 +55,18 @@ struct VertexP3D
 	const static DWORD format = D3DFVF_XYZ | D3DFVF_DIFFUSE; // 형식
 };
 
+// 광원을 이용하기 위해서는 새로운 정점 형식이 필요합니다.
+// 법선벡터와 연산해야 하므로 법선벡터가 필수로 들어가야 합니다.
+// 법선벡터가 추가되면 색상과 함께 생각해야 합니다.
+// 정점 형식에 색상을 넣게 되면 재질을 따로 설정해주지 않아도 되지만
+// 정점 형식에 따로 색상이 없으면 재질을 반드시 설정해줘야 합니다.
+struct VertexP3N
+{
+	D3DXVECTOR3 vPos; // 위치
+	D3DXVECTOR3 vN;   // 법선벡터(정규화 필수!)
+	const static DWORD format = D3DFVF_XYZ | D3DFVF_NORMAL; // 형식
+};
+
 // 인덱스의 형식을 설정합니다.
 struct Index16
 {
@@ -63,6 +76,7 @@ struct Index16
 
 extern std::vector<VertexP4D> g_vecP4D;
 extern std::vector<VertexP3D> g_vecP3D;
+extern std::vector<VertexP3N> g_vecP3N;
 extern std::vector<Index16>   g_vecIndex16;
 
 #endif
