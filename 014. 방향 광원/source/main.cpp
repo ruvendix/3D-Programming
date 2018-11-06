@@ -39,7 +39,6 @@ HRESULT CALLBACK OnUpdate();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
-void AdjustColorRange(D3DCOLORVALUE* pColor);
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -149,45 +148,6 @@ HRESULT CALLBACK OnInit()
 HRESULT CALLBACK OnUpdate()
 {
 	InputOldKeyboard();
-
-	// 빨강 ===============================
-	if (::GetAsyncKeyState('T') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.r += 0.05f;
-	}
-
-	if (::GetAsyncKeyState('Y') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.r -= 0.05f;
-	}
-	// ====================================
-
-	// 초록 ===============================
-	if (::GetAsyncKeyState('U') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.g += 0.05f;
-	}
-
-	if (::GetAsyncKeyState('I') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.g -= 0.05f;
-	}
-	// ====================================
-
-	// 파랑 ===============================
-	if (::GetAsyncKeyState('O') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.b += 0.05f;
-	}
-
-	if (::GetAsyncKeyState('P') & 0x8000)
-	{
-		//g_mtrl.MatD3D.Ambient.b -= 0.05f;
-	}
-	// ====================================
-
-	//AdjustColorRange(&g_mtrl.MatD3D.Ambient);
-
 	return S_OK;
 }
 
@@ -229,48 +189,4 @@ HRESULT CALLBACK OnRelease()
 	SAFE_RELEASE(g_pVertexBuffer);
 	SAFE_RELEASE(g_pLine);
 	return S_OK;
-}
-
-void AdjustColorRange(D3DCOLORVALUE* pColor)
-{
-	if (pColor == nullptr)
-	{
-		return;
-	}
-
-	if (pColor->a < 0.0f)
-	{
-		pColor->a = 0.0f;
-	}
-	else if (pColor->a > 1.0f)
-	{
-		pColor->a = 1.0f;
-	}
-
-	if (pColor->r < 0.0f)
-	{
-		pColor->r = 0.0f;
-	}
-	else if (pColor->r > 1.0f)
-	{
-		pColor->r = 1.0f;
-	}
-
-	if (pColor->g < 0.0f)
-	{
-		pColor->g = 0.0f;
-	}
-	else if (pColor->g > 1.0f)
-	{
-		pColor->g = 1.0f;
-	}
-
-	if (pColor->b < 0.0f)
-	{
-		pColor->b = 0.0f;
-	}
-	else if (pColor->b > 1.0f)
-	{
-		pColor->b = 1.0f;
-	}
 }
