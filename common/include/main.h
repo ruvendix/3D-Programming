@@ -67,6 +67,14 @@ struct VertexP3N
 	const static DWORD format = D3DFVF_XYZ | D3DFVF_NORMAL; // 형식
 };
 
+struct VertexP3ND
+{
+	D3DXVECTOR3 vPos;    // 위치
+	D3DXVECTOR3 vN;      // 법선벡터(정규화 필수!)
+	DWORD       dwColor; // 정점의 확산광
+	const static DWORD format = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE; // 형식
+};
+
 // 인덱스의 형식을 설정합니다.
 struct Index16
 {
@@ -74,9 +82,10 @@ struct Index16
 	const static D3DFORMAT format = D3DFMT_INDEX16; // 형식은 2바이트를 사용합니다.
 };
 
-extern std::vector<VertexP4D> g_vecP4D;
-extern std::vector<VertexP3D> g_vecP3D;
-extern std::vector<VertexP3N> g_vecP3N;
-extern std::vector<Index16>   g_vecIndex16;
+extern std::vector<VertexP4D>  g_vecP4D;
+extern std::vector<VertexP3D>  g_vecP3D;
+extern std::vector<VertexP3N>  g_vecP3N;
+extern std::vector<VertexP3ND> g_vecP3ND;
+extern std::vector<Index16>    g_vecIndex16;
 
 #endif
