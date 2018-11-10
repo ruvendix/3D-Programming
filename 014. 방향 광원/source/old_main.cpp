@@ -115,7 +115,7 @@ void InputOldKeyboard()
 
 void CalcTriangleNormal()
 {
-	::ZeroMemory(g_vTriangleNormal, sizeof(D3DXVECTOR3) * 12);
+	::ZeroMemory(g_vCubeTriangleNormal, sizeof(D3DXVECTOR3) * 12);
 
 	INT32 index = -1;
 	for (INT32 i = 0; i < 12; ++i)
@@ -123,7 +123,7 @@ void CalcTriangleNormal()
 		D3DXVECTOR3 v1 = g_vBaseVertex[g_vecIndex16[++index].index];
 		D3DXVECTOR3 v2 = g_vBaseVertex[g_vecIndex16[++index].index];
 		D3DXVECTOR3 v3 = g_vBaseVertex[g_vecIndex16[++index].index];
-		g_vTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
+		g_vCubeTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
 	}
 }
 
@@ -147,25 +147,25 @@ void RenderNormalVector()
 		{
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][0]];
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][1]];
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][2]];
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][3]];
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -200,7 +200,7 @@ void RenderNormalVector()
 					g_vBaseVertex[normalVectorTable[i][1]] +
 					g_vBaseVertex[normalVectorTable[i][2]]) / 3.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -230,7 +230,7 @@ void RenderNormalVector()
 					g_vBaseVertex[normalVectorTable[i][2]] +
 					g_vBaseVertex[normalVectorTable[i][3]]) / 4.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -486,6 +486,6 @@ void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2)
 	INT32 size = g_vecP3N.size();
 	for (INT32 i = 0; i < size; ++i)
 	{
-		g_vecP3N[i].vN = g_vTriangleNormal[2];
+		g_vecP3N[i].vN = g_vCubeTriangleNormal[2];
 	}
 }

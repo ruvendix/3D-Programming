@@ -42,6 +42,14 @@ namespace RX
 			m_primitiveType = primitiveType;
 		}
 
+		void setEnable(bool bEnable)
+		{
+			m_bEnable = bEnable;
+		}
+
+	protected:
+		bool m_bEnable;
+
 	private:
 		RX::RXVertexBufferDX9* m_pVB;           // 정점 버퍼입니다.
 		RX::RXIndexBufferDX9*  m_pIB;           // 인덱스 버퍼입니다.

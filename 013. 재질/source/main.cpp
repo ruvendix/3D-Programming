@@ -20,7 +20,7 @@ HRESULT g_DXResult = S_OK;
 std::vector<VertexP3D> g_vecP3D;
 std::vector<Index16>   g_vecIndex16;
 D3DXVECTOR3            g_vBaseVertex[8];
-D3DXVECTOR3            g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
+D3DXVECTOR3            g_vCubeTriangleNormal[12]; // 삼각형에서의 법선벡터
 
 // 재질은 빛의 반사 및 흡수를 설정하는 개념입니다.
 // 검정(0.0f)부터 흰색(1.0f)까지 색상의 비율을 설정할 수 있습니다.

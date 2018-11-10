@@ -30,7 +30,7 @@ extern IDirect3DIndexBuffer9*  g_pIndexBuffer;
 extern D3DXVECTOR3             g_vBaseVertex[8];
 
 extern ID3DXLine*  g_pLine; // 선을 그리기 위한 것
-extern D3DXVECTOR3 g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
+extern D3DXVECTOR3 g_vCubeTriangleNormal[12]; // 삼각형에서의 법선벡터
 
 extern D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
 extern D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬

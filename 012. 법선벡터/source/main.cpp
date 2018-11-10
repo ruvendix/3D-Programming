@@ -27,7 +27,7 @@ RX::RXMain_DX9*         g_pMainDX       = nullptr;
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
 IDirect3DIndexBuffer9*  g_pIndexBuffer  = nullptr;
 ID3DXLine*              g_pLine         = nullptr;     // 선을 그리기 위한 것
-D3DXVECTOR3 g_vTriangleNormal[12]; // 삼각형에서의 법선벡터
+D3DXVECTOR3 g_vCubeTriangleNormal[12]; // 삼각형에서의 법선벡터
 
 D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
 D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
@@ -133,7 +133,7 @@ HRESULT CALLBACK OnInit()
 	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 
 	// 정점 정보 초기화입니다.
-	::ZeroMemory(g_vTriangleNormal, sizeof(D3DXVECTOR3) * 12);
+	::ZeroMemory(g_vCubeTriangleNormal, sizeof(D3DXVECTOR3) * 12);
 
 	// 전역행렬 초기화입니다.
 	D3DXMatrixIdentity(&g_matAll);
@@ -298,7 +298,7 @@ void InputKeyboard()
 
 void CalcTriangleNormal()
 {
-	::ZeroMemory(g_vTriangleNormal, sizeof(D3DXVECTOR3) * 12);
+	::ZeroMemory(g_vCubeTriangleNormal, sizeof(D3DXVECTOR3) * 12);
 
 	INT32 index = -1;
 	for (INT32 i = 0; i < 12; ++i)
@@ -306,7 +306,7 @@ void CalcTriangleNormal()
 		D3DXVECTOR3 v1 = g_vBaseVertex[g_vecIndex16[++index].index];
 		D3DXVECTOR3 v2 = g_vBaseVertex[g_vecIndex16[++index].index];
 		D3DXVECTOR3 v3 = g_vBaseVertex[g_vecIndex16[++index].index];
-		g_vTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
+		g_vCubeTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
 	}
 }
 
@@ -330,25 +330,25 @@ void RenderNormalVector()
 		{
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][0]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i * 2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][1]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i * 2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][2]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i * 2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 
 			g_pLine->Begin();
 			vList[0] = g_vBaseVertex[normalVectorTable[i][3]];
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i * 2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -383,7 +383,7 @@ void RenderNormalVector()
 				 g_vBaseVertex[normalVectorTable[i][1]] +
 				 g_vBaseVertex[normalVectorTable[i][2]]) / 3.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[i];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
@@ -413,7 +413,7 @@ void RenderNormalVector()
 				 g_vBaseVertex[normalVectorTable[i][2]] +
 				 g_vBaseVertex[normalVectorTable[i][3]]) / 4.0f;
 
-			vList[1] = vList[0] + g_vTriangleNormal[i * 2];
+			vList[1] = vList[0] + g_vCubeTriangleNormal[i * 2];
 			g_pLine->DrawTransform(vList, 2, &g_matAll, DXCOLOR_WHITE);
 			g_pLine->End();
 		}
