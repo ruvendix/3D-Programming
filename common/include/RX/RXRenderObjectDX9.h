@@ -22,7 +22,7 @@ namespace RX
 	{
 	public:
 		RXRenderObjectDX9();
-		virtual ~RXRenderObjectDX9();
+		virtual ~RXRenderObjectDX9() = default;
 
 		void AllocVertexBuffer();
 		void AllocIndexBuffer();
@@ -31,6 +31,8 @@ namespace RX
 		void InsertVertex(FLOAT rX, FLOAT rY, FLOAT rZ, DWORD dwColor);
 		void InsertVertex(const D3DXVECTOR3& vPos, DWORD dwColor);
 		void InsertIndex(WORD first, WORD second, WORD third);
+		void FlipEnable(); // Enable 상태를 뒤집습니다.
+		void Release();
 
 		HRESULT DrawPrimitive();
 		HRESULT DrawIdxedPrimitive();

@@ -20,6 +20,15 @@
 #define ON_BIT(data, value)  (data |= value)
 #define OFF_BIT(data, value) (data &= ~value)
 #define IS_BIT(data, value)  ((data & value) != 0)
+#define TOGGLE_BIT(data, value)\
+if (IS_BIT(data, value))\
+{\
+	OFF_BIT(data, value);\
+}\
+else\
+{\
+	ON_BIT(data, value);\
+}
 
 // ====================================================================================
 // 동적 할당, Release, LostDevice, ResetDevice 관련 매크로입니다.
