@@ -237,9 +237,9 @@ void DefaultRenderState()
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	// 법선벡터를 자동으로 계산해주는 설정입니다.
 	// 단! 이 설정을 이용하게 되면 사양을 좀 탑니다...
