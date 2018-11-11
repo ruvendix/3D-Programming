@@ -244,17 +244,31 @@ void DefaultViewAndProjection()
 void DefaultLight()
 {
 	// 조명을 생성하고 등록합니다.
-	// 이번에는 점 광원을 이용합니다.
+	// 이번에는 점적 광원을 이용합니다.
 	::ZeroMemory(&g_light, sizeof(g_light));
-	g_light.Type = D3DLIGHT_POINT;
-	g_light.Position = D3DXVECTOR3(0.0f, 3.1f, 0.0f); // 점 광원은 위치가 존재합니다.
-	g_light.Range = 3.6f; // 점 광원은 범위가 존재합니다.
+	g_light.Type = D3DLIGHT_SPOT;
+	g_light.Position = D3DXVECTOR3(0.0f, 3.1f, 0.0f); // 점적 광원은 위치가 존재합니다.
+	g_light.Range = 6.0f; // 점적 광원은 범위가 존재합니다.
 	g_light.Diffuse = D3DXCOLOR(DXCOLOR_WHITE);
 	
-	// 점 광원에는 빛이 약해지는 비율인 감쇠라는 게 있습니다.
+	// 점적 광원에는 빛이 약해지는 비율인 감쇠라는 게 있습니다.
 	g_light.Attenuation0 = 0.15f; // 감쇠 1단계입니다.
 	g_light.Attenuation1 = 0.15f; // 감쇠 2단계입니다.
 	g_light.Attenuation2 = 0.0f;  // 감쇠 3단계입니다.
+
+	// 점적 광원에는 세타와 파이라는 조명 각도가 있습니다.
+	// 점적 광원은 고깔 모양처럼 되어있는데 외부원을 그리는 파이와
+	// 내부원을 그리는 세타에 영향을 받습니다. 파이 > 세타인 것만 알면 됩니다.
+	g_light.Theta = D3DXToRadian(40.0f);
+	g_light.Phi   = D3DXToRadian(80.0f);
+
+	// 점적 광원에는 폴오프라고 하는
+	// 세타와 파이에 따른 증감 비율이 있는데 1.0f으로 설정합니다.
+	g_light.Falloff = 1.0f;
+
+	// 점적 광원은 방향 광원처럼 방향이 존재합니다.
+	// 빛을 쏠 방향을 설정해주면 됩니다.
+	g_light.Direction = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 
 	// 광원을 등록하고 활성화시킵니다.
 	g_pD3DDevice9->SetLight(0, &g_light);
@@ -553,6 +567,16 @@ void OnUserInput()
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
 		g_light.Position.z -= 0.1f;
+	}
+
+	if (::GetAsyncKeyState('T') & 0x8000)
+	{
+		g_light.Phi -= 0.01f;
+	}
+
+	if (::GetAsyncKeyState('G') & 0x8000)
+	{
+		g_light.Phi += 0.01f;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)
