@@ -291,8 +291,8 @@ void CreateTerrainVertex()
 			VertexP3N vertex;
 
 			vertex.vPos.x = vStart.x + (col * TERRAIN_DISTANCE);
-			//vertex.vPos.y = vStart.y;
-			vertex.vPos.y = vStart.y + ((rand() / (float)RAND_MAX) * 0.4f);
+			vertex.vPos.y = vStart.y;
+			//vertex.vPos.y = vStart.y + ((rand() / (float)RAND_MAX) * 0.4f);
 			vertex.vPos.z = vStart.z + -(row * TERRAIN_DISTANCE);
 
 			g_vecTerrainVertex.push_back(vertex);
