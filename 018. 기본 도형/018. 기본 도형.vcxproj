@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{6A00F7DA-123B-4990-A308-1FBA8C79DDDB}</ProjectGuid>
-    <RootNamespace>My017점적광원</RootNamespace>
+    <ProjectGuid>{0FA554C8-DBAA-4436-849D-4542B8E38F48}</ProjectGuid>
+    <RootNamespace>My018기본도형</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -80,9 +80,9 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(SolutionDir)common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>base_project.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(SolutionDir)common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(SolutionDir)common\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -135,7 +135,7 @@
     <ClCompile Include="source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="017. 점적 광원.rc" />
+    <ResourceCompile Include="018. 기본 도형.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\ruven\Desktop\이미지 모음\Ruvendix.ico" />
