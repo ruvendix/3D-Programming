@@ -169,7 +169,7 @@ void DefaultViewAndProjection()
 void DefaultLight()
 {
 	// 조명을 생성하고 등록합니다.
-	// 이번에는 점적 광원을 이용합니다.
+	// 이번에는 방향 광원을 이용합니다.
 	D3DLIGHT9 light;
 	::ZeroMemory(&light, sizeof(light));
 	light.Type = D3DLIGHT_DIRECTIONAL;
