@@ -278,7 +278,7 @@ if (ptr == nullptr)\
 #define DXCOLOR_GREEN   D3DCOLOR_ARGB(255,   0, 255,   0) // 초록색
 #define DXCOLOR_BLUE    D3DCOLOR_ARGB(255,   0,   0, 255) // 파란색
 #define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255) // 분홍색
-#define DXCOLOR_TEAL    D3DCOLOR_ARGB(255, 64,  128, 128) // 청록색
+#define DXCOLOR_CYAN    D3DCOLOR_ARGB(255, 255, 255,   0) // 청록색
 
 // DirectX 에러 핸들러 매크로입니다.
 // HRESULT값만 넣어야 정상 작동합니다.
