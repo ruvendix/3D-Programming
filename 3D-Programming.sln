@@ -51,6 +51,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "017. 점적 광원", "017. 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "018. 기본 도형", "018. 기본 도형\018. 기본 도형.vcxproj", "{0FA554C8-DBAA-4436-849D-4542B8E38F48}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "019. 메시 텍스트", "019. 메시 텍스트\019. 메시 텍스트.vcxproj", "{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -203,6 +205,14 @@ Global
 		{0FA554C8-DBAA-4436-849D-4542B8E38F48}.Release|x64.Build.0 = Release|x64
 		{0FA554C8-DBAA-4436-849D-4542B8E38F48}.Release|x86.ActiveCfg = Release|Win32
 		{0FA554C8-DBAA-4436-849D-4542B8E38F48}.Release|x86.Build.0 = Release|Win32
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Debug|x64.ActiveCfg = Debug|x64
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Debug|x64.Build.0 = Debug|x64
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Debug|x86.ActiveCfg = Debug|Win32
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Debug|x86.Build.0 = Debug|Win32
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Release|x64.ActiveCfg = Release|x64
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Release|x64.Build.0 = Release|x64
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Release|x86.ActiveCfg = Release|Win32
+		{4D98A3FB-03D6-47D8-A3BD-F97FC84488D9}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
