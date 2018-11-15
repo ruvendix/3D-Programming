@@ -5,6 +5,38 @@
 
 
 // ====================================================================================
+// 공용체 선언부입니다.
+enum class TEXT_RENDERING_FLAG : INT32
+{
+	TOP,
+	LEFT,
+	CENTER,
+	RIGHT,
+	VCENTER,
+	BOTTOM,
+	WORDBREAK,
+	SINGLELINE,
+	EXPANDTABS,
+	TABSTOP,
+	NOCLIP,
+	EXTERNALLEADING,
+	CALCRECT,
+	NOPREFIX,
+	INTERNAL,
+	EDITCONTROL,
+	PATH_ELLIPSIS,
+	END_ELLIPSIS,
+	MODIFYSTRING,
+	RTLREADING,
+	WORD_ELLIPSIS,
+	NOFULLWIDTHCHARBREAK,
+	HIDEPREFIX,
+	PREFIXONLY,
+	END,
+};
+
+
+// ====================================================================================
 // 전역 변수 선언부입니다.
 IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 RX::RXMain_DX9*   g_pMainDX     = nullptr;
@@ -17,18 +49,20 @@ HRESULT g_DXResult = S_OK;
 namespace
 {
 	RX::RX3DAxisDX9 g_axis; // 3D축을 다루기 위한 것
-	ID3DXMesh* g_pMesh = nullptr; // 메시 인터페이스
-	INT32 g_shapeType;
-
+	
+	// DirectX에서 사용되는 폰트 인터페이스 포인터입니다.
+	// Win32 API보다는 좀 더 간단하지만 제대로 사용하려면 
+	// ID3DXSprite와 연동해서 사용해야 합니다.
+	ID3DXFont* g_pFont = nullptr;
+	
 	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
 	D3DXVECTOR3 g_roateAngle;
 
-	// 미리 계산된 행렬입니다.
-	D3DXMATRIXA16 g_matTextScale;
-	D3DXMATRIXA16 g_matTextTrans;
+	INT32        g_textRenderingFlagIdx = 0;
+	INT32        g_textRenderingFlag    = 0;
+	const TCHAR* g_szTextRenderingFlag  = CONVERT_FLAG_TO_STRING(DT_TOP);;
 }
 
-HDC g_hMainDC = nullptr;
 
 // ====================================================================================
 // 함수 선언부입니다.
@@ -40,19 +74,14 @@ HRESULT CALLBACK OnRelease();
 // 기본 행렬을 설정합니다.
 void DefaultMatrix();
 
-// 기본 조명을 설정합니다.
-void DefaultLight();
-
 // 기본 렌더 스테이트를 설정합니다.
 void DefaultRenderState();
 
 // 사용자의 키보드 또는 마우스 입력에 따른 처리를 합니다.
 void OnUserInput();
 
-// 폰트 정보를 받는 콜백 함수입니다.
-// 인자는 순서대로 논리 폰트, 물리 폰트, 폰트 형식, 추가 정보입니다.
-INT32 CALLBACK EnumFontCallback(const LOGFONT* pLogicalFont,
-	const TEXTMETRIC* pPhysicalFont, DWORD fontType, LPARAM lParam);
+// 텍스트 렌더링 플래그를 문자열로 바꾸는 함수입니다.
+const TCHAR* ConvertTextRenderingFlagToString(INT32 flagIdx);
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -95,7 +124,6 @@ HRESULT CALLBACK OnInit()
 	NULLCHK(g_pD3DDevice9);
 
 	DefaultMatrix();
-	DefaultLight();
 	DefaultRenderState();
 
 	// 축을 생성합니다.
@@ -104,58 +132,36 @@ HRESULT CALLBACK OnInit()
 	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
 
-	// 백버퍼의 가져옵니다.
-	IDirect3DSurface9* pBackBufferSurface = nullptr;
-	g_pD3DDevice9->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBufferSurface);
-	NULLCHK(pBackBufferSurface);
-
-	// 백버퍼의 DC를 가져와서 복사합니다.
-	HDC hBackBufferDC = nullptr;
-	pBackBufferSurface->GetDC(&hBackBufferDC);
-	SAFE_RELEASE(pBackBufferSurface); // 레퍼런스 카운트가 증가했으므로 해제 필수!
-	HDC hDC = ::CreateCompatibleDC(hBackBufferDC);
-
-	LOGFONT logicalFont; // LOOGFONT는 Logical Font의 약자입니다.
+	// ======================================================================
+	// 폰트 정보를 채웁니다.
+	D3DXFONT_DESC logicalFont;
 	::ZeroMemory(&logicalFont, sizeof(logicalFont));
 
-	// 시스템 로케일에 맞춰서 문자 집합을 설정해줍니다.
-	logicalFont.lfCharSet = DEFAULT_CHARSET;
+	logicalFont.Height    = 80; // 높이
+	logicalFont.MipLevels = 1;  // 밉레벨 사용하지 않음, 0이면 밉레벨 생성함...
+	logicalFont.Italic    = FALSE; // 이탤릭체 사용하지 않음
+	logicalFont.CharSet   = DEFAULT_CHARSET; // 시스템 로케일에 따른 문자 집합 사용
+	logicalFont.OutputPrecision = OUT_DEFAULT_PRECIS; // 기본 정확도
+	logicalFont.Quality         = DEFAULT_QUALITY;    // 기본 품질
+	logicalFont.PitchAndFamily  = DEFAULT_PITCH | FW_DONTCARE; // 기본 간격 및 패밀리 신경 쓰지 않음
 
-	// 현재 설치된 모든 폰트를 찾습니다.
-	::EnumFontFamiliesEx(
-		hDC, // 폰트를 적용할 DC
-		&logicalFont,     // 폰트 정보를 받을 LOGFONT 구조체의 포인터
-		EnumFontCallback, // 폰트 정보를 받을 콜백 함수
-		0,  // 추가 정보를 받을 포인터
-		0); // 안 쓰는 값
-
-	// 폰트를 설정합니다. "C:\Windows\Fonts\"에 있는 폰트만 설정 가능합니다.
-	// 즉, 자신의 컴퓨터에는 폰트가 있어도 다른 컴퓨터에는 없을 수 있습니다.
-	// 프로그램을 배포할 때는 폰트도 고려해야 할 대상임을 기억해두세요.
-	// _TRUNCATE은 -1을 부호 없는 정수로 표현한 값인데 42억 정도 됩니다.
-	// 즉, 복사할 길이에 제한을 두지 않겠다는 의미입니다.
-	wcsncpy_s(logicalFont.lfFaceName, _countof(logicalFont.lfFaceName), L"굴림", _TRUNCATE);
-
-	// Win32 API를 이용해서 폰트를 생성합니다.
-	// 텍스트를 메시로 생성하기 위한 과정입니다.
-	HFONT hFont = ::CreateFontIndirect(&logicalFont);
-
-	// 복사한 DC에 폰트 핸들을 적용합니다.
-	HFONT hOldFont = static_cast<HFONT>(::SelectObject(hDC, hFont));
-
-	g_DXResult = D3DXCreateText(
+	// 폰트를 설정하는 부분입니다. 전에 했던 대로 폰트 목록을 먼저 조사하고 설정해도 됩니다.
+	wcsncpy_s(logicalFont.FaceName, _countof(logicalFont.FaceName), L"굴림", _TRUNCATE);
+	
+	// ======================================================================
+	// 폰트 객체를 생성합니다.
+	// 위에서 설정한 폰트 정보를 이용해서 생성합니다.
+	g_DXResult = D3DXCreateFontIndirect(
 		g_pD3DDevice9, // 가상 디바이스 객체
-		hDC, // 폰트가 있는 DC
-		L"헬로 월드~!", // 텍스트
-		0.0f, // 폰트 편차라는 건데 그냥 0.0으로 설정하면 됨
-		0.5f, // 폰트의 돌출인데 값이 커질수록 앞으로 튀어나옴...
-		&g_pMesh, nullptr, nullptr);
+		&logicalFont,  // D3DXFONT_DESC 포인터
+		&g_pFont);     // ID3DXFont 인터페이스 포인터
 	DXERR_HANDLER(g_DXResult);
 
-	// 이전 폰트로 복구하고 폰트 및 DC를 제거합니다.
-	hFont = static_cast<HFONT>(::SelectObject(hDC, hOldFont));
-	::DeleteObject(hFont);
-	::DeleteDC(hDC);
+	// 이것과 동일한데 이렇게 하면 모든 정보를 넣어야 합니다.
+	// 하지만 폰트 정보를 먼저 설정해놓으면 필요 없는 정보를 생략할 수 있습니다.
+	// 이번에는 예제라서 거의 모든 정보를 보여드렸습니다.
+	//D3DXCreateFont(g_pD3DDevice9, 80, 0, 0, 1, FALSE, DEFAULT_CHARSET,
+	//	OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FW_DONTCARE, L"굴림", &g_pFont);
 
 	return S_OK;
 }
@@ -175,28 +181,16 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
 	g_axis.DrawAxis();
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, TRUE);
 
-	// 현재 적용된 행렬이 회전행렬뿐이라 이렇게 가져옵니다.
-	// 원래는 다른 방식으로 회전행렬을 가져옵니다.
-	D3DXMATRIXA16 matRot;
-	g_pD3DDevice9->GetTransform(D3DTS_WORLD, &matRot);
-
-	// 현재 오일러각 회전을 이용 중인데 일반적으로 아는 개념인
-	// 크기 * 자전 * 이동이 아니라 크기 * 공전 * 이동으로 적용해야 합니다.
-	D3DXMATRIXA16 matTextWorld;
-	matTextWorld = g_matTextScale * g_matTextTrans * matRot;
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matTextWorld);
-	
-	if (g_pMesh != nullptr)
-	{
-		// 텍스트가 메시로 만들어졌으니 DrawSubset()으로 렌더링합니다.
-		g_pMesh->DrawSubset(0);
-	}
-
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	// DirectX 폰트 객체를 이용해서 2D 텍스트를 렌더링합니다.
+	g_pFont->DrawText(
+		nullptr, // ID3DXSprite 인터페이스 포인터, nullptr로 설정하면 내부 객체 이용(느림)
+		g_szTextRenderingFlag, // 렌더링할 텍스트
+		_TRUNCATE, // 텍스트의 길이(_TRUNCATE는 -1인데 텍스트가 널문자 만날 때까지만 렌더링)
+		&(g_pMainDX->getClientRect()), // 렌더링 영역인데 nullptr로 설정하면 클라이언트 영역(0, 0)
+		g_textRenderingFlag, // 렌더링 플래그(OR 연산자로 여러 플래그 이용 가능한데 무시되는 것도 있음)
+		DXCOLOR_WHITE); // 렌더링할 텍스트의 색상
 
 	return S_OK;
 }
@@ -204,17 +198,12 @@ HRESULT CALLBACK OnRender()
 HRESULT CALLBACK OnRelease()
 {
 	g_axis.Release();
-	SAFE_RELEASE(g_pMesh);
+	SAFE_RELEASE(g_pFont);
 	return S_OK;
 }
 
 void DefaultMatrix()
 {
-	// =====================================================================
-	// 월드행렬을 설정합니다.
-	D3DXMatrixScaling(&g_matTextScale, 0.8f, 0.8f, 0.8f);
-	D3DXMatrixTranslation(&g_matTextTrans, -2.0f, 0.0f, 0.0f);
-
 	// =====================================================================
 	// 뷰행렬을 설정합니다.
 	D3DXVECTOR3 vEye(1.0f, 4.0f, -3.0f);   // 카메라의 위치
@@ -237,54 +226,13 @@ void DefaultMatrix()
 	g_matViewAndProjection = matView * g_matProjection;
 }
 
-void DefaultLight()
-{
-	// 조명을 생성하고 등록합니다.
-	// 이번에는 방향 광원을 이용합니다.
-	D3DLIGHT9 light;
-	::ZeroMemory(&light, sizeof(light));
-	light.Type = D3DLIGHT_DIRECTIONAL;
-	
-	D3DXVECTOR3 vDir = { -1.0f, -1.0f, 0.2f };
-	D3DXVec3Normalize(&vDir, &vDir);
-	light.Direction = vDir;
-
-	light.Ambient  = D3DXCOLOR(DXCOLOR_WHITE);
-	light.Diffuse  = D3DXCOLOR(DXCOLOR_WHITE);
-	light.Specular = D3DXCOLOR(DXCOLOR_WHITE);
-
-	// 광원을 등록하고 활성화시킵니다.
-	g_pD3DDevice9->SetLight(0, &light);
-	g_pD3DDevice9->LightEnable(0, TRUE);
-
-	// 재질은 하나만 등록 가능합니다.
-	// 따라서 재질을 자주 바꿔가며 렌더링할 때가 많습니다.
-	D3DXMATERIAL mtrl;
-	::ZeroMemory(&mtrl, sizeof(mtrl));
-	mtrl.MatD3D.Ambient  = D3DXCOLOR(DXCOLOR_BLACK);
-	mtrl.MatD3D.Diffuse  = D3DXCOLOR(DXCOLOR_BLUE);
-	
-	// 반사광 설정입니다.
-	// 반사광에는 Power가 있는데 이게 높으면 반사 범위가 줄어들고
-	// 이게 낮으면 반사 범위가 넓어집니다.
-	// 반사광을 사용하려면 렌더 스테이트에서 반사광을 활성해야 합니다.
-	mtrl.MatD3D.Specular = D3DXCOLOR(DXCOLOR_WHITE);
-	mtrl.MatD3D.Power    = 20.0f;
-
-	// 방사광 설정입니다.
-	// 방사광은 낮게 설정해야 합니다.
-	mtrl.MatD3D.Emissive = D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f);
-
-	g_pD3DDevice9->SetMaterial(&(mtrl.MatD3D));
-}
-
 void DefaultRenderState()
 {
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를
 	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
 	// 조명(라이팅, Lighting)도 그중 하나인데
-	// 이번에는 조명을 사용하므로 조명을 켜줍니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, TRUE);
+	// 이번에는 조명을 사용하지 않으므로 조명을 꺼줍니다.
+	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
 	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
@@ -296,14 +244,6 @@ void DefaultRenderState()
 	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
 	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-
-	// 법선벡터를 자동으로 계산해주는 설정입니다.
-	// 단! 이 설정을 이용하게 되면 사양을 좀 탑니다...
-	// 디폴트는 FALSE입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
-
-	// 반사광을 활성시킵니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
 }
 
 void OnUserInput()
@@ -326,6 +266,18 @@ void OnUserInput()
 	if (::GetAsyncKeyState('F') & 0x0001)
 	{
 		g_axis.FlipEnable();
+	}
+
+	if (::GetAsyncKeyState('V') & 0x0001)
+	{
+		++g_textRenderingFlagIdx;
+		g_szTextRenderingFlag = ConvertTextRenderingFlagToString(g_textRenderingFlagIdx);
+		if (g_textRenderingFlagIdx >= static_cast<INT32>(TEXT_RENDERING_FLAG::END))
+		{
+			g_textRenderingFlag    = DT_TOP;
+			g_textRenderingFlagIdx = 0;
+			g_szTextRenderingFlag  = CONVERT_FLAG_TO_STRING(DT_TOP);
+		}
 	}
 
 	if (::GetAsyncKeyState('A'))
@@ -378,4 +330,134 @@ void OnUserInput()
 		D3DXToRadian(g_roateAngle.z));
 
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+}
+
+const TCHAR* ConvertTextRenderingFlagToString(INT32 flagIdx)
+{
+	TEXT_RENDERING_FLAG value = static_cast<TEXT_RENDERING_FLAG>(flagIdx);
+	switch (value)
+	{
+	case TEXT_RENDERING_FLAG::TOP:
+	{
+		g_textRenderingFlag = DT_TOP;
+		return CONVERT_FLAG_TO_STRING(DT_TOP);
+	}
+	case TEXT_RENDERING_FLAG::LEFT:
+	{
+		g_textRenderingFlag = DT_LEFT;
+		return CONVERT_FLAG_TO_STRING(DT_LEFT);
+	}
+	case TEXT_RENDERING_FLAG::CENTER:
+	{
+		g_textRenderingFlag = DT_CENTER;
+		return CONVERT_FLAG_TO_STRING(DT_CENTER);
+	}
+	case TEXT_RENDERING_FLAG::RIGHT:
+	{
+		g_textRenderingFlag = DT_RIGHT;
+		return CONVERT_FLAG_TO_STRING(DT_RIGHT);
+	}
+	case TEXT_RENDERING_FLAG::VCENTER:
+	{
+		g_textRenderingFlag = DT_VCENTER;
+		return CONVERT_FLAG_TO_STRING(DT_VCENTER);
+	}
+	case TEXT_RENDERING_FLAG::BOTTOM:
+	{
+		g_textRenderingFlag = DT_BOTTOM;
+		return CONVERT_FLAG_TO_STRING(DT_BOTTOM);
+	}
+	case TEXT_RENDERING_FLAG::WORDBREAK:
+	{
+		g_textRenderingFlag = DT_WORDBREAK;
+		return CONVERT_FLAG_TO_STRING(DT_WORDBREAK);
+	}
+	case TEXT_RENDERING_FLAG::SINGLELINE:
+	{
+		g_textRenderingFlag = DT_SINGLELINE;
+		return CONVERT_FLAG_TO_STRING(DT_SINGLELINE);
+	}
+	case TEXT_RENDERING_FLAG::EXPANDTABS:
+	{
+		g_textRenderingFlag = DT_EXPANDTABS;
+		return CONVERT_FLAG_TO_STRING(DT_EXPANDTABS);
+	}
+	case TEXT_RENDERING_FLAG::TABSTOP:
+	{
+		g_textRenderingFlag = DT_TABSTOP;
+		return CONVERT_FLAG_TO_STRING(DT_TABSTOP);
+	}
+	case TEXT_RENDERING_FLAG::NOCLIP:
+	{
+		g_textRenderingFlag = DT_NOCLIP;
+		return CONVERT_FLAG_TO_STRING(DT_NOCLIP);
+	}
+	case TEXT_RENDERING_FLAG::EXTERNALLEADING:
+	{
+		g_textRenderingFlag = DT_EXTERNALLEADING;
+		return CONVERT_FLAG_TO_STRING(DT_EXTERNALLEADING);
+	}
+	case TEXT_RENDERING_FLAG::CALCRECT:
+	{
+		g_textRenderingFlag = DT_CALCRECT;
+		return CONVERT_FLAG_TO_STRING(DT_CALCRECT);
+	}
+	case TEXT_RENDERING_FLAG::NOPREFIX:
+	{
+		g_textRenderingFlag = DT_NOPREFIX;
+		return CONVERT_FLAG_TO_STRING(DT_NOPREFIX);
+	}
+	case TEXT_RENDERING_FLAG::INTERNAL:
+	{
+		g_textRenderingFlag = DT_INTERNAL;
+		return CONVERT_FLAG_TO_STRING(DT_INTERNAL);
+	}
+	case TEXT_RENDERING_FLAG::EDITCONTROL:
+	{
+		g_textRenderingFlag = DT_EDITCONTROL;
+		return CONVERT_FLAG_TO_STRING(DT_EDITCONTROL);
+	}
+	case TEXT_RENDERING_FLAG::PATH_ELLIPSIS:
+	{
+		g_textRenderingFlag = DT_PATH_ELLIPSIS;
+		return CONVERT_FLAG_TO_STRING(DT_PATH_ELLIPSIS);
+	}
+	case TEXT_RENDERING_FLAG::END_ELLIPSIS:
+	{
+		g_textRenderingFlag = DT_END_ELLIPSIS;
+		return CONVERT_FLAG_TO_STRING(DT_END_ELLIPSIS);
+	}
+	case TEXT_RENDERING_FLAG::MODIFYSTRING:
+	{
+		g_textRenderingFlag = DT_MODIFYSTRING;
+		return CONVERT_FLAG_TO_STRING(DT_MODIFYSTRING);
+	}
+	case TEXT_RENDERING_FLAG::RTLREADING:
+	{
+		g_textRenderingFlag = DT_RTLREADING;
+		return CONVERT_FLAG_TO_STRING(DT_RTLREADING);
+	}
+	case TEXT_RENDERING_FLAG::WORD_ELLIPSIS:
+	{
+		g_textRenderingFlag = DT_WORD_ELLIPSIS;
+		return CONVERT_FLAG_TO_STRING(DT_WORD_ELLIPSIS);
+	}
+	case TEXT_RENDERING_FLAG::NOFULLWIDTHCHARBREAK:
+	{
+		g_textRenderingFlag = DT_NOFULLWIDTHCHARBREAK;
+		return CONVERT_FLAG_TO_STRING(DT_NOFULLWIDTHCHARBREAK);
+	}
+	case TEXT_RENDERING_FLAG::HIDEPREFIX:
+	{
+		g_textRenderingFlag = DT_HIDEPREFIX;
+		return CONVERT_FLAG_TO_STRING(DT_HIDEPREFIX);
+	}
+	case TEXT_RENDERING_FLAG::PREFIXONLY:
+	{
+		g_textRenderingFlag = DT_PREFIXONLY;
+		return CONVERT_FLAG_TO_STRING(DT_PREFIXONLY);
+	}
+	}
+
+	return SZ_NULL;
 }

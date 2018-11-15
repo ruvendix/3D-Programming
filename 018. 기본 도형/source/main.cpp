@@ -32,7 +32,7 @@ namespace
 {
 	RX::RX3DAxisDX9 g_axis; // 3D축을 다루기 위한 것
 	ID3DXMesh* g_pMesh = nullptr; // 메시 인터페이스
-	INT32 g_shapeType;
+	INT32 g_shapeType  = 0;
 
 	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
 	D3DXVECTOR3 g_roateAngle;
