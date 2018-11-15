@@ -126,6 +126,7 @@ HRESULT CALLBACK OnInit()
 	// 백버퍼의 DC를 가져와서 복사합니다.
 	HDC hBackBufferDC = nullptr;
 	pBackBufferSurface->GetDC(&hBackBufferDC);
+	SAFE_RELEASE(pBackBufferSurface); // 레퍼런스 카운트가 증가했으므로 해제 필수!
 	HDC hDC = ::CreateCompatibleDC(hBackBufferDC);
 
 	LOGFONT logicalFont; // LOOGFONT는 Logical Font의 약자입니다.
