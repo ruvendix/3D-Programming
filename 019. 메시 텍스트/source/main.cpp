@@ -63,6 +63,11 @@ void DefaultRenderState();
 // 사용자의 키보드 또는 마우스 입력에 따른 처리를 합니다.
 void OnUserInput();
 
+// 폰트 정보를 받는 콜백 함수입니다.
+// 인자는 순서대로 논리 폰트, 물리 폰트, 폰트 형식, 추가 정보입니다.
+INT32 CALLBACK EnumFontCallback(const LOGFONT* pLogicalFont,
+	const TEXTMETRIC* pPhysicalFont, DWORD fontType, LPARAM lParam);
+
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
 INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -121,12 +126,19 @@ HRESULT CALLBACK OnInit()
 	HDC hBackBufferDC = nullptr;
 	pBackBufferSurface->GetDC(&hBackBufferDC);
 
-
 	LOGFONT logicalFont; // LOOGFONT는 Logical Font의 약자입니다.
 	::ZeroMemory(&logicalFont, sizeof(logicalFont));
 
 	// 시스템 로케일에 맞춰서 문자 집합을 설정해줍니다.
 	logicalFont.lfCharSet = DEFAULT_CHARSET;
+	HDC hDC2 = ::CreateCompatibleDC(nullptr);
+	// 현재 설치된 모든 폰트를 찾습니다.
+	::EnumFontFamiliesEx(
+		hDC2, // 폰트를 적용할 DC
+		&logicalFont,     // 폰트 정보를 받을 LOGFONT 구조체의 포인터
+		EnumFontCallback, // 폰트 정보를 받을 콜백 함수
+		0,  // 추가 정보를 받을 포인터
+		0); // 안 쓰는 값
 
 	// 폰트를 설정합니다. "C:\Windows\Fonts\"에 있는 폰트만 설정 가능합니다.
 	// 즉, 자신의 컴퓨터에는 폰트가 있어도 다른 컴퓨터에는 없을 수 있습니다.
@@ -379,4 +391,12 @@ void OnUserInput()
 		D3DXToRadian(g_roateAngle.z));
 
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+}
+
+INT32 CALLBACK EnumFontCallback(const LOGFONT* pLogicalFont,
+	const TEXTMETRIC* pPhysicalFont, DWORD fontType, LPARAM lParam)
+{
+	const ENUMLOGFONTEX* pData = reinterpret_cast<const ENUMLOGFONTEX*>(pLogicalFont);
+	RXLOG("%s(%s)", pData->elfFullName, pData->elfScript); // 폰트 이름(소속)
+	return -1;
 }

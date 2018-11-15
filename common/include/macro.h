@@ -272,13 +272,15 @@ if (ptr == nullptr)\
 // ====================================================================================
 // DirectX 관련 매크로입니다.
 
-#define DXCOLOR_WHITE   D3DCOLOR_ARGB(255, 255, 255, 255) // 흰색
-#define DXCOLOR_BLACK   D3DCOLOR_ARGB(255,   0,   0,   0) // 검은색
-#define DXCOLOR_RED     D3DCOLOR_ARGB(255, 255,   0,   0) // 빨간색
-#define DXCOLOR_GREEN   D3DCOLOR_ARGB(255,   0, 255,   0) // 초록색
-#define DXCOLOR_BLUE    D3DCOLOR_ARGB(255,   0,   0, 255) // 파란색
-#define DXCOLOR_MAGENTA D3DCOLOR_ARGB(255, 255,   0, 255) // 분홍색
-#define DXCOLOR_CYAN    D3DCOLOR_ARGB(255, 255, 255,   0) // 청록색
+#define DXCOLOR_WHITE     D3DCOLOR_ARGB(255, 255, 255, 255) // 흰색
+#define DXCOLOR_BLACK     D3DCOLOR_ARGB(255,   0,   0,   0) // 검은색
+#define DXCOLOR_RED       D3DCOLOR_ARGB(255, 255,   0,   0) // 빨간색
+#define DXCOLOR_GREEN     D3DCOLOR_ARGB(255,   0, 255,   0) // 초록색
+#define DXCOLOR_BLUE      D3DCOLOR_ARGB(255,   0,   0, 255) // 파란색
+#define DXCOLOR_MAGENTA   D3DCOLOR_ARGB(255, 255,   0, 255) // 심홍색
+#define DXCOLOR_YELLOW    D3DCOLOR_ARGB(255, 255, 255,   0) // 노란색
+#define DXCOLOR_CYAN      D3DCOLOR_ARGB(255,   0, 255, 255) // 청록색
+#define DXCOLOR_DARK_CYAN D3DCOLOR_ARGB(255,   0, 127, 127) // 어두운 청록색
 
 // DirectX 에러 핸들러 매크로입니다.
 // HRESULT값만 넣어야 정상 작동합니다.
