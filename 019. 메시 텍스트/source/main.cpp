@@ -154,8 +154,7 @@ HRESULT CALLBACK OnInit()
 	// 텍스트를 메시로 생성하기 위한 과정입니다.
 	HFONT hFont = ::CreateFontIndirect(&logicalFont);
 
-	// 백버퍼의 DC 정보를 복사해서 새로운 DC를 만들고
-	// 생성한 DC에 폰트 핸들을 적용합니다.
+	// 복사한 DC에 폰트 핸들을 적용합니다.
 	HFONT hOldFont = static_cast<HFONT>(::SelectObject(hDC, hFont));
 
 	g_DXResult = D3DXCreateText(
