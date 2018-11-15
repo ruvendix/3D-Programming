@@ -5,20 +5,6 @@
 
 
 // ====================================================================================
-// 공용체 선언부입니다.
-enum class SHAPE_TYPE : INT32
-{
-	NONE = 0,
-	BOX,
-	SPHERE,
-	TEAPOT,
-	TORUS,
-	CYLINDER,
-	END,
-};
-
-
-// ====================================================================================
 // 전역 변수 선언부입니다.
 IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 RX::RXMain_DX9*   g_pMainDX     = nullptr;
@@ -32,7 +18,6 @@ namespace
 {
 	RX::RX3DAxisDX9 g_axis; // 3D축을 다루기 위한 것
 	ID3DXMesh* g_pMesh = nullptr; // 메시 인터페이스
-	INT32 g_shapeType;
 
 	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
 	D3DXVECTOR3 g_roateAngle;
@@ -42,7 +27,6 @@ namespace
 	D3DXMATRIXA16 g_matTextTrans;
 }
 
-HDC g_hMainDC = nullptr;
 
 // ====================================================================================
 // 함수 선언부입니다.
