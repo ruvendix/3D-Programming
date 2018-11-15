@@ -71,6 +71,10 @@ namespace RX
 		HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
 
 		// ====================================================================================
+		// 폰트 관련 함수
+		HRESULT CreateFontDX9(const WCHAR* szFont, INT32 height);
+
+		// ====================================================================================
 		// 가상 디바이스 상태에 따른 처리 함수
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
