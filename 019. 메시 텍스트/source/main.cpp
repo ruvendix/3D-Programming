@@ -118,23 +118,25 @@ HRESULT CALLBACK OnInit()
 	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
 
-	// 폰트 테스트
+	// 백버퍼의 가져옵니다.
 	IDirect3DSurface9* pBackBufferSurface = nullptr;
 	g_pD3DDevice9->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBufferSurface);
 	NULLCHK(pBackBufferSurface);
 
+	// 백버퍼의 DC를 가져와서 복사합니다.
 	HDC hBackBufferDC = nullptr;
 	pBackBufferSurface->GetDC(&hBackBufferDC);
+	HDC hDC = ::CreateCompatibleDC(hBackBufferDC);
 
 	LOGFONT logicalFont; // LOOGFONT는 Logical Font의 약자입니다.
 	::ZeroMemory(&logicalFont, sizeof(logicalFont));
 
 	// 시스템 로케일에 맞춰서 문자 집합을 설정해줍니다.
 	logicalFont.lfCharSet = DEFAULT_CHARSET;
-	HDC hDC2 = ::CreateCompatibleDC(nullptr);
+
 	// 현재 설치된 모든 폰트를 찾습니다.
 	::EnumFontFamiliesEx(
-		hDC2, // 폰트를 적용할 DC
+		hDC, // 폰트를 적용할 DC
 		&logicalFont,     // 폰트 정보를 받을 LOGFONT 구조체의 포인터
 		EnumFontCallback, // 폰트 정보를 받을 콜백 함수
 		0,  // 추가 정보를 받을 포인터
@@ -153,7 +155,6 @@ HRESULT CALLBACK OnInit()
 
 	// 백버퍼의 DC 정보를 복사해서 새로운 DC를 만들고
 	// 생성한 DC에 폰트 핸들을 적용합니다.
-	HDC hDC = ::CreateCompatibleDC(hBackBufferDC);
 	HFONT hOldFont = static_cast<HFONT>(::SelectObject(hDC, hFont));
 
 	g_DXResult = D3DXCreateText(
