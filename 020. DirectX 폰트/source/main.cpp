@@ -5,20 +5,6 @@
 
 
 // ====================================================================================
-// 공용체 선언부입니다.
-enum class SHAPE_TYPE : INT32
-{
-	NONE = 0,
-	BOX,
-	SPHERE,
-	TEAPOT,
-	TORUS,
-	CYLINDER,
-	END,
-};
-
-
-// ====================================================================================
 // 전역 변수 선언부입니다.
 IDirect3DDevice9* g_pD3DDevice9 = nullptr;
 RX::RXMain_DX9*   g_pMainDX     = nullptr;

@@ -382,6 +382,7 @@ INT32 CALLBACK EnumFontCallback(const LOGFONT* pLogicalFont,
 	const TEXTMETRIC* pPhysicalFont, DWORD fontType, LPARAM lParam)
 {
 	const ENUMLOGFONTEX* pData = reinterpret_cast<const ENUMLOGFONTEX*>(pLogicalFont);
+	NULLCHK(pData);
 	RXLOG("%s(%s)", pData->elfFullName, pData->elfScript); // 폰트 이름(소속)
 	return -1;
 }
