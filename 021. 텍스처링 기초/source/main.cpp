@@ -99,7 +99,7 @@ HRESULT CALLBACK OnInit()
 	InitIndexBuffer();
 
 	// 텍스처를 불러옵니다.
-	// 텍스처 경로를 넘길 떄는 이스케이프 시퀸스를 주의해야 합니다!
+	// 텍스처 경로를 넘길 때는 이스케이프 시퀸스를 주의해야 합니다!
 	// \이 아니라 \\으로 넣어야 경로를 제대로 찾습니다.
 	// 이스케이프 시퀸스를 쓰기 싫다면 / 이걸 넣으면 됩니다.
 	g_DXResult = D3DXCreateTextureFromFile(
