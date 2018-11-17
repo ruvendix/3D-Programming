@@ -19,9 +19,10 @@
 
 #include <cstdio>
 #include <cstdlib>
-#include <cstring>
 #include <clocale>
 #include <ctime>
+
+#include <string>
 
 #include <vector>
 

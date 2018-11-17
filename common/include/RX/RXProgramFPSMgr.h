@@ -28,19 +28,16 @@ namespace RX
 
 		// 전체 프레임을 업데이트합니다.
 		void UpdateFrame();
-		
-		// ====================================================================================
-		// Getter
-		DWORD getFPS() const
-		{
-			return m_FPS;
-		}
+
+		// FPS를 문자열로 변환합니다.
+		const WCHAR* ConvertFPSToString();
 
 	private:
 		INT32   m_frameCnt;   // 프레임 개수입니다.
 		FLOAT   m_frameSec;   // 프레임 누적 시간입니다.
 		DWORD   m_FPS;        // 초당 프레임 개수입니다. (Frame Per Second)
 		RXTimer m_frameTimer; // 프레임을 측정하기 위한 타이머입니다.
+		std::wstring m_szFPS; // 프레임을 문자열로 저장하기 위한 것입니다.
 	};
 
 } // namespace RX end
