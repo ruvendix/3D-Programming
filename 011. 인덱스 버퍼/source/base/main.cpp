@@ -125,37 +125,37 @@ HRESULT CALLBACK OnUpdate()
 	static FLOAT rAngleX = 0.0f;
 	static FLOAT rAngleY = 0.0f;
 
-	if (::GetAsyncKeyState('A'))
+	if (::GetAsyncKeyState('A') & 0x8000)
 	{
 		rAngleZ += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('D'))
+	if (::GetAsyncKeyState('D') & 0x8000)
 	{
 		rAngleZ -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('W'))
+	if (::GetAsyncKeyState('W') & 0x8000)
 	{
 		rAngleX += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('S'))
+	if (::GetAsyncKeyState('S') & 0x8000)
 	{
 		rAngleX -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('Q'))
+	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
 		rAngleY += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('E'))
+	if (::GetAsyncKeyState('E') & 0x8000)
 	{
 		rAngleY -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('R'))
+	if (::GetAsyncKeyState('R') & 0x8000)
 	{
 		rAngleZ = 0.0f;
 		rAngleX = 0.0f;

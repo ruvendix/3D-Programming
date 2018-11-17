@@ -35,7 +35,7 @@ namespace
 	INT32 g_shapeType  = 0;
 
 	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
-	D3DXVECTOR3 g_roateAngle;
+	D3DXVECTOR3 g_rotateAngle;
 }
 
 
@@ -337,54 +337,54 @@ void OnUserInput()
 		}
 	}
 
-	if (::GetAsyncKeyState('A'))
+	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		g_roateAngle.z += 4.0f;
+		g_rotateAngle.z += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('D'))
+	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		g_roateAngle.z -= 4.0f;
+		g_rotateAngle.z -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('W'))
+	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		g_roateAngle.x += 4.0f;
+		g_rotateAngle.x += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('S'))
+	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		g_roateAngle.x -= 4.0f;
+		g_rotateAngle.x -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('Q'))
+	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		g_roateAngle.y += 4.0f;
+		g_rotateAngle.y += 4.0f;
 	}
 
-	if (::GetAsyncKeyState('E'))
+	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		g_roateAngle.y -= 4.0f;
+		g_rotateAngle.y -= 4.0f;
 	}
 
-	if (::GetAsyncKeyState('R'))
+	if (::GetAsyncKeyState('R') & 0x8000)
 	{
-		RX::ZeroVector(&g_roateAngle);
+		RX::ZeroVector(&g_rotateAngle);
 		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	// 각도 보정
-	g_roateAngle.z = RX::AdjustAngle(g_roateAngle.z);
-	g_roateAngle.x = RX::AdjustAngle(g_roateAngle.x);
-	g_roateAngle.y = RX::AdjustAngle(g_roateAngle.y);
+	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
+	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
+	g_rotateAngle.y = RX::AdjustAngle(g_rotateAngle.y);
 
 	// 회전행렬입니다. 순서는 Z -> X -> Y입니다.
 	// 즉, Roll -> Pitch -> Yaw입니다.
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
-		D3DXToRadian(g_roateAngle.y),
-		D3DXToRadian(g_roateAngle.x),
-		D3DXToRadian(g_roateAngle.z));
+		D3DXToRadian(g_rotateAngle.y),
+		D3DXToRadian(g_rotateAngle.x),
+		D3DXToRadian(g_rotateAngle.z));
 
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 }

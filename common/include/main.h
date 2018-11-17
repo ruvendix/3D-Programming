@@ -40,6 +40,7 @@
 // N  => Normal (X, Y, Z)         법선벡터
 // D  => Diffuse                  확산(색상)
 // S  => Specular                 반사
+// Tn => Texture Num              텍스처 UV 좌표 개수
 
 struct VertexP4D
 {
@@ -67,6 +68,14 @@ struct VertexP3N
 	const static DWORD format = D3DFVF_XYZ | D3DFVF_NORMAL; // 형식
 };
 
+// 3D 좌표와 텍스처 UV 좌표만 있는 형식입니다.
+struct VertexP3T1
+{
+	D3DXVECTOR3 vPos; // 위치
+	TextureUV   tex;  // 텍스처 UV 좌표
+	const static DWORD format = D3DFVF_XYZ | D3DFVF_TEX1; // 형식
+};
+
 struct VertexP3ND
 {
 	D3DXVECTOR3 vPos;    // 위치
@@ -85,6 +94,7 @@ struct Index16
 extern std::vector<VertexP4D>  g_vecP4D;
 extern std::vector<VertexP3D>  g_vecP3D;
 extern std::vector<VertexP3N>  g_vecP3N;
+extern std::vector<VertexP3T1> g_vecP3T1;
 extern std::vector<VertexP3ND> g_vecP3ND;
 extern std::vector<Index16>    g_vecIndex16;
 

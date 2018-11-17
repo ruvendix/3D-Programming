@@ -78,4 +78,11 @@ struct SubFuncInfo
 	}
 };
 
+// 텍스처 UV 좌표 관리용입니다.
+struct TextureUV
+{
+	FLOAT u;
+	FLOAT v;
+};
+
 #endif
