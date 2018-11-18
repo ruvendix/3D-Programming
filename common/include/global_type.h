@@ -85,4 +85,12 @@ struct TextureUV
 	FLOAT v;
 };
 
+// 예제 출력용입니다.
+struct ExampleRenderInfo
+{
+	INT32 idx;
+	INT32 value;
+	const TCHAR* szValue;
+};
+
 #endif

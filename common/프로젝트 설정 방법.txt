@@ -12,7 +12,7 @@ $(SolutionDir)Bin\Debug\
 $(ProjectDir)Debug\$(Platform)\
 
 디버깅 -> 작업 디렉터리
-$(SolutionDir)Resource\Texture
+$(SolutionDir)Bin\Debug
 
 디버깅 -> 환경
 Path=$(SolutionDir)common\lib

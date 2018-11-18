@@ -74,6 +74,9 @@ namespace RX
 		// 폰트 관련 함수
 		HRESULT CreateFontDX9(const WCHAR* szFont, INT32 height);
 
+		// 클라이언트 영역 왼쪽 위를 기준으로 텍스트를 렌더링하는 함수
+		void DrawTextOriginClientArea(const TCHAR* szText, DWORD flag, D3DCOLOR color);
+
 		// ====================================================================================
 		// 가상 디바이스 상태에 따른 처리 함수
 		HRESULT OnLostDevice();
@@ -95,6 +98,11 @@ namespace RX
 		IDirect3DDevice9* getD3DDevice9() const noexcept
 		{
 			return m_pD3DDevice9;
+		}
+
+		ID3DXFont* getD3DXFont() const noexcept
+		{
+			return m_pD3DXFont;
 		}
 
 		// ====================================================================================
@@ -119,6 +127,7 @@ namespace RX
 		RECT                   m_rtScissor;   // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
 		IDirect3D9*            m_pD3D9;       // D3D9 객체입니다.
 		IDirect3DDevice9*      m_pD3DDevice9; // D3D9 가상 디바이스입니다.
+		ID3DXFont*             m_pD3DXFont;   // D3DX 폰트 객체입니다.
 		D3DPRESENT_PARAMETERS* m_pD3DPP;      // D3D9 가상 디바이스의 정보입니다.
 		D3DVIEWPORT9           m_viewport9;   // 백버퍼 서페이스의 뷰포트입니다.
 		D3DCOLOR               m_clearColor;  // 백버퍼 서페이스의 클리어 색상입니다.
