@@ -26,6 +26,7 @@ namespace RX
 	const TCHAR* ConvertD3DFORMATToString(D3DFORMAT surfaceFormat);
 	const TCHAR* ConvertD3DXIMAGE_FILEFORMATToString(D3DXIMAGE_FILEFORMAT fileFormat);
 	void         PrintD3DPresentParameters(const D3DPRESENT_PARAMETERS& D3DPP);
+	ID3DXFont*   CreateDXFont(const WCHAR* szFont, INT32 height);
 
 } // namespace RX end
 
