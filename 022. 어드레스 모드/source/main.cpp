@@ -7,11 +7,11 @@
 // 공용체 선언부입니다.
 enum class ADDRESS_MODE : INT32
 {
-	WRAP = 1,
-	MIRROR,
-	CLAMP,
-	BORDER,
-	MIRRORONCE,
+	WRAP = 1,   // 랩(반복)
+	MIRROR,     // 미러(거울처럼 반사)
+	CLAMP,      // 클램프(경계 픽셀로 반복)
+	BORDER,     // 보더(경계 색상을 지정해서 반복)
+	MIRRORONCE, // 한번만 반복하는 미러
 	END,
 };
 
@@ -163,7 +163,7 @@ HRESULT CALLBACK OnRender()
 	g_pD3DDevice9->SetTexture(0, nullptr);
 
 	TCHAR szText[DEFAULT_STRING_LENGTH];
-	swprintf_s(szText, L"U(G) V(H)\nU => %s\nV => %s",
+	swprintf_s(szText, L"U(T) V(Y)\nU => %s\nV => %s",
 		g_exampleRenderInfoU.szValue, g_exampleRenderInfoV.szValue);
 	RX::RXRendererDX9::Instance()->DrawTextOriginClientArea(
 		szText, DT_LEFT, DXCOLOR_WHITE);
@@ -368,7 +368,7 @@ void OnUserInput()
 		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
-	if (::GetAsyncKeyState('G') & 0x0001)
+	if (::GetAsyncKeyState('T') & 0x0001)
 	{
 		++g_exampleRenderInfoU.idx;
 		g_exampleRenderInfoU.szValue = UpdateAddressModeToString(&g_exampleRenderInfoU);
@@ -382,7 +382,7 @@ void OnUserInput()
 		g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, g_exampleRenderInfoU.value);
 	}
 
-	if (::GetAsyncKeyState('H') & 0x0001)
+	if (::GetAsyncKeyState('Y') & 0x0001)
 	{
 		++g_exampleRenderInfoV.idx;
 		g_exampleRenderInfoV.szValue = UpdateAddressModeToString(&g_exampleRenderInfoV);
