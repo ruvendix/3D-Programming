@@ -166,7 +166,7 @@ HRESULT CALLBACK OnRender()
 	g_pD3DDevice9->SetTexture(0, nullptr);
 
 	TCHAR szText[DEFAULT_STRING_LENGTH];
-	swprintf_s(szText, L"È®´ë(G) Ãà¼Ò(H) ¹Ó¸Ê(J)\nÈ®´ë => %s\nÃà¼Ò => %s\n¹Ó¸Ê => %s",
+	swprintf_s(szText, L"È®´ë(T) Ãà¼Ò(Y) ¹Ó¸Ê(U)\nÈ®´ë => %s\nÃà¼Ò => %s\n¹Ó¸Ê => %s",
 		g_exampleRenderInfoMag.szValue, g_exampleRenderInfoMin.szValue,
 		g_exampleRenderInfoMip.szValue);
 	RX::RXRendererDX9::Instance()->DrawTextOriginClientArea(
@@ -419,7 +419,6 @@ void OnUserInput()
 
 		g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MIPFILTER, g_exampleRenderInfoMip.value);
 	}
-
 
 	// °¢µµ º¸Á¤
 	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
