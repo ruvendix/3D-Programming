@@ -61,6 +61,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "022. 어드레스 모드", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "023. 텍스처 필터링", "023. 텍스처 필터링\023. 텍스처 필터링.vcxproj", "{2D13C407-A74E-4D62-A7CC-FBC0E66ABEF2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "024. 멀티 텍스처링", "024. 멀티 텍스처링\024. 멀티 텍스처링.vcxproj", "{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -253,6 +255,14 @@ Global
 		{2D13C407-A74E-4D62-A7CC-FBC0E66ABEF2}.Release|x64.Build.0 = Release|x64
 		{2D13C407-A74E-4D62-A7CC-FBC0E66ABEF2}.Release|x86.ActiveCfg = Release|Win32
 		{2D13C407-A74E-4D62-A7CC-FBC0E66ABEF2}.Release|x86.Build.0 = Release|Win32
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Debug|x64.ActiveCfg = Debug|x64
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Debug|x64.Build.0 = Debug|x64
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Debug|x86.ActiveCfg = Debug|Win32
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Debug|x86.Build.0 = Debug|Win32
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Release|x64.ActiveCfg = Release|x64
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Release|x64.Build.0 = Release|x64
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Release|x86.ActiveCfg = Release|Win32
+		{C98F8C8B-2EF1-4FC7-B289-545B8A3F46A6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

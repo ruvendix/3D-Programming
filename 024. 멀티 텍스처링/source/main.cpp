@@ -5,13 +5,16 @@
 
 // ====================================================================================
 // 공용체 선언부입니다.
-enum class ADDRESS_MODE : INT32
+enum class BLEND_OPERATION : INT32
 {
-	WRAP = 1,   // 랩(반복)
-	MIRROR,     // 미러(거울처럼 반사)
-	CLAMP,      // 클램프(경계 픽셀로 반복)
-	BORDER,     // 보더(경계 색상을 지정해서 반복)
-	MIRRORONCE, // 한번만 반복하는 미러
+	MODULATE,    // 곱셈
+	MODULATE2X,  // 곱셈하고 1비트 왼쪽 시프트(X2)
+	MODULATE4X,  // 곱셈하고 2비트 왼쪽 시프트(X4)
+	ADD,         // 덧셈
+	ADDSIGNED,   // 덧셈하고 0.5 빼기(바이어스)
+	ADDSIGNED2X, // 덧셈하고 0.5 뺀 다음에 1비트 왼쪽 시프트(X2)
+	SUBTRACT,    // 뺄셈
+	ADDSMOOTH,   // 두값을 더해서 두값을 곱한 값에서 뺌(A + B - AB => A + B(1-A))
 	END,
 };
 
@@ -25,7 +28,7 @@ HRESULT g_DXResult = S_OK;
 
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
 IDirect3DIndexBuffer9*  g_pIndexBuffer  = nullptr;
-std::vector<VertexP3T1> g_vecP3T1;
+std::vector<VertexP3T2> g_vecP3T2;
 std::vector<Index16>    g_vecIndex16;
 
 namespace
@@ -34,11 +37,11 @@ namespace
 	D3DXVECTOR3 g_rotateAngle;
 
 	// 텍스처 포인터입니다.
-	IDirect3DTexture9* g_pTexture = nullptr;
+	IDirect3DTexture9* g_pTexture1 = nullptr;
+	IDirect3DTexture9* g_pTexture2 = nullptr;
 
 	// 예제 출력용입니다.
-	ExampleRenderInfo g_exampleRenderInfoU;
-	ExampleRenderInfo g_exampleRenderInfoV;
+	ExampleRenderInfo g_exampleRenderInfo;
 }
 
 
@@ -58,6 +61,9 @@ void DefaultRenderState();
 // 기본 텍스처 샘플링 스테이트를 설정합니다.
 void DefaultSamplerState();
 
+// 기본 멀티 텍스처링 스테이트를 설정합니다.
+void DefaultTextureStageState();
+
 // 정점 버퍼에 정점 정보를 설정합니다.
 void InitVertexBuffer();
 
@@ -67,8 +73,8 @@ void InitIndexBuffer();
 // 사용자의 키보드 또는 마우스 입력에 따른 처리를 합니다.
 void OnUserInput();
 
-// 어드레스 모드 정보를 갱신해줍니다.
-const TCHAR* UpdateAddressMode(ExampleRenderInfo* pInfo);
+// 블렌드 정보를 갱신해줍니다.
+const TCHAR* UpdateBlendOperation(ExampleRenderInfo* pInfo);
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -113,6 +119,7 @@ HRESULT CALLBACK OnInit()
 	DefaultMatrix();
 	DefaultRenderState();
 	DefaultSamplerState();
+	DefaultTextureStageState();
 
 	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
@@ -128,14 +135,19 @@ HRESULT CALLBACK OnInit()
 	g_DXResult = D3DXCreateTextureFromFile(
 		g_pD3DDevice9, // 가상 디바이스 포인터
 		L"Resource/Texture/Kirby.jpg", // 텍스처 파일이 있는 경로(솔루션 폴더 기준으로 잡음)
-		&g_pTexture); // 텍스처 포인터
+		&g_pTexture1); // 텍스처 포인터
+	DXERR_HANDLER(g_DXResult);
+
+	g_DXResult = D3DXCreateTextureFromFile(
+		g_pD3DDevice9, // 가상 디바이스 포인터
+		L"Resource/Texture/LightMap.jpg", // 텍스처 파일이 있는 경로(솔루션 폴더 기준으로 잡음)
+		&g_pTexture2); // 텍스처 포인터
 	DXERR_HANDLER(g_DXResult);
 
 	// 예제 출력용 정보를 초기화합니다.
-	g_exampleRenderInfoU.idx     = 1; // 시작값이 1인 것에 주의!
-	g_exampleRenderInfoU.value   = D3DTADDRESS_WRAP;
-	g_exampleRenderInfoU.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
-	g_exampleRenderInfoV = g_exampleRenderInfoU;
+	g_exampleRenderInfo.idx     = 0;
+	g_exampleRenderInfo.value   = D3DTOP_MODULATE;
+	g_exampleRenderInfo.szValue = CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE);
 
 	return S_OK;
 }
@@ -155,24 +167,28 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetTexture(0, g_pTexture);
-	g_pD3DDevice9->SetFVF(VertexP3T1::format);
-	g_pD3DDevice9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3T1));
+	g_pD3DDevice9->SetTexture(0, g_pTexture1);
+	g_pD3DDevice9->SetTexture(1, g_pTexture2);
+
+	g_pD3DDevice9->SetFVF(VertexP3T2::format);
+	g_pD3DDevice9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3T2));
 	g_pD3DDevice9->SetIndices(g_pIndexBuffer);
 	g_pD3DDevice9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 6, 0, 2);
+
 	g_pD3DDevice9->SetTexture(0, nullptr);
+	g_pD3DDevice9->SetTexture(1, nullptr);
 
 	TCHAR szText[DEFAULT_STRING_LENGTH];
-	swprintf_s(szText, L"U(T) V(Y)\nU => %s\nV => %s",
-		g_exampleRenderInfoU.szValue, g_exampleRenderInfoV.szValue);
-	RX::RXRendererDX9::Instance()->DrawTextOriginClientArea(
-		szText, DT_LEFT, DXCOLOR_WHITE);
+	swprintf_s(szText, L"연산 변경(T)\n현재 연산 => %s", g_exampleRenderInfo.szValue);
+	RX::RXRendererDX9::Instance()->DrawTextOriginClientArea(szText, DT_LEFT, DXCOLOR_WHITE);
+
 	return S_OK;
 }
 
 HRESULT CALLBACK OnRelease()
 {
-	SAFE_RELEASE(g_pTexture);
+	SAFE_RELEASE(g_pTexture1);
+	SAFE_RELEASE(g_pTexture2);
 	SAFE_RELEASE(g_pIndexBuffer);
 	SAFE_RELEASE(g_pVertexBuffer);
 	return S_OK;
@@ -225,51 +241,85 @@ void DefaultSamplerState()
 	// U와 V 따로 어드레스 모드를 설정할 수 있습니다.
 	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DPTADDRESSCAPS_WRAP);
 	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DPTADDRESSCAPS_WRAP);
+
+	// 필터링을 설정합니다.
+	// 샘플러의 필터링은 확대(Magnification), 축소(Minification), 밉맵(Mipmap) 이렇게 3개입니다.
+	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
+	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_NONE);
+	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+}
+
+// 몇몇은 필요 없는 과정인데 예제이므로 전부 다 작성할게요.
+void DefaultTextureStageState()
+{
+	// 텍스처 스테이지 스테이트를 설정합니다. (필수 아님)
+	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0); // 첫번째 UV 좌표
+	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1); // 두번째 UV 좌표
+
+	// 첫번째 스테이지의 첫번째 픽셀은 텍스처에서 가져오고
+	// 별다른 연산 없이 그대로 첫번째 픽셀을 사용합니다. (필수 아님)
+	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+
+	// 두번째 스테이지의 첫번째 픽셀은 텍스처에서 가져오고
+	// 두번째 픽셀은 이전 단계의 픽셀 연산 결과를 가져와서
+	// 두 픽셀을 서로 곱합니다. (Modulate, 필수)
+	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
+	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+
+	// 0부터 시작하므로 2는 세번째가 됩니다.
+	// 세번째부터는 사용하지 않겠다고 알립니다. (필수 아님)
+	g_pD3DDevice9->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 }
 
 void InitVertexBuffer()
 {
-	VertexP3T1 vertex;
+	VertexP3T2 vertex;
 	::ZeroMemory(&vertex, sizeof(vertex));
 
 	// 첫번째 정점입니다.
 	vertex.vPos.x = -1.0f;
 	vertex.vPos.y =  1.0f;
-	vertex.tex.u  = -2.0f;
-	vertex.tex.v  = -2.0f;
-	g_vecP3T1.push_back(vertex);
+	vertex.tex1.u =  0.0f;
+	vertex.tex1.v =  0.0f;
+	vertex.tex2 = vertex.tex1;
+	g_vecP3T2.push_back(vertex);
 
 	// 두번째 정점입니다.
 	vertex.vPos.x =  1.0f;
 	vertex.vPos.y =  1.0f;
-	vertex.tex.u  =  2.0f;
-	vertex.tex.v  = -2.0f;
-	g_vecP3T1.push_back(vertex);
+	vertex.tex1.u =  1.0f;
+	vertex.tex1.v =  0.0f;
+	vertex.tex2 = vertex.tex1;
+	g_vecP3T2.push_back(vertex);
 
 	// 세번째 정점입니다.
 	vertex.vPos.x = -1.0f;
 	vertex.vPos.y = -1.0f;
-	vertex.tex.u  = -2.0f;
-	vertex.tex.v  =  2.0f;
-	g_vecP3T1.push_back(vertex);
+	vertex.tex1.u =  0.0f;
+	vertex.tex1.v =  1.0f;
+	vertex.tex2 = vertex.tex1;
+	g_vecP3T2.push_back(vertex);
 
 	// 네번째 정점입니다.
 	vertex.vPos.x =  1.0f;
 	vertex.vPos.y = -1.0f;
-	vertex.tex.u  =  2.0f;
-	vertex.tex.v  =  2.0f;
-	g_vecP3T1.push_back(vertex);
+	vertex.tex1.u =  1.0f;
+	vertex.tex1.v =  1.0f;
+	vertex.tex2 = vertex.tex1;
+	g_vecP3T2.push_back(vertex);
 
 	// 정점 버퍼 생성하기
-	INT32 verticesSize = g_vecP3T1.size() * sizeof(vertex);
+	INT32 verticesSize = g_vecP3T2.size() * sizeof(vertex);
 	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(verticesSize, D3DUSAGE_WRITEONLY,
-		VertexP3T1::format, D3DPOOL_MANAGED, &g_pVertexBuffer, nullptr);
+		VertexP3T2::format, D3DPOOL_MANAGED, &g_pVertexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 
 	// 정점 버퍼에 정점 정보 넣기
 	void* pData = nullptr;
 	g_pVertexBuffer->Lock(0, verticesSize, &pData, D3DFLAG_NONE);
-	::CopyMemory(pData, &g_vecP3T1[0], verticesSize);
+	::CopyMemory(pData, &g_vecP3T2[0], verticesSize);
 	g_pVertexBuffer->Unlock();
 }
 
@@ -370,32 +420,18 @@ void OnUserInput()
 
 	if (::GetAsyncKeyState('T') & 0x0001)
 	{
-		++g_exampleRenderInfoU.idx;
-		g_exampleRenderInfoU.szValue = UpdateAddressMode(&g_exampleRenderInfoU);
-		if (g_exampleRenderInfoU.idx >= static_cast<INT32>(ADDRESS_MODE::END))
+		++g_exampleRenderInfo.idx;
+		g_exampleRenderInfo.szValue = UpdateBlendOperation(&g_exampleRenderInfo);
+		if (g_exampleRenderInfo.idx >= static_cast<INT32>(BLEND_OPERATION::END))
 		{
-			g_exampleRenderInfoU.idx     = 1; // 시작값이 1인 것에 주의!
-			g_exampleRenderInfoU.value   = D3DTADDRESS_WRAP;
-			g_exampleRenderInfoU.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
+			g_exampleRenderInfo.idx     = 0;
+			g_exampleRenderInfo.value   = D3DTOP_MODULATE;
+			g_exampleRenderInfo.szValue = CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE);
 		}
 
-		g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, g_exampleRenderInfoU.value);
+		g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLOROP, g_exampleRenderInfo.value);
 	}
 
-	if (::GetAsyncKeyState('Y') & 0x0001)
-	{
-		++g_exampleRenderInfoV.idx;
-		g_exampleRenderInfoV.szValue = UpdateAddressMode(&g_exampleRenderInfoV);
-		if (g_exampleRenderInfoV.idx >= static_cast<INT32>(ADDRESS_MODE::END))
-		{
-			g_exampleRenderInfoV.idx     = 1; // 시작값이 1인 것에 주의!
-			g_exampleRenderInfoV.value   = D3DTADDRESS_WRAP;
-			g_exampleRenderInfoV.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
-		}
-
-		g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSV, g_exampleRenderInfoV.value);
-	}
-	
 	// 각도 보정
 	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
 	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
@@ -411,37 +447,51 @@ void OnUserInput()
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
-const TCHAR* UpdateAddressMode(ExampleRenderInfo* pInfo)
+const TCHAR* UpdateBlendOperation(ExampleRenderInfo * pInfo)
 {
 	NULLCHK(pInfo);
-	ADDRESS_MODE value = static_cast<ADDRESS_MODE>(pInfo->idx);
+	BLEND_OPERATION value = static_cast<BLEND_OPERATION>(pInfo->idx);
 	switch (value)
 	{
-	case ADDRESS_MODE::WRAP:
+	case BLEND_OPERATION::MODULATE:
 	{
-		pInfo->value = D3DTADDRESS_WRAP;
-		return CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
+		pInfo->value = D3DTOP_MODULATE;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE);
 	}
-	case ADDRESS_MODE::MIRROR:
+	case BLEND_OPERATION::MODULATE2X:
 	{
-		pInfo->value = D3DTADDRESS_MIRROR;
-		return CONVERT_FLAG_TO_STRING(D3DTADDRESS_MIRROR);
+		pInfo->value = D3DTOP_MODULATE2X;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE2X);
 	}
-	case ADDRESS_MODE::CLAMP:
+	case BLEND_OPERATION::MODULATE4X:
 	{
-		pInfo->value = D3DTADDRESS_CLAMP;
-		return CONVERT_FLAG_TO_STRING(D3DTADDRESS_CLAMP);
+		pInfo->value = D3DTOP_MODULATE4X;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE4X);
 	}
-	case ADDRESS_MODE::BORDER:
+	case BLEND_OPERATION::ADD:
 	{
-		pInfo->value = D3DTADDRESS_BORDER;
-		g_pD3DDevice9->SetSamplerState(0, D3DSAMP_BORDERCOLOR, DXCOLOR_GREEN);
-		return CONVERT_FLAG_TO_STRING(D3DTADDRESS_BORDER);
+		pInfo->value = D3DTOP_ADD;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_ADD);
 	}
-	case ADDRESS_MODE::MIRRORONCE:
+	case BLEND_OPERATION::ADDSIGNED:
 	{
-		pInfo->value = D3DTADDRESS_MIRRORONCE;
-		return CONVERT_FLAG_TO_STRING(D3DTADDRESS_MIRRORONCE);
+		pInfo->value = D3DTOP_ADDSIGNED;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_ADDSIGNED);
+	}
+	case BLEND_OPERATION::ADDSIGNED2X:
+	{
+		pInfo->value = D3DTOP_ADDSIGNED2X;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_ADDSIGNED2X);
+	}
+	case BLEND_OPERATION::SUBTRACT:
+	{
+		pInfo->value = D3DTOP_SUBTRACT;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_SUBTRACT);
+	}
+	case BLEND_OPERATION::ADDSMOOTH:
+	{
+		pInfo->value = D3DTOP_ADDSMOOTH;
+		return CONVERT_FLAG_TO_STRING(D3DTOP_ADDSMOOTH);
 	}
 	}
 

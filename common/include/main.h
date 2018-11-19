@@ -76,6 +76,15 @@ struct VertexP3T1
 	const static DWORD format = D3DFVF_XYZ | D3DFVF_TEX1; // 형식
 };
 
+// 3D 좌표와 텍스처 UV 좌표만 있는 형식입니다.
+struct VertexP3T2
+{
+	D3DXVECTOR3 vPos; // 위치
+	TextureUV   tex1; // 첫번째 텍스처 UV 좌표
+	TextureUV   tex2; // 두번째 텍스처 UV 좌표
+	const static DWORD format = D3DFVF_XYZ | D3DFVF_TEX2; // 형식 (D3DFVF_TEX1은 넣을 필요 없음!)
+};
+
 struct VertexP3ND
 {
 	D3DXVECTOR3 vPos;    // 위치
@@ -95,6 +104,7 @@ extern std::vector<VertexP4D>  g_vecP4D;
 extern std::vector<VertexP3D>  g_vecP3D;
 extern std::vector<VertexP3N>  g_vecP3N;
 extern std::vector<VertexP3T1> g_vecP3T1;
+extern std::vector<VertexP3T2> g_vecP3T2;
 extern std::vector<VertexP3ND> g_vecP3ND;
 extern std::vector<Index16>    g_vecIndex16;
 

@@ -70,7 +70,7 @@ void InitIndexBuffer();
 void OnUserInput();
 
 // 필터링 정보를 갱신해줍니다.
-const TCHAR* UpdateFilterTypeToString(ExampleRenderInfo* pInfo);
+const TCHAR* UpdateFilterType(ExampleRenderInfo* pInfo);
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -381,7 +381,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('T') & 0x0001)
 	{
 		++g_exampleRenderInfoMag.idx;
-		g_exampleRenderInfoMag.szValue = UpdateFilterTypeToString(&g_exampleRenderInfoMag);
+		g_exampleRenderInfoMag.szValue = UpdateFilterType(&g_exampleRenderInfoMag);
 		if (g_exampleRenderInfoMag.idx >= static_cast<INT32>(FILTER_TYPE::END))
 		{
 			g_exampleRenderInfoMag.idx     = 0;
@@ -395,7 +395,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('Y') & 0x0001)
 	{
 		++g_exampleRenderInfoMin.idx;
-		g_exampleRenderInfoMin.szValue = UpdateFilterTypeToString(&g_exampleRenderInfoMin);
+		g_exampleRenderInfoMin.szValue = UpdateFilterType(&g_exampleRenderInfoMin);
 		if (g_exampleRenderInfoMin.idx >= static_cast<INT32>(FILTER_TYPE::END))
 		{
 			g_exampleRenderInfoMin.idx     = 0;
@@ -409,7 +409,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('U') & 0x0001)
 	{
 		++g_exampleRenderInfoMip.idx;
-		g_exampleRenderInfoMip.szValue = UpdateFilterTypeToString(&g_exampleRenderInfoMip);
+		g_exampleRenderInfoMip.szValue = UpdateFilterType(&g_exampleRenderInfoMip);
 		if (g_exampleRenderInfoMip.idx >= static_cast<INT32>(FILTER_TYPE::END))
 		{
 			g_exampleRenderInfoMip.idx     = 0;
@@ -435,7 +435,7 @@ void OnUserInput()
 	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
-const TCHAR* UpdateFilterTypeToString(ExampleRenderInfo* pInfo)
+const TCHAR* UpdateFilterType(ExampleRenderInfo* pInfo)
 {
 	NULLCHK(pInfo);
 	FILTER_TYPE value = static_cast<FILTER_TYPE>(pInfo->idx);
