@@ -43,8 +43,6 @@ namespace
 }
 
 
-INT32 _tWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR szCmdLine, INT32 cmdShow);
-
 // ====================================================================================
 // 함수 선언부입니다.
 HRESULT CALLBACK OnInit();

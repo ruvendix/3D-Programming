@@ -65,6 +65,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "024. 멀티 텍스처링", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "025. 알파블렌딩", "025. 알파블렌딩\025. 알파블렌딩.vcxproj", "{CDF0BCF4-F4A3-4C12-B6F1-8FF05C05A5A9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "026. XFile", "026. XFile\026. XFile.vcxproj", "{37BD92AF-E594-4D7C-B5A6-506D07E046B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -273,6 +275,14 @@ Global
 		{CDF0BCF4-F4A3-4C12-B6F1-8FF05C05A5A9}.Release|x64.Build.0 = Release|x64
 		{CDF0BCF4-F4A3-4C12-B6F1-8FF05C05A5A9}.Release|x86.ActiveCfg = Release|Win32
 		{CDF0BCF4-F4A3-4C12-B6F1-8FF05C05A5A9}.Release|x86.Build.0 = Release|Win32
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Debug|x64.ActiveCfg = Debug|x64
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Debug|x64.Build.0 = Debug|x64
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Debug|x86.ActiveCfg = Debug|Win32
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Debug|x86.Build.0 = Debug|Win32
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Release|x64.ActiveCfg = Release|x64
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Release|x64.Build.0 = Release|x64
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Release|x86.ActiveCfg = Release|Win32
+		{37BD92AF-E594-4D7C-B5A6-506D07E046B3}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

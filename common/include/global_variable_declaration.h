@@ -32,6 +32,7 @@ extern D3DXVECTOR3             g_vBaseVertex[8];
 extern ID3DXLine*  g_pLine; // 선을 그리기 위한 것
 extern D3DXVECTOR3 g_vCubeTriangleNormal[12]; // 삼각형에서의 법선벡터
 
+extern D3DXMATRIXA16 g_matWorld; // 월드행렬
 extern D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
 extern D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
 extern D3DXMATRIXA16 g_matAll; // 월드행렬과 결합하기 위한 전체변환행렬
