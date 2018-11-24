@@ -146,7 +146,7 @@ HRESULT CALLBACK OnRelease()
 	}
 	
 	SAFE_DELTE_ARR(g_loadXFileInfo.ppMeshTexture);
-	SAFE_DELTE(g_loadXFileInfo.pMaterial);
+	SAFE_DELTE_ARR(g_loadXFileInfo.pMaterial);
 
 	SAFE_RELEASE(g_loadXFileInfo.pMesh);
 
