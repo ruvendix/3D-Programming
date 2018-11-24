@@ -214,9 +214,9 @@ void LoadXFile()
 
 	// XFile에서 로딩한 머티리얼 정보를 캐스팅해서 사용합니다.
 	// 이렇게 포인터를 다른 포인터로 해석할 때는 reinterpret_cast<>를 사용해야 가독성이 좋습니다.
-	D3DXMATERIAL* pMaterial = static_cast<D3DXMATERIAL*>(pMaterialBuffer->GetBufferPointer());
+	D3DXMATERIAL* pMaterial = reinterpret_cast<D3DXMATERIAL*>(pMaterialBuffer->GetBufferPointer());
 
-	// create a new material buffer for each material in the mesh
+	// 부가 정보를 저장하기 위한 공간을 생성합니다.
 	INT32 materialCnt = g_loadXFileInfo.materialCnt;
 	g_loadXFileInfo.pMaterial     = RXNew D3DXMATERIAL[materialCnt];
 	g_loadXFileInfo.ppMeshTexture = RXNew IDirect3DTexture9*[materialCnt];
