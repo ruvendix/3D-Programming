@@ -223,8 +223,8 @@ void DefaultSamplerState()
 {
 	// 텍스처 어드레스 모드를 설정합니다. 디폴트는 Wrap 모드입니다.
 	// U와 V 따로 어드레스 모드를 설정할 수 있습니다.
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DPTADDRESSCAPS_WRAP);
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DPTADDRESSCAPS_WRAP);
+	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 }
 
 void InitVertexBuffer()
