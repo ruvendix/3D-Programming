@@ -429,7 +429,7 @@ void OnUserInput()
 			g_exampleRenderInfo.szValue = CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE);
 		}
 
-		g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLOROP, g_exampleRenderInfo.value);
+		g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLOROP, g_exampleRenderInfo.value);
 	}
 
 	// 각도 보정
