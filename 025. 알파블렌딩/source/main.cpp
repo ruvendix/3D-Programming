@@ -216,7 +216,7 @@ void DefaultRenderState()
 	g_pD3DDevice9->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
 	g_pD3DDevice9->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // 거의 이것만 사용함
 	g_pD3DDevice9->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA); // 전송원의 알파
-	g_pD3DDevice9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA); // 전송원의 알파 역수
+	g_pD3DDevice9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA); // 1 - 전송원의 알파
 }
 
 void InitVertexBuffer()
