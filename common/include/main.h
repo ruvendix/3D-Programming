@@ -22,6 +22,7 @@
 // DirectX9 라이브러리 연결입니다
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "d3dx9d.lib")
 #pragma comment(lib, "DxErr.lib")
  
 // Window Kit의 버전이 높아서 링크되지 않는 함수들을
