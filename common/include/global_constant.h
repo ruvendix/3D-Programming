@@ -34,8 +34,8 @@ const INT32 FRAME_SKIP_TIME         = 1000 / UPDATE_FRAME_PER_SECOND;
 const INT32 MAX_FRAMESKIP           = 10;
 
 const FLOAT ONE_SECOND = 1.0f;
-const FLOAT FIXED_DELTASECOND_60FPS = 0.0166f;
-const FLOAT FIXED_DELTASECOND_30FPS = 0.0333f;
+const FLOAT FIXED_DeltaSecondsS_60FPS = 0.0166f;
+const FLOAT FIXED_DeltaSecondsS_30FPS = 0.0333f;
 
 // 문자열은 미리 컴파일된 헤더 파일에서 중복 정의로 인식하므로
 // 표준 라이브러리를 따라 문자열은 매크로 상수로 정의합니다.

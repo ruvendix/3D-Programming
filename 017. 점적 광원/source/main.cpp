@@ -539,44 +539,45 @@ void OnUserInput()
 		g_axis.FlipEnable();
 	}
 
+	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
 	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		g_light.Position.x += 0.1f;
+		g_light.Position.x += 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		g_light.Position.x -= 0.1f;
+		g_light.Position.x -= 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		g_light.Position.y += 0.1f;
+		g_light.Position.y += 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		g_light.Position.y -= 0.1f;
+		g_light.Position.y -= 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		g_light.Position.z += 0.1f;
+		g_light.Position.z += 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		g_light.Position.z -= 0.1f;
+		g_light.Position.z -= 6.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('T') & 0x8000)
 	{
-		g_light.Phi -= 0.01f;
+		g_light.Phi -= 1.0 * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('G') & 0x8000)
 	{
-		g_light.Phi += 0.01f;
+		g_light.Phi += 1.0 * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)

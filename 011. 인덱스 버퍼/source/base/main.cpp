@@ -125,34 +125,35 @@ HRESULT CALLBACK OnUpdate()
 	static FLOAT rAngleX = 0.0f;
 	static FLOAT rAngleY = 0.0f;
 
+	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
 	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		rAngleZ += 4.0f;
+		rAngleZ += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		rAngleZ -= 4.0f;
+		rAngleZ -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		rAngleX += 4.0f;
+		rAngleX += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		rAngleX -= 4.0f;
+		rAngleX -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		rAngleY += 4.0f;
+		rAngleY += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		rAngleY -= 4.0f;
+		rAngleY -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)

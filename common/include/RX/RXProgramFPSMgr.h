@@ -32,9 +32,29 @@ namespace RX
 		// FPS를 문자열로 변환합니다.
 		const WCHAR* ConvertFPSToString();
 
+		// ====================================================================================
+		// Getter
+		FLOAT getTimeScale() const noexcept
+		{
+			return m_rTimeScale;
+		}
+
+		const RXTimer* getTimer() const noexcept
+		{
+			return &m_frameTimer;
+		}
+
+		// ====================================================================================
+		// Setter
+		void setTimeScale(FLOAT rTimeScale)
+		{
+			m_rTimeScale = rTimeScale;
+		}
+
 	private:
 		INT32   m_frameCnt;   // 프레임 개수입니다.
-		FLOAT   m_frameSec;   // 프레임 누적 시간입니다.
+		FLOAT   m_rFrameSec;  // 프레임 누적 시간입니다.
+		FLOAT   m_rTimeScale; // 타임스케일입니다. (값이 크면 빨라지고, 작으면 느려집니다)
 		DWORD   m_FPS;        // 초당 프레임 개수입니다. (Frame Per Second)
 		RXTimer m_frameTimer; // 프레임을 측정하기 위한 타이머입니다.
 		std::wstring m_szFPS; // 프레임을 문자열로 저장하기 위한 것입니다.

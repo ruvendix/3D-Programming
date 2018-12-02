@@ -342,34 +342,35 @@ void OnUserInput()
 		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 	}
 
+	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
 	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		g_rotateAngle.z += 4.0f;
+		g_rotateAngle.z += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		g_rotateAngle.z -= 4.0f;
+		g_rotateAngle.z -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		g_rotateAngle.x += 4.0f;
+		g_rotateAngle.x += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		g_rotateAngle.x -= 4.0f;
+		g_rotateAngle.x -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		g_rotateAngle.y += 4.0f;
+		g_rotateAngle.y += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		g_rotateAngle.y -= 4.0f;
+		g_rotateAngle.y -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)
