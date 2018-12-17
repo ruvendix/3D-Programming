@@ -129,7 +129,7 @@ namespace RX
 		bool                   m_bMSAA;        // 멀티 샘플링(안티얼라이징) 사용 여부입니다.
 		bool		           m_bVSync;       // 수직동기화 여부입니다.
 		DWORD                  m_dwBehavior;   // 정점 처리 방식입니다.
-		RECT                   m_rtScissor;    // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
+		RXRect                 m_rtScissor;    // 실제로 렌더링될 영역(뷰포트가 아닌 클리핑)
 		IDirect3D9*            m_pD3D9;        // D3D9 객체입니다.
 		IDirect3DDevice9*      m_pD3DDevice9;  // D3D9 가상 디바이스입니다.
 		ID3DXFont*             m_pFPSFont;     // FPS 출력용 폰트입니다.

@@ -19,7 +19,7 @@
 
 #ifdef RXBASEDX_EXPORTS
 #include "PCH.h"
-#include "math_function.h"
+#include "RXMath.h"
 #endif 
 
 #endif

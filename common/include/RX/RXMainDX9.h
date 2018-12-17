@@ -86,24 +86,19 @@ namespace RX
 			return m_msgCode;
 		}
 
-		RECT* getWindowRect() noexcept
+		RXRect* getWindowRect()
 		{
 			return &m_rtWindow;
 		}
 
-		RECT* getClientRect() noexcept
+		RXRect* getClientRect()
 		{
 			return &m_rtClient;
 		}
 
-		INT32 getClientWidth() const noexcept
+		RXRect* getMonitorRect()
 		{
-			return (m_rtClient.right - m_rtClient.left);
-		}
-
-		INT32 getClientHeight() const noexcept
-		{
-			return (m_rtClient.bottom - m_rtClient.top);
+			return &m_rtMonitor;
 		}
 
 		// ====================================================================================
@@ -121,8 +116,9 @@ namespace RX
 		ROUTINE_STATE m_routineState; // 프로그램 루틴 상태입니다.
 		INT32         m_msgCode;      // 메시지 핸들러의 코드값입니다.
 		INT32         m_iconID;       // 프로그램 아이콘 아이디입니다.
-		RECT          m_rtClient;     // 프로그램 클라이언트 영역입니다.
-		RECT          m_rtWindow;     // 프로그램 전체 영역입니다.
+		RXRect        m_rtClient;     // 프로그램 클라이언트 영역입니다.
+		RXRect        m_rtWindow;     // 프로그램 전체 영역입니다.
+		RXRect        m_rtMonitor;    // 모니터 전체 영역입니다.
 		SubFuncInfo   m_subFunc[SubFuncInfo::MAX_SUBFUNC]; // 콜백 서브 루틴입니다.
 	};
 
