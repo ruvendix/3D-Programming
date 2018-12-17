@@ -140,7 +140,8 @@ void ProjectionMatrixTest()
 	// 일반 해상도인지 와이드 해상도인지를 구분할 때 사용하는데
 	// 투영변환에는 종횡비가 사용됩니다. 일반적으로는 1.0으로 사용합니다.
 	FLOAT rAspectRatio =
-		static_cast<FLOAT>(RXMAIN_DX9->getClientWidth() / RXMAIN_DX9->getClientHeight());
+		static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth() /
+			               RXMAIN_DX9->getClientRect()->CalcHeight());
 
 	// 투영행렬을 만듭니다.
 	// 투영행렬을 적용할 때는 D3DTS_PROJECTION을 쓰면 됩니다.
@@ -183,7 +184,8 @@ void ViewPortTest()
 	// 일반 해상도인지 와이드 해상도인지를 구분할 때 사용하는데
 	// 투영변환에는 종횡비가 사용됩니다. 일반적으로는 1.0으로 사용합니다.
 	FLOAT rAspectRatio =
-		static_cast<FLOAT>(RXMAIN_DX9->getClientWidth() / RXMAIN_DX9->getClientHeight());
+		static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth() /
+			               RXMAIN_DX9->getClientRect()->CalcHeight());
 
 	// 투영행렬을 만듭니다.
 	// 투영행렬을 적용할 때는 D3DTS_PROJECTION을 쓰면 됩니다.
@@ -212,8 +214,8 @@ void ViewPortTest()
 	// 뷰포트의 렌더링 영역을 설정합니다.
 	// 화면 4개로 분할할 것이므로 메인 뷰포트는 왼쪽 위가 됩니다.
 	// 가로와 세로 길이는 클라이언트 영역의 절반입니다. 즉, 4분의 1 정도가 됩니다.
-	viewPort.Width  = RXMAIN_DX9->getClientWidth() / 2;
-	viewPort.Height = RXMAIN_DX9->getClientHeight() / 2;
+	viewPort.Width  = RXMAIN_DX9->getClientRect()->CalcWidth() / 2;
+	viewPort.Height = RXMAIN_DX9->getClientRect()->CalcHeight() / 2;
 
 	// 뷰포트 설정을 변경하면 반드시 가상 디바이스에 적용해줘야 합니다.
 	D3DDEVICE9->SetViewport(&viewPort);
@@ -244,7 +246,7 @@ void ViewPortTest()
 	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 뷰포트 영역을 새로 설정해줍니다.
-	viewPort.X = RXMAIN_DX9->getClientWidth() / 2;
+	viewPort.X = RXMAIN_DX9->getClientRect()->CalcWidth() / 2;
 	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.
@@ -263,7 +265,7 @@ void ViewPortTest()
 
 	// 뷰포트 영역을 새로 설정해줍니다.
 	viewPort.X = 0;
-	viewPort.Y = RXMAIN_DX9->getClientHeight() / 2;
+	viewPort.Y = RXMAIN_DX9->getClientRect()->CalcHeight() / 2;
 	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.
@@ -281,8 +283,8 @@ void ViewPortTest()
 	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 뷰포트 영역을 새로 설정해줍니다.
-	viewPort.X = RXMAIN_DX9->getClientWidth() / 2;;
-	viewPort.Y = RXMAIN_DX9->getClientHeight() / 2;
+	viewPort.X = RXMAIN_DX9->getClientRect()->CalcWidth() / 2;
+	viewPort.Y = RXMAIN_DX9->getClientRect()->CalcHeight() / 2;
 	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.

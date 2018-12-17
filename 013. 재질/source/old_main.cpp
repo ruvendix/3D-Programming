@@ -66,7 +66,7 @@ void InputOldKeyboard()
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
 		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	// 전체변환행렬을 구합니다.
 	g_matAll = matRot * g_matViewAndProjection;
@@ -105,12 +105,12 @@ void InputOldKeyboard()
 	// 필모드를 선택합니다.
 	if (::GetAsyncKeyState('F') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('G') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 }
 
@@ -249,7 +249,7 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	InitCubeVertexAndIndex(rPoint1, rPoint2);
 
 	INT32 vertexCnt = g_vecP3D.size();
-	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
 		sizeof(VertexP3D) * vertexCnt, // 정점 총 용량
 		D3DUSAGE_WRITEONLY, // 정점 버퍼의 용도
 		VertexP3D::format,  // 정점 형식
@@ -276,7 +276,7 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	// ================================================================================
 
 	INT32 indexCnt = g_vecIndex16.size();
-	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(
+	g_DXResult = D3DDEVICE9->CreateIndexBuffer(
 		sizeof(Index16) * indexCnt, // 인덱스 총 용량
 		D3DUSAGE_WRITEONLY, // 인덱스 버퍼의 용도
 		Index16::format, // 인덱스 형식

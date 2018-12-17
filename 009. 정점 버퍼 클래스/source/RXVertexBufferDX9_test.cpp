@@ -34,14 +34,14 @@ namespace RX
 
 	void RXVertexBufferDX9Test::DrawPrimitive()
 	{
-		g_pD3DDevice9->SetFVF(m_dwFVF);
-		g_pD3DDevice9->SetStreamSource(
+		D3DDEVICE9->SetFVF(m_dwFVF);
+		D3DDEVICE9->SetStreamSource(
 			0,                     // 스트림 넘버는 0으로 설정합니다.
 			m_pVertexBuffer,       // 정점 버퍼를 설정해줍니다.
 			0,                     // 오프셋은 0으로 설정합니다.
 			sizeof(CustomVertex)); // 보폭(Stride)은 FVF로 생성한 크기와 일치해야 합니다.
 
-		g_pD3DDevice9->DrawPrimitive(
+		D3DDEVICE9->DrawPrimitive(
 			D3DPT_TRIANGLELIST,      // 렌더링 형식을 설정합니다.
 			0,                       // 오프셋은 0으로 설정합니다.
 			m_vecVertex.size() / 3); // 프리미티브 개수입니다.
@@ -52,7 +52,7 @@ namespace RX
 		INT32 vertexCnt = m_vecVertex.size();
 
 		// 정점 버퍼를 생성합니다.
-		g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
+		g_DXResult = D3DDEVICE9->CreateVertexBuffer(
 			sizeof(CustomVertex) * vertexCnt, // 정점 버퍼의 크기입니다.
 			D3DUSAGE_NONE,                    // Usage는 0으로 설정합니다.
 			m_dwFVF,                          // FVF 형식입니다.

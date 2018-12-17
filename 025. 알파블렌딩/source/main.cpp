@@ -22,9 +22,6 @@ enum BLEND_MODE : INT32
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-
 HRESULT g_DXResult = S_OK;
 
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
@@ -81,23 +78,17 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
-
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
 	// 메모리 할당 순서를 이용해서 메모리 누수를 찾습니다.
 	// 평소에는 주석 처리하면 됩니다.
 	//_CrtSetBreakAlloc(451);
 
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -106,9 +97,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	DefaultMatrix();
 	DefaultRenderState();
 
@@ -146,10 +134,10 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetFVF(VertexP3D::format);
-	g_pD3DDevice9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3D));
-	g_pD3DDevice9->SetIndices(g_pIndexBuffer);
-	g_pD3DDevice9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 6, 0, 2);
+	D3DDEVICE9->SetFVF(VertexP3D::format);
+	D3DDEVICE9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3D));
+	D3DDEVICE9->SetIndices(g_pIndexBuffer);
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 6, 0, 2);
 
 	TCHAR szText[DEFAULT_STRING_LENGTH] = _T("전송원 모드 변경(T) 목적원 모드 변경(Y)");
 	swprintf_s(szText,L"%s\n전송원 모드(%s)\n목적원 모드(%s)", szText,
@@ -176,15 +164,15 @@ void DefaultMatrix()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// =====================================================================
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 }
 
 void DefaultRenderState()
@@ -193,18 +181,18 @@ void DefaultRenderState()
 	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
 	// 조명(라이팅, Lighting)도 그중 하나인데
 	// 이번에는 조명을 사용하지 않으므로 조명을 꺼줍니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+	D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	// 알파블렌딩을 설정합니다. 디폴트는 FALSE입니다.
 	// 알파블렌딩을 설정하면 비활성하기 전까지 모든 렌더링에 적용됩니다.
@@ -213,10 +201,10 @@ void DefaultRenderState()
 	// 일반적으로 알파블렌딩은 전송원의 블렌딩 계수로 전송원의 알파를,
 	// 목적원의 블렌딩 계수로 전송원의 알파 역수를 이용합니다.
 	// 그래야 두 픽셀을 블렌딩하면 1.0f가 나오기 때문입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
-	g_pD3DDevice9->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // 거의 이것만 사용함
-	g_pD3DDevice9->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA); // 전송원의 알파
-	g_pD3DDevice9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA); // 1 - 전송원의 알파
+	D3DDEVICE9->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+	D3DDEVICE9->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD); // 거의 이것만 사용함
+	D3DDEVICE9->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA); // 전송원의 알파
+	D3DDEVICE9->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA); // 1 - 전송원의 알파
 }
 
 void InitVertexBuffer()
@@ -250,7 +238,7 @@ void InitVertexBuffer()
 
 	// 정점 버퍼 생성하기
 	INT32 verticesSize = g_vecP3D.size() * sizeof(vertex);
-	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(verticesSize, D3DUSAGE_WRITEONLY,
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(verticesSize, D3DUSAGE_WRITEONLY,
 		VertexP3D::format, D3DPOOL_MANAGED, &g_pVertexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 
@@ -292,7 +280,7 @@ void InitIndexBuffer()
 
 	// 인덱스 버퍼 생성하기
 	INT32 indicesSize = g_vecIndex16.size() * sizeof(index);
-	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(indicesSize, D3DUSAGE_WRITEONLY,
+	g_DXResult = D3DDEVICE9->CreateIndexBuffer(indicesSize, D3DUSAGE_WRITEONLY,
 		Index16::format, D3DPOOL_MANAGED, &g_pIndexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 
@@ -307,17 +295,17 @@ void OnUserInput()
 {
 	if (::GetAsyncKeyState('Z') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('X') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (::GetAsyncKeyState('C') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 	}
 
 	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
@@ -354,7 +342,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
 		RX::ZeroVector(&g_rotateAngle);
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('T') & 0x0001)
@@ -368,7 +356,7 @@ void OnUserInput()
 			g_exampleRenderInfoSrc.szValue = CONVERT_FLAG_TO_STRING(D3DBLEND_SRCALPHA);
 		}
 
-		g_pD3DDevice9->SetRenderState(D3DRS_SRCBLEND, g_exampleRenderInfoSrc.value);
+		D3DDEVICE9->SetRenderState(D3DRS_SRCBLEND, g_exampleRenderInfoSrc.value);
 	}
 
 	if (::GetAsyncKeyState('Y') & 0x0001)
@@ -382,7 +370,7 @@ void OnUserInput()
 			g_exampleRenderInfoDest.szValue = CONVERT_FLAG_TO_STRING(D3DBLEND_INVSRCALPHA);
 		}
 
-		g_pD3DDevice9->SetRenderState(D3DRS_DESTBLEND, g_exampleRenderInfoDest.value);
+		D3DDEVICE9->SetRenderState(D3DRS_DESTBLEND, g_exampleRenderInfoDest.value);
 	}
 
 	// 각도 보정
@@ -397,7 +385,7 @@ void OnUserInput()
 		D3DXToRadian(g_rotateAngle.x),
 		D3DXToRadian(g_rotateAngle.z));
 
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
 const TCHAR* UpdateBlendMode(ExampleRenderInfo* pInfo)

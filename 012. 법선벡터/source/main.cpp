@@ -22,8 +22,6 @@
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
-RX::RXMain_DX9*         g_pMainDX       = nullptr;
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
 IDirect3DIndexBuffer9*  g_pIndexBuffer  = nullptr;
 ID3DXLine*              g_pLine         = nullptr;     // 선을 그리기 위한 것
@@ -80,19 +78,13 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
-
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -101,21 +93,18 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	CreateCube(-1.0f, 1.0f);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, false);
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	// 뷰행렬을 설정합니다.
 	D3DXVECTOR3 vEye(4.0f, 4.0f, -4.0f);   // 카메라의 위치
@@ -124,13 +113,14 @@ HRESULT CALLBACK OnInit()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 투영행렬을 설정합니다.
-	D3DXMatrixPerspectiveFovLH(&g_matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
+	D3DXMATRIXA16 matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 
 	// 정점 정보 초기화입니다.
 	::ZeroMemory(g_vCubeTriangleNormal, sizeof(D3DXVECTOR3) * 12);
@@ -140,7 +130,7 @@ HRESULT CALLBACK OnInit()
 	g_matViewAndProjection = matView * g_matProjection;
 
 	// 선을 그리는 객체를 생성합니다.
-	D3DXCreateLine(g_pD3DDevice9, &g_pLine);
+	D3DXCreateLine(D3DDEVICE9, &g_pLine);
 
 	// 삼각형에서의 법선벡터를 구합니다.
 	CalcTriangleNormal();
@@ -166,15 +156,15 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetFVF(VertexP3D::format); // 정점 형식 연결
-	g_pD3DDevice9->SetStreamSource(
+	D3DDEVICE9->SetFVF(VertexP3D::format); // 정점 형식 연결
+	D3DDEVICE9->SetStreamSource(
 		0,                  // 사용할 스트림 인덱스
 		g_pVertexBuffer,    // 연결할 정점 버퍼
 		0,                  // 정점 버퍼의 오프셋
 		sizeof(VertexP3D)); // 정점 용량
 
-	g_pD3DDevice9->SetIndices(g_pIndexBuffer); // 인덱스 버퍼 연결
-	g_pD3DDevice9->DrawIndexedPrimitive(
+	D3DDEVICE9->SetIndices(g_pIndexBuffer); // 인덱스 버퍼 연결
+	D3DDEVICE9->DrawIndexedPrimitive(
 		D3DPT_TRIANGLELIST, // 인덱스 버퍼는 트라이앵글리스트로 고정
 		0,   // 첫 인덱스가 될 정점 버퍼의 정점 인덱스
 		0,   // 사용할 첫 인덱스(인덱스가 0, 1, 2, 3이 있을 때 3이면 3부터 시작)
@@ -249,7 +239,7 @@ void InputKeyboard()
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
 		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	// 전체변환행렬을 구합니다.
 	g_matAll = matRot * g_matViewAndProjection;
@@ -288,12 +278,12 @@ void InputKeyboard()
 	// 필모드를 선택합니다.
 	if (::GetAsyncKeyState('F') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('G') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 }
 
@@ -432,7 +422,7 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	InitCubeVertexAndIndex(rPoint1, rPoint2);
 
 	INT32 vertexCnt = g_vecP3D.size();
-	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
 		sizeof(VertexP3D) * vertexCnt, // 정점 총 용량
 		D3DUSAGE_WRITEONLY, // 정점 버퍼의 용도
 		VertexP3D::format,  // 정점 형식
@@ -459,7 +449,7 @@ void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 	// ================================================================================
 	
 	INT32 indexCnt = g_vecIndex16.size();
-	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(
+	g_DXResult = D3DDEVICE9->CreateIndexBuffer(
 		sizeof(Index16) * indexCnt, // 인덱스 총 용량
 		D3DUSAGE_WRITEONLY, // 인덱스 버퍼의 용도
 		Index16::format,    // 인덱스 형식

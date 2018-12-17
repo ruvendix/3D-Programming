@@ -38,9 +38,6 @@ enum class TEXT_RENDERING_FLAG : INT32
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-
 D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
 D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
 
@@ -95,23 +92,17 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
-
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
 	// 메모리 할당 순서를 이용해서 메모리 누수를 찾습니다.
 	// 평소에는 주석 처리하면 됩니다.
 	//_CrtSetBreakAlloc(451);
 
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -120,9 +111,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	DefaultMatrix();
 	DefaultRenderState();
 
@@ -152,7 +140,7 @@ HRESULT CALLBACK OnInit()
 	// 폰트 객체를 생성합니다.
 	// 위에서 설정한 폰트 정보를 이용해서 생성합니다.
 	g_DXResult = D3DXCreateFontIndirect(
-		g_pD3DDevice9, // 가상 디바이스 객체
+		D3DDEVICE9, // 가상 디바이스 객체
 		&logicalFont,  // D3DXFONT_DESC 포인터
 		&g_pFont);     // ID3DXFont 인터페이스 포인터
 	DXERR_HANDLER(g_DXResult);
@@ -160,7 +148,7 @@ HRESULT CALLBACK OnInit()
 	// 이것과 동일한데 이렇게 하면 모든 정보를 넣어야 합니다.
 	// 하지만 폰트 정보를 먼저 설정해놓으면 필요 없는 정보를 생략할 수 있습니다.
 	// 이번에는 예제라서 거의 모든 정보를 보여드렸습니다.
-	//D3DXCreateFont(g_pD3DDevice9, 80, 0, 0, 1, FALSE, DEFAULT_CHARSET,
+	//D3DXCreateFont(D3DDEVICE9, 80, 0, 0, 1, FALSE, DEFAULT_CHARSET,
 	//	OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FW_DONTCARE, L"굴림", &g_pFont);
 
 	return S_OK;
@@ -183,12 +171,15 @@ HRESULT CALLBACK OnRender()
 {
 	g_axis.DrawAxis();
 
+	RECT rtClient;
+	RXMAIN_DX9->getClientRect()->ConvertToWinAPIRect(&rtClient);
+
 	// DirectX 폰트 객체를 이용해서 2D 텍스트를 렌더링합니다.
 	g_pFont->DrawText(
 		nullptr, // ID3DXSprite 인터페이스 포인터, nullptr로 설정하면 내부 객체 이용(느림)
 		g_szTextRenderingFlag, // 렌더링할 텍스트
 		_TRUNCATE, // 텍스트의 길이(_TRUNCATE는 -1인데 텍스트가 널문자 만날 때까지만 렌더링)
-		&(g_pMainDX->getClientRect()), // 렌더링 영역인데 nullptr로 설정하면 클라이언트 영역(0, 0)
+		&rtClient, // 렌더링 영역인데 nullptr로 설정하면 클라이언트 영역(0, 0)
 		g_textRenderingFlag, // 렌더링 플래그(OR 연산자로 여러 플래그 이용 가능한데 무시되는 것도 있음)
 		DXCOLOR_WHITE); // 렌더링할 텍스트의 색상
 
@@ -212,14 +203,15 @@ void DefaultMatrix()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// =====================================================================
 	// 투영행렬을 설정합니다.
-	D3DXMatrixPerspectiveFovLH(&g_matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
+	D3DXMATRIXA16 matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 	
 	// =====================================================================
 	// 전역행렬 초기화입니다.
@@ -232,35 +224,35 @@ void DefaultRenderState()
 	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
 	// 조명(라이팅, Lighting)도 그중 하나인데
 	// 이번에는 조명을 사용하지 않으므로 조명을 꺼줍니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+	D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 }
 
 void OnUserInput()
 {
 	if (::GetAsyncKeyState('Z') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('X') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (::GetAsyncKeyState('C') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 	}
 
 	if (::GetAsyncKeyState('F') & 0x0001)
@@ -314,7 +306,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
 		RX::ZeroVector(&g_rotateAngle);
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	// 각도 보정
@@ -330,7 +322,7 @@ void OnUserInput()
 		D3DXToRadian(g_rotateAngle.x),
 		D3DXToRadian(g_rotateAngle.z));
 
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
 const TCHAR* ConvertTextRenderingFlagToString(INT32 flagIdx)

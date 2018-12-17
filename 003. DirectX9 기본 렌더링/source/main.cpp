@@ -27,9 +27,7 @@ struct CustomVertex
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-RX::RXMain_DX9*         g_pMainDX       = nullptr;
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-IDirect3DDevice9*       g_pD3DDevice9   = nullptr;
 HRESULT                 g_DXResult      = S_OK;
 
 
@@ -70,9 +68,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.
 	CustomVertex vertices[3] =
 	{
@@ -82,7 +77,7 @@ HRESULT CALLBACK OnInit()
 	};
 
 	// 정점 버퍼를 생성합니다.
-	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
 		sizeof(CustomVertex) * 3, // 정점 버퍼의 크기입니다.
 		D3DUSAGE_NONE,            // 사용법인데 일반적으로는 0입니다.
 		CUSTOM_FVF,               // FVF 형식입니다.
@@ -113,14 +108,14 @@ HRESULT CALLBACK OnInit()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetFVF(CUSTOM_FVF);
-	g_pD3DDevice9->SetStreamSource(
+	D3DDEVICE9->SetFVF(CUSTOM_FVF);
+	D3DDEVICE9->SetStreamSource(
 		0,                     // 스트림 넘버인데 0으로 설정합니다.
 		g_pVertexBuffer,       // 정점 버퍼를 설정해줍니다.
 		0,                     // 오프셋인데 0으로 설정합니다.
 		sizeof(CustomVertex)); // 보폭(Stride)을 의미하는데 FVF로 생성한 크기와 일치해야 합니다.
 	
-	g_pD3DDevice9->DrawPrimitive(
+	D3DDEVICE9->DrawPrimitive(
 		D3DPT_TRIANGLELIST, // 렌더링 형식을 설정합니다.
 		0,                  // 오프셋인데 0으로 설정합니다.
 		1);                 // 렌더링할 개수를 설정합니다. 개수가 안 맞으면 정상 작동 보장하지 못합니다.

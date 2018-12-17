@@ -21,9 +21,6 @@ enum class BLEND_OPERATION : INT32
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-
 HRESULT g_DXResult = S_OK;
 
 IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
@@ -88,23 +85,17 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
-
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
 	// 메모리 할당 순서를 이용해서 메모리 누수를 찾습니다.
 	// 평소에는 주석 처리하면 됩니다.
 	//_CrtSetBreakAlloc(451);
 
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -113,9 +104,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	DefaultMatrix();
 	DefaultRenderState();
 	DefaultSamplerState();
@@ -133,13 +121,13 @@ HRESULT CALLBACK OnInit()
 	// \이 아니라 \\으로 넣어야 경로를 제대로 찾습니다.
 	// 이스케이프 시퀸스를 쓰기 싫다면 / 이걸 넣으면 됩니다.
 	g_DXResult = D3DXCreateTextureFromFile(
-		g_pD3DDevice9, // 가상 디바이스 포인터
+		D3DDEVICE9, // 가상 디바이스 포인터
 		L"Resource/Texture/Kirby.jpg", // 텍스처 파일이 있는 경로(솔루션 폴더 기준으로 잡음)
 		&g_pTexture1); // 텍스처 포인터
 	DXERR_HANDLER(g_DXResult);
 
 	g_DXResult = D3DXCreateTextureFromFile(
-		g_pD3DDevice9, // 가상 디바이스 포인터
+		D3DDEVICE9, // 가상 디바이스 포인터
 		L"Resource/Texture/LightMap.jpg", // 텍스처 파일이 있는 경로(솔루션 폴더 기준으로 잡음)
 		&g_pTexture2); // 텍스처 포인터
 	DXERR_HANDLER(g_DXResult);
@@ -167,16 +155,16 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetTexture(0, g_pTexture1);
-	g_pD3DDevice9->SetTexture(1, g_pTexture2);
+	D3DDEVICE9->SetTexture(0, g_pTexture1);
+	D3DDEVICE9->SetTexture(1, g_pTexture2);
 
-	g_pD3DDevice9->SetFVF(VertexP3T2::format);
-	g_pD3DDevice9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3T2));
-	g_pD3DDevice9->SetIndices(g_pIndexBuffer);
-	g_pD3DDevice9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 6, 0, 2);
+	D3DDEVICE9->SetFVF(VertexP3T2::format);
+	D3DDEVICE9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3T2));
+	D3DDEVICE9->SetIndices(g_pIndexBuffer);
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 6, 0, 2);
 
-	g_pD3DDevice9->SetTexture(0, nullptr);
-	g_pD3DDevice9->SetTexture(1, nullptr);
+	D3DDEVICE9->SetTexture(0, nullptr);
+	D3DDEVICE9->SetTexture(1, nullptr);
 
 	TCHAR szText[DEFAULT_STRING_LENGTH];
 	swprintf_s(szText, L"연산 변경(T)\n현재 연산 => %s", g_exampleRenderInfo.szValue);
@@ -204,15 +192,15 @@ void DefaultMatrix()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// =====================================================================
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 }
 
 void DefaultRenderState()
@@ -221,56 +209,56 @@ void DefaultRenderState()
 	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
 	// 조명(라이팅, Lighting)도 그중 하나인데
 	// 이번에는 조명을 사용하지 않으므로 조명을 꺼줍니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+	D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 }
 
 void DefaultSamplerState()
 {
 	// 텍스처 어드레스 모드를 설정합니다. 디폴트는 Wrap 모드입니다.
 	// U와 V 따로 어드레스 모드를 설정할 수 있습니다.
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
+	D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP);
+	D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 
 	// 필터링을 설정합니다.
 	// 샘플러의 필터링은 확대(Magnification), 축소(Minification), 밉맵(Mipmap) 이렇게 3개입니다.
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_NONE);
-	g_pD3DDevice9->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+	D3DDEVICE9->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
+	D3DDEVICE9->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_NONE);
+	D3DDEVICE9->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
 }
 
 // 몇몇은 필요 없는 과정인데 예제이므로 전부 다 작성할게요.
 void DefaultTextureStageState()
 {
 	// 텍스처 스테이지 스테이트를 설정합니다. (필수 아님)
-	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0); // 첫번째 UV 좌표
-	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1); // 두번째 UV 좌표
+	D3DDEVICE9->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, 0); // 첫번째 UV 좌표
+	D3DDEVICE9->SetTextureStageState(1, D3DTSS_TEXCOORDINDEX, 1); // 두번째 UV 좌표
 
 	// 첫번째 스테이지의 첫번째 픽셀은 텍스처에서 가져오고
 	// 별다른 연산 없이 그대로 첫번째 픽셀을 사용합니다. (필수 아님)
-	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	g_pD3DDevice9->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	D3DDEVICE9->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	D3DDEVICE9->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
 
 	// 두번째 스테이지의 첫번째 픽셀은 텍스처에서 가져오고
 	// 두번째 픽셀은 이전 단계의 픽셀 연산 결과를 가져와서
 	// 두 픽셀을 서로 곱합니다. (Modulate, 필수)
-	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
-	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
-	g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	D3DDEVICE9->SetTextureStageState(1, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	D3DDEVICE9->SetTextureStageState(1, D3DTSS_COLORARG2, D3DTA_CURRENT);
+	D3DDEVICE9->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_MODULATE);
 
 	// 0부터 시작하므로 2는 세번째가 됩니다.
 	// 세번째부터는 사용하지 않겠다고 알립니다. (필수 아님)
-	g_pD3DDevice9->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
+	D3DDEVICE9->SetTextureStageState(2, D3DTSS_COLOROP, D3DTOP_DISABLE);
 }
 
 void InitVertexBuffer()
@@ -312,7 +300,7 @@ void InitVertexBuffer()
 
 	// 정점 버퍼 생성하기
 	INT32 verticesSize = g_vecP3T2.size() * sizeof(vertex);
-	g_DXResult = g_pD3DDevice9->CreateVertexBuffer(verticesSize, D3DUSAGE_WRITEONLY,
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(verticesSize, D3DUSAGE_WRITEONLY,
 		VertexP3T2::format, D3DPOOL_MANAGED, &g_pVertexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 
@@ -354,7 +342,7 @@ void InitIndexBuffer()
 
 	// 인덱스 버퍼 생성하기
 	INT32 indicesSize = g_vecIndex16.size() * sizeof(index);
-	g_DXResult = g_pD3DDevice9->CreateIndexBuffer(indicesSize, D3DUSAGE_WRITEONLY,
+	g_DXResult = D3DDEVICE9->CreateIndexBuffer(indicesSize, D3DUSAGE_WRITEONLY,
 		Index16::format, D3DPOOL_MANAGED, &g_pIndexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 
@@ -369,17 +357,17 @@ void OnUserInput()
 {
 	if (::GetAsyncKeyState('Z') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('X') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (::GetAsyncKeyState('C') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 	}
 
 	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
@@ -416,7 +404,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
 		RX::ZeroVector(&g_rotateAngle);
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('T') & 0x0001)
@@ -430,7 +418,7 @@ void OnUserInput()
 			g_exampleRenderInfo.szValue = CONVERT_FLAG_TO_STRING(D3DTOP_MODULATE);
 		}
 
-		g_pD3DDevice9->SetTextureStageState(1, D3DTSS_COLOROP, g_exampleRenderInfo.value);
+		D3DDEVICE9->SetTextureStageState(1, D3DTSS_COLOROP, g_exampleRenderInfo.value);
 	}
 
 	// 각도 보정
@@ -445,7 +433,7 @@ void OnUserInput()
 		D3DXToRadian(g_rotateAngle.x),
 		D3DXToRadian(g_rotateAngle.z));
 
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
 const TCHAR* UpdateBlendOperation(ExampleRenderInfo * pInfo)

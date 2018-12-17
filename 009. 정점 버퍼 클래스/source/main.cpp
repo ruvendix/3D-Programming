@@ -5,9 +5,7 @@
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-HRESULT           g_DXResult    = S_OK;
+HRESULT g_DXResult = S_OK;
 
 namespace
 {
@@ -53,9 +51,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	g_pVB1 = RXNew RX::RXVertexBufferDX9;
 	NULLCHK_HEAPALLOC(g_pVB1);
 
@@ -96,20 +91,20 @@ HRESULT CALLBACK OnInit()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, false);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	return S_OK;
 }
@@ -124,7 +119,7 @@ HRESULT CALLBACK OnRender()
 	D3DXMatrixRotationZ(&matRot, D3DXToRadian(-20.0f));
 
 	// 로컬좌표를 월드좌표로 변환해줍니다.
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	RX::RXRendererDX9::Instance()->DrawPrimitive(D3DPT_TRIANGLELIST, *g_pVB1);
 	RX::RXRendererDX9::Instance()->DrawPrimitive(D3DPT_TRIANGLELIST, *g_pVB2);

@@ -6,9 +6,6 @@
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-
 D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
 D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
 
@@ -64,23 +61,17 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
-
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnUpdate,  SUBFUNC_TYPE::UPDATE);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
 
 	// 메모리 할당 순서를 이용해서 메모리 누수를 찾습니다.
 	// 평소에는 주석 처리하면 됩니다.
 	//_CrtSetBreakAlloc(451);
 
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -89,9 +80,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	DefaultMatrix();
 	DefaultLight();
 	DefaultRenderState();
@@ -104,7 +92,7 @@ HRESULT CALLBACK OnInit()
 
 	// 백버퍼의 가져옵니다.
 	IDirect3DSurface9* pBackBufferSurface = nullptr;
-	g_pD3DDevice9->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBufferSurface);
+	D3DDEVICE9->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBufferSurface);
 	NULLCHK(pBackBufferSurface);
 
 	// 백버퍼의 DC를 가져와서 복사합니다.
@@ -142,7 +130,7 @@ HRESULT CALLBACK OnInit()
 	HFONT hOldFont = static_cast<HFONT>(::SelectObject(hDC, hFont));
 
 	g_DXResult = D3DXCreateText(
-		g_pD3DDevice9, // 가상 디바이스 객체
+		D3DDEVICE9, // 가상 디바이스 객체
 		hDC, // 폰트가 있는 DC
 		L"헬로 월드~!", // 텍스트
 		0.0f, // 폰트 편차라는 건데 그냥 0.0으로 설정하면 됨
@@ -173,20 +161,20 @@ HRESULT CALLBACK OnUpdate()
 // 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, FALSE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
 	g_axis.DrawAxis();
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, TRUE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, TRUE);
 
 	// 현재 적용된 행렬이 회전행렬뿐이라 이렇게 가져옵니다.
 	// 원래는 다른 방식으로 회전행렬을 가져옵니다.
 	D3DXMATRIXA16 matRot;
-	g_pD3DDevice9->GetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->GetTransform(D3DTS_WORLD, &matRot);
 
 	// 현재 오일러각 회전을 이용 중인데 일반적으로 아는 개념인
 	// 크기 * 자전 * 이동이 아니라 크기 * 공전 * 이동으로 적용해야 합니다.
 	D3DXMATRIXA16 matTextWorld;
 	matTextWorld = g_matTextScale * g_matTextTrans * matRot;
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matTextWorld);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matTextWorld);
 	
 	if (g_pMesh != nullptr)
 	{
@@ -194,7 +182,7 @@ HRESULT CALLBACK OnRender()
 		g_pMesh->DrawSubset(0);
 	}
 
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	return S_OK;
 }
@@ -221,14 +209,15 @@ void DefaultMatrix()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// =====================================================================
 	// 투영행렬을 설정합니다.
-	D3DXMatrixPerspectiveFovLH(&g_matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(g_pMainDX->getClientWidth()) / (g_pMainDX->getClientHeight())),
-		1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
+	D3DXMATRIXA16 matProjection;
+	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
+		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
+		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
 	
 	// =====================================================================
 	// 전역행렬 초기화입니다.
@@ -252,8 +241,8 @@ void DefaultLight()
 	light.Specular = D3DXCOLOR(DXCOLOR_WHITE);
 
 	// 광원을 등록하고 활성화시킵니다.
-	g_pD3DDevice9->SetLight(0, &light);
-	g_pD3DDevice9->LightEnable(0, TRUE);
+	D3DDEVICE9->SetLight(0, &light);
+	D3DDEVICE9->LightEnable(0, TRUE);
 
 	// 재질은 하나만 등록 가능합니다.
 	// 따라서 재질을 자주 바꿔가며 렌더링할 때가 많습니다.
@@ -273,7 +262,7 @@ void DefaultLight()
 	// 방사광은 낮게 설정해야 합니다.
 	mtrl.MatD3D.Emissive = D3DXCOLOR(0.2f, 0.2f, 0.2f, 1.0f);
 
-	g_pD3DDevice9->SetMaterial(&(mtrl.MatD3D));
+	D3DDEVICE9->SetMaterial(&(mtrl.MatD3D));
 }
 
 void DefaultRenderState()
@@ -282,43 +271,43 @@ void DefaultRenderState()
 	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
 	// 조명(라이팅, Lighting)도 그중 하나인데
 	// 이번에는 조명을 사용하므로 조명을 켜줍니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, TRUE);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, TRUE);
 
 	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+	D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 
 	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
 	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//g_pD3DDevice9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
+	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
 	// 법선벡터를 자동으로 계산해주는 설정입니다.
 	// 단! 이 설정을 이용하게 되면 사양을 좀 탑니다...
 	// 디폴트는 FALSE입니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+	D3DDEVICE9->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
 	// 반사광을 활성시킵니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
+	D3DDEVICE9->SetRenderState(D3DRS_SPECULARENABLE, TRUE);
 }
 
 void OnUserInput()
 {
 	if (::GetAsyncKeyState('Z') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	if (::GetAsyncKeyState('X') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 	}
 
 	if (::GetAsyncKeyState('C') & 0x8000)
 	{
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
 	}
 
 	if (::GetAsyncKeyState('F') & 0x0001)
@@ -360,7 +349,7 @@ void OnUserInput()
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
 		RX::ZeroVector(&g_rotateAngle);
-		g_pD3DDevice9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
 	// 각도 보정
@@ -376,7 +365,7 @@ void OnUserInput()
 		D3DXToRadian(g_rotateAngle.x),
 		D3DXToRadian(g_rotateAngle.z));
 
-	g_pD3DDevice9->SetTransform(D3DTS_WORLD, &matRot);
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 }
 
 INT32 CALLBACK EnumFontCallback(const LOGFONT* pLogicalFont,
