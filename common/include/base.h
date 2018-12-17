@@ -23,7 +23,6 @@
 #include <ctime>
 
 #include <string>
-
 #include <vector>
 
 // SDKDDKVer.h를 포함하면 최고 수준의 가용성을 가진 Windows 플랫폼이 정의됩니다.

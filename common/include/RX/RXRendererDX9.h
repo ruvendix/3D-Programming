@@ -17,6 +17,9 @@
 #include "RXVertexBufferDX9.h"
 #include "RXIndexBufferDX9.h"
 
+// DirectX 에러는 렌더러 관련에서만 사용됩니다.
+extern HRESULT g_DXResult;
+
 namespace RX
 {
 
@@ -24,7 +27,7 @@ namespace RX
 	{
 		PHOENIX_SINGLETON(RXRendererDX9);
 	public:
-		void Init();
+		void InitValues();
 		void ResetD3DPP(); // 검증이 필요 없는 기본 정보를 설정합니다.
 		void ResetDrawCallCount()
 		{
@@ -84,7 +87,6 @@ namespace RX
 		// 가상 디바이스 상태에 따른 처리 함수
 		HRESULT OnLostDevice();
 		HRESULT OnResetDevice();
-		HRESULT OnRecreateDevice();
 
 		bool IsLostDevice() const noexcept
 		{
@@ -103,7 +105,11 @@ namespace RX
 			return m_pD3DDevice9;
 		}
 
-
+		D3DPRESENT_PARAMETERS* getD3DPP() noexcept
+		{
+			return &m_D3DPP;
+		}
+		
 		// ====================================================================================
 		// Setter
 		void setClearColor(D3DCOLOR clearColor)
@@ -128,7 +134,7 @@ namespace RX
 		IDirect3DDevice9*      m_pD3DDevice9;  // D3D9 가상 디바이스입니다.
 		ID3DXFont*             m_pFPSFont;     // FPS 출력용 폰트입니다.
 		ID3DXFont*             m_pDefaultFont; // 기본 폰트입니다.
-		D3DPRESENT_PARAMETERS* m_pD3DPP;       // D3D9 가상 디바이스의 정보입니다.
+		D3DPRESENT_PARAMETERS  m_D3DPP;        // D3D9 가상 디바이스의 정보입니다.
 		D3DVIEWPORT9           m_viewport9;    // 백버퍼 서페이스의 뷰포트입니다.
 		D3DCOLOR               m_clearColor;   // 백버퍼 서페이스의 클리어 색상입니다.
 	};

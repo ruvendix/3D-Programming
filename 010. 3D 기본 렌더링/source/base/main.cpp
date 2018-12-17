@@ -6,9 +6,7 @@
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-RX::RXMain_DX9*   g_pMainDX     = nullptr;
-IDirect3DDevice9* g_pD3DDevice9 = nullptr;
-HRESULT           g_DXResult    = S_OK;
+HRESULT g_DXResult = S_OK;
 
 namespace
 {
@@ -42,21 +40,15 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(hPrevInstance);
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
-
-	g_pMainDX = RXNew RX::RXMain_DX9;
-	NULLCHK(g_pMainDX);
 	
-	g_pMainDX->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
-	g_pMainDX->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
-	g_pMainDX->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
-	g_pMainDX->setSubFunc(OnLost,    SUBFUNC_TYPE::LOSTDEVICE);
-	g_pMainDX->setSubFunc(OnReset,   SUBFUNC_TYPE::RESETDEVICE);
+	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
+	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
+	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
+	RXMAIN_DX9->setSubFunc(OnLost,    SUBFUNC_TYPE::LOSTDEVICE);
+	RXMAIN_DX9->setSubFunc(OnReset,   SUBFUNC_TYPE::RESETDEVICE);
 
-	g_pMainDX->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	INT32 messageCode = g_pMainDX->getMessageCode();
-	SAFE_DELTE(g_pMainDX);
-	return messageCode;
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }
 
 // 초기화 함수입니다.
@@ -65,9 +57,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 // 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
-	g_pD3DDevice9 = RX::RXRendererDX9::Instance()->getD3DDevice9();
-	NULLCHK(g_pD3DDevice9);
-
 	g_p3DAxis = RXNew RX::RX3DAxisDX9;
 	NULLCHK_HEAPALLOC(g_p3DAxis);
 	g_p3DAxis->CreateAxis(0.5f);
@@ -75,7 +64,7 @@ HRESULT CALLBACK OnInit()
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
-	g_pD3DDevice9->SetRenderState(D3DRS_LIGHTING, false);
+	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, false);
 
 	return S_OK;
 }
@@ -122,7 +111,7 @@ void ViewMatrixTest()
 	// 뷰행렬을 적용할 때는 D3DTS_VIEW를 쓰면 됩니다.
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp); // 왼손좌표계 기준입니다.
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	g_p3DAxis->DrawAxis();
 }
@@ -145,13 +134,13 @@ void ProjectionMatrixTest()
 	// 뷰행렬을 적용할 때는 D3DTS_VIEW를 쓰면 됩니다.
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// 종횡비입니다. 가로 / 세로를 의미합니다.
 	// 일반 해상도인지 와이드 해상도인지를 구분할 때 사용하는데
 	// 투영변환에는 종횡비가 사용됩니다. 일반적으로는 1.0으로 사용합니다.
 	FLOAT rAspectRatio =
-		static_cast<FLOAT>(g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight());
+		static_cast<FLOAT>(RXMAIN_DX9->getClientWidth() / RXMAIN_DX9->getClientHeight());
 
 	// 투영행렬을 만듭니다.
 	// 투영행렬을 적용할 때는 D3DTS_PROJECTION을 쓰면 됩니다.
@@ -167,7 +156,7 @@ void ProjectionMatrixTest()
 	// 일반적으로는 Near는 1.0으로 설정하고 Far는 크게 잡습니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DX_PI / 4.0f, rAspectRatio, 1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	g_p3DAxis->DrawAxis();
 }
@@ -188,13 +177,13 @@ void ViewPortTest()
 	// 뷰행렬을 적용할 때는 D3DTS_VIEW를 쓰면 됩니다.
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 	
 	// 종횡비입니다. 가로 / 세로를 의미합니다.
 	// 일반 해상도인지 와이드 해상도인지를 구분할 때 사용하는데
 	// 투영변환에는 종횡비가 사용됩니다. 일반적으로는 1.0으로 사용합니다.
 	FLOAT rAspectRatio =
-		static_cast<FLOAT>(g_pMainDX->getClientWidth() / g_pMainDX->getClientHeight());
+		static_cast<FLOAT>(RXMAIN_DX9->getClientWidth() / RXMAIN_DX9->getClientHeight());
 
 	// 투영행렬을 만듭니다.
 	// 투영행렬을 적용할 때는 D3DTS_PROJECTION을 쓰면 됩니다.
@@ -210,24 +199,24 @@ void ViewPortTest()
 	// 일반적으로는 Near는 1.0으로 설정하고 Far는 크게 잡습니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, D3DX_PI / 4.0f, rAspectRatio, 1.0f, 1000.0f);
-	g_pD3DDevice9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// 뷰포트 설정입니다.
 	// 뷰포트는 백버퍼와 다른 개념으로서, 백버퍼에 실제로 렌더링할 영역이라고 보면 됩니다.
 	// 따라서 뷰포트를 잘 이용하면 하나의 오브젝트를 여러 화면으로 렌더링하는 게 가능합니다.
 	D3DVIEWPORT9 viewPort;
 	D3DVIEWPORT9 backupViewPort;
-	g_pD3DDevice9->GetViewport(&viewPort);
+	D3DDEVICE9->GetViewport(&viewPort);
 	backupViewPort = viewPort; // 현재 뷰포트 백업
 
 	// 뷰포트의 렌더링 영역을 설정합니다.
 	// 화면 4개로 분할할 것이므로 메인 뷰포트는 왼쪽 위가 됩니다.
 	// 가로와 세로 길이는 클라이언트 영역의 절반입니다. 즉, 4분의 1 정도가 됩니다.
-	viewPort.Width  = g_pMainDX->getClientWidth() / 2;
-	viewPort.Height = g_pMainDX->getClientHeight() / 2;
+	viewPort.Width  = RXMAIN_DX9->getClientWidth() / 2;
+	viewPort.Height = RXMAIN_DX9->getClientHeight() / 2;
 
 	// 뷰포트 설정을 변경하면 반드시 가상 디바이스에 적용해줘야 합니다.
-	g_pD3DDevice9->SetViewport(&viewPort);
+	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 결과적으로 렌더링은 마지막에 처리됩니다.
 	g_p3DAxis->DrawAxis();
@@ -252,11 +241,11 @@ void ViewPortTest()
 	SetVector(&vEye, 0.0f, 2.0f, 0.0f);
 	SetVector(&vUp, 0.0f, 0.0f, -1.0f);
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 뷰포트 영역을 새로 설정해줍니다.
-	viewPort.X = g_pMainDX->getClientWidth() / 2;
-	g_pD3DDevice9->SetViewport(&viewPort);
+	viewPort.X = RXMAIN_DX9->getClientWidth() / 2;
+	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.
 	// 새로운 객체가 아닌 기존 객체를 그대로 사용합니다.
@@ -270,12 +259,12 @@ void ViewPortTest()
 	SetVector(&vEye, 0.0f, 0.0f, -2.0f);
 	SetVector(&vUp, 0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 뷰포트 영역을 새로 설정해줍니다.
 	viewPort.X = 0;
-	viewPort.Y = g_pMainDX->getClientHeight() / 2;
-	g_pD3DDevice9->SetViewport(&viewPort);
+	viewPort.Y = RXMAIN_DX9->getClientHeight() / 2;
+	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.
 	// 새로운 객체가 아닌 기존 객체를 그대로 사용합니다.
@@ -289,12 +278,12 @@ void ViewPortTest()
 	SetVector(&vEye, 1.0f, 1.0f, -1.0f);
 	SetVector(&vUp, 0.0f, 1.0f, 0.0f);
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	g_pD3DDevice9->SetTransform(D3DTS_VIEW, &matView);
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
 
 	// 뷰포트 영역을 새로 설정해줍니다.
-	viewPort.X = g_pMainDX->getClientWidth() / 2;;
-	viewPort.Y = g_pMainDX->getClientHeight() / 2;
-	g_pD3DDevice9->SetViewport(&viewPort);
+	viewPort.X = RXMAIN_DX9->getClientWidth() / 2;;
+	viewPort.Y = RXMAIN_DX9->getClientHeight() / 2;
+	D3DDEVICE9->SetViewport(&viewPort);
 
 	// 3D축을 렌더링합니다.
 	// 새로운 객체가 아닌 기존 객체를 그대로 사용합니다.
@@ -304,7 +293,7 @@ void ViewPortTest()
 
 	// 백업한 뷰포트로 복구해줍니다.
 	// 복구해주지 않으면 뷰포트 영역끼리 꼬이게 됩니다.
-	g_pD3DDevice9->SetViewport(&backupViewPort);
+	D3DDEVICE9->SetViewport(&backupViewPort);
 }
 
 void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ)

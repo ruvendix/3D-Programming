@@ -13,13 +13,13 @@
 #ifndef MAIN_H__
 #define MAIN_H__
 
-// 프로그램의 기본 리소스 헤더 파일입니다.
+// 프로그램의 기본 리소스 정보 모음입니다.
 #include "resource.h"
 
-// Win32 API의 Lib 연결입니다.
+// Win32 API의 Lib 링크입니다.
 #pragma comment(lib, "winmm.lib")
  
-// DirectX9 라이브러리 연결입니다
+// DirectX9 라이브러리 링크입니다
 #pragma comment(lib, "d3d9.lib")
 #pragma comment(lib, "d3dx9.lib")
 #pragma comment(lib, "d3dx9d.lib")
@@ -29,7 +29,7 @@
 // 링크시켜주기 위해 사용합니다. 예를 들면 "DxErr.h"가 있습니다.
 #pragma comment(lib, "legacy_stdio_definitions.lib")
  
-// RX 라이브러리 연결입니다.
+// RX 라이브러리 링크입니다.
 #pragma comment(lib, "RXBaseDX_Debug.lib")
 
 // ====================================================================================

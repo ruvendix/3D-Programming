@@ -15,8 +15,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	UNREFERENCED_PARAMETER(szCmdLine);
 	UNREFERENCED_PARAMETER(cmdShow);
 
-	RX::RXMain_DX9 main;
-	main.RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
-
-	return main.getMessageCode();
+	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
+	return RXMAIN_DX9->getMessageCode();
 }

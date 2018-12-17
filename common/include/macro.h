@@ -432,4 +432,13 @@ private:\
 	classType* classType::m_pInst = nullptr;\
 	bool classType::m_bDestroy = false;
 
+// 전역 인스턴스 모음입니다.
+#define RXMAIN_DX9    RX::RXMain_DX9::Instance()
+#define MAININST      RX::RXMain_DX9::Instance()->getmain()->getProgramInstanceHandle()
+#define MAINWND       RX::RXMain_DX9::Instance()->getMainWindowHandle()
+#define RXRENDERERDX9 RX::RXRendererDX9::Instance()
+#define D3D9          RX::RXRendererDX9::Instance()->getD3D9()
+#define D3DDEVICE9    RX::RXRendererDX9::Instance()->getD3DDevice9()
+#define RXFPSMGR      RX::RXProgramFPSMgr::Instance()
+
 #endif
