@@ -14,7 +14,7 @@
 #ifndef RXPROGRAMFPSMGR_H_
 #define RXPROGRAMFPSMGR_H_
 
-#include "../common.h"
+#include "common.h"
 #include "RXTimer.h"
 
 namespace RX

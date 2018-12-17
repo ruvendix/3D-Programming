@@ -12,7 +12,7 @@
 #ifndef RXTIMER_H_
 #define RXTIMER_H_
 
-#include "../common.h"
+#include "common.h"
 
 namespace RX
 {

@@ -51,15 +51,7 @@ namespace RX
 			::ZeroMemory(this, sizeof(RXRect));
 		}
 
-		RECT* ConvertToWinAPIRect(RECT* pRt)
-		{
-			NULLCHK(pRt);
-			pRt->left   = m_left;
-			pRt->top    = m_top;
-			pRt->right  = m_right;
-			pRt->bottom = m_bottom;
-			return pRt;
-		}
+		RECT* ConvertToWinAPIRect(RECT* pRt);
 
 		const RXRect* ConvertToRXRect(const RECT& rt)
 		{
