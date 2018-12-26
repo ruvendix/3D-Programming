@@ -53,7 +53,7 @@ namespace RX
 
 		// 정점 버퍼를 생성합니다.
 		g_DXResult = D3DDEVICE9->CreateVertexBuffer(
-			sizeof(CustomVertex) * vertexCnt, // 정점 버퍼의 크기입니다.
+			sizeof(CustomVertex) * vertexCnt, // 정점 버퍼의 용량입니다.
 			D3DUSAGE_NONE,                    // Usage는 0으로 설정합니다.
 			m_dwFVF,                          // FVF 형식입니다.
 			D3DPOOL_MANAGED,                  // 메모리풀입니다.
@@ -68,7 +68,7 @@ namespace RX
 		void* pVertexData = nullptr;
 		m_pVertexBuffer->Lock(
 			0,                                // 오프셋이 0이면 전체 잠금입니다.
-			sizeof(CustomVertex) * vertexCnt, // 복사할 정점 정보의 크기를 넘겨줍니다.
+			sizeof(CustomVertex) * vertexCnt, // 복사할 정점 정보의 용량을 넘겨줍니다.
 			&pVertexData,                     // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
 			D3DFLAG_NONE);                    // 잠금 플래그는 0으로 설정합니다.
 

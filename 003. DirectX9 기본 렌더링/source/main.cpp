@@ -36,8 +36,6 @@ HRESULT                 g_DXResult      = S_OK;
 HRESULT CALLBACK OnInit();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
-HRESULT CALLBACK OnLost();
-HRESULT CALLBACK OnReset();
 
 
 // ====================================================================================
@@ -55,8 +53,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	RXMAIN_DX9->setSubFunc(OnInit,    SUBFUNC_TYPE::INIT);
 	RXMAIN_DX9->setSubFunc(OnRender,  SUBFUNC_TYPE::RENDER);
 	RXMAIN_DX9->setSubFunc(OnRelease, SUBFUNC_TYPE::RELEASE);
-	RXMAIN_DX9->setSubFunc(OnLost,    SUBFUNC_TYPE::LOSTDEVICE);
-	RXMAIN_DX9->setSubFunc(OnReset,   SUBFUNC_TYPE::RESETDEVICE);
 
 	RXMAIN_DX9->RunMainRoutine(hInstance, IDI_RUVENDIX_ICO);
 	return RXMAIN_DX9->getMessageCode();
@@ -78,8 +74,8 @@ HRESULT CALLBACK OnInit()
 
 	// 정점 버퍼를 생성합니다.
 	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
-		sizeof(CustomVertex) * 3, // 정점 버퍼의 크기입니다.
-		D3DUSAGE_NONE,            // 사용법인데 일반적으로는 0입니다.
+		sizeof(CustomVertex) * 3, // 정점 버퍼의 용량입니다.
+		D3DUSAGE_WRITEONLY,       // 사용법인데 0이 기본이지만 최적화를 위해 쓰기 전용으로 설정합니다.
 		CUSTOM_FVF,               // FVF 형식입니다.
 		D3DPOOL_MANAGED,          // 메모리풀 설정입니다.
 		&g_pVertexBuffer,         // 정점 버퍼의 포인터를 넘깁니다.
@@ -93,7 +89,7 @@ HRESULT CALLBACK OnInit()
 	void* pVertexData = nullptr;
 	g_pVertexBuffer->Lock(
 		0,                        // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
-		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 크기를 넘겨줍니다.
+		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 용량을 넘겨줍니다.
 		&pVertexData,             // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
 		D3DFLAG_NONE);            // 잠금 플래그인데 0으로 설정합니다.
 	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 3);
@@ -126,17 +122,5 @@ HRESULT CALLBACK OnRender()
 HRESULT CALLBACK OnRelease()
 {
 	SAFE_RELEASE(g_pVertexBuffer);
-	return S_OK;
-}
-
-HRESULT CALLBACK OnLost()
-{
-	OnRelease();
-	return S_OK;
-}
-
-HRESULT CALLBACK OnReset()
-{
-	OnInit();
 	return S_OK;
 }
