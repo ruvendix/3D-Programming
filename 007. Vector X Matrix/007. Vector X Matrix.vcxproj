@@ -83,6 +83,7 @@
       <AdditionalIncludeDirectories>$(MSBuildProjectDirectory);$(SolutionDir)\common\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>base_project.h</PrecompiledHeaderFile>
+      <PreprocessorDefinitions>_MBCS;NOT_USED_VLD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(DXSDK_DIR)\Lib\x86;$(SolutionDir)common\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

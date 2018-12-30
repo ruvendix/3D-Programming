@@ -5,8 +5,8 @@
 
 // ====================================================================================
 // 함수 선언부입니다.
-void ZeroVector(D3DXVECTOR3* pV);
 void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ);
+void ZeroVector(D3DXVECTOR3* pV);
 void AddTest();
 void SubtractTest();
 void ScalarMultiplyTest();
@@ -30,16 +30,6 @@ INT32 main()
 	return 0;
 }
 
-void ZeroVector(D3DXVECTOR3 * pV)
-{
-	NULLCHK_RETURN_NOCOMENT(pV);
-
-	// 벡터는 이렇게 값을 설정합니다.
-	pV->x = 0.0f;
-	pV->y = 0.0f;
-	pV->z = 0.0f;
-}
-
 void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ)
 {
 	NULLCHK_RETURN_NOCOMENT(pV);
@@ -50,10 +40,18 @@ void SetVector(D3DXVECTOR3* pV, FLOAT rX, FLOAT rY, FLOAT rZ)
 	pV->z = rZ;
 }
 
+void ZeroVector(D3DXVECTOR3* pV)
+{
+	SetVector(pV, 0.0f, 0.0f, 0.0f);
+}
+
 void AddTest()
 {
 	// 3차원 벡터의 기본형입니다.
 	// 쓰레기값이 있으므로 초기화는 필수입니다.
+	// D3DXVECTOR3의 생성자들은 값을 초기화해주지 않습니다.
+	// 벡터는 크기와 방향만 존재하므로 엄밀히 따지자면 위치는 없습니다.
+	// 위치는 점에만 존재하지만 벡터와 점을 통합해서 사용합니다.
 	D3DXVECTOR3 vPos1(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 vPos2(0.0f, 0.0f, 0.0f);
 
@@ -67,6 +65,7 @@ void AddTest()
 	SetVector(&vPos1, 1.0f, 2.0f, 3.0f);
 
 	// 벡터의 덧셈입니다.
+	// 아핀 공간에서 벡터 + 벡터 = 벡터입니다.
 	D3DXVECTOR3 vResult(0.0f, 0.0f, 0.0f);
 	vResult = vPos1 + vPos2;
 	printf("vPos1 + vPos2 = (%.2f, %.2f, %.2f)\n", vResult.x, vResult.y, vResult.z);
@@ -80,21 +79,12 @@ void AddTest()
 
 void SubtractTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
 	D3DXVECTOR3 vPos1(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vPos2(0.0f, 0.0f, 0.0f);
-
-	// 영벡터로 만드는 초기화인데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	ZeroVector(&vPos1);
-	ZeroVector(&vPos2);
-
-	// 벡터의 값을 설정하는 건데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	SetVector(&vPos2, 1.0f, 2.0f, 3.0f);
+	D3DXVECTOR3 vPos2(1.0f, 2.0f, 3.0f);
 
 	// 벡터의 뺄셈입니다.
+	// 아핀 공간에서 벡터 - 벡터 = 벡터입니다.
+	// 또는 점 - 점 = 벡터입니다.
 	D3DXVECTOR3 vResult(0.0f, 0.0f, 0.0f);
 	vResult = vPos1 - vPos2;
 	printf("vPos1 - vPos2 = (%.2f, %.2f, %.2f)\n", vResult.x, vResult.y, vResult.z);
@@ -108,19 +98,10 @@ void SubtractTest()
 
 void ScalarMultiplyTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
-	D3DXVECTOR3 vPos(0.0f, 0.0f, 0.0f);
-
-	// 영벡터로 만드는 초기화인데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	ZeroVector(&vPos);
-
-	// 벡터의 값을 설정하는 건데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	SetVector(&vPos, 1.0f, 2.0f, 3.0f);
+	D3DXVECTOR3 vPos(1.0f, 2.0f, 3.0f);
 
 	// 벡터의 스칼라 곱셈입니다.
+	// 아핀 공간에서 벡터 * 스칼라 = 벡터입니다.
 	D3DXVECTOR3 vResult(0.0f, 0.0f, 0.0f);
 	vResult = vPos * 2;
 	printf("vPos * 2 = (%.2f, %.2f, %.2f)\n", vResult.x, vResult.y, vResult.z);
@@ -134,17 +115,7 @@ void ScalarMultiplyTest()
 
 void ScalarDivideTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
-	D3DXVECTOR3 vPos(0.0f, 0.0f, 0.0f);
-
-	// 영벡터로 만드는 초기화인데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	ZeroVector(&vPos);
-
-	// 벡터의 값을 설정하는 건데
-	// 이렇게 함수를 만들어서 할 수도 있습니다.
-	SetVector(&vPos, 1.0f, 2.0f, 3.0f);
+	D3DXVECTOR3 vPos(1.0f, 2.0f, 3.0f);
 
 	// 벡터의 스칼라 나눗셈입니다.
 	D3DXVECTOR3 vResult(0.0f, 0.0f, 0.0f);
@@ -160,8 +131,6 @@ void ScalarDivideTest()
 
 void NormalizeTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
 	D3DXVECTOR3 vPos(3.0f, 3.0f, 3.0f);
 
 	// 벡터의 길이를 제곱으로 구합니다.
@@ -187,8 +156,6 @@ void NormalizeTest()
 
 void DotProductTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
 	D3DXVECTOR3 vPos1(1.0f, 1.0f, 1.0f);
 	D3DXVECTOR3 vPos2(2.0f, 0.0f, 3.0f);
 
@@ -214,8 +181,6 @@ void DotProductTest()
 
 void CrossProductTest()
 {
-	// 3차원 벡터의 기본형입니다.
-	// 쓰레기값이 있으므로 초기화는 필수입니다.
 	D3DXVECTOR3 vPos1(1.0f, 1.0f, 1.0f);
 	D3DXVECTOR3 vPos2(2.0f, 0.0f, 3.0f);
 
@@ -224,6 +189,7 @@ void CrossProductTest()
 	// 기하학적으로는 두 벡터에 수직인 벡터인데 왼손좌표계와 오른손좌표계에 따라 방향이 다릅니다.
 	// 여기서 좀 헷갈릴 수 있는데 대수학적으로는 왼손좌표계든 오른손좌표계든 값은 동일합니다.
 	// 다만 Z축의 방향이 서로 반대이므로 외적 결과 벡터의 Z값을 주목해야 합니다.
+	// DirectX는 왼손좌표계를 사용합니다.
 	D3DXVECTOR3 vResult(0.0f, 0.0f, 0.0f);
 	D3DXVec3Cross(&vResult, &vPos1, &vPos2);
 	printf("vPos1 X vPos2 = (%+5.2f, %+5.2f, %+5.2f)\n", vResult.x, vResult.y, vResult.z);
