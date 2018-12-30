@@ -144,7 +144,6 @@ HRESULT CALLBACK OnRelease()
 	return S_OK;
 }
 
-
 void ScalingTest(FLOAT rX, FLOAT rY, FLOAT rZ)
 {
 	D3DXMATRIXA16 matScale;

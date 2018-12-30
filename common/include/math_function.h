@@ -38,6 +38,7 @@ namespace RX
 	DLL_DEFINE void SetMatrix2ndRow(D3DXMATRIXA16* pMat, FLOAT c21, FLOAT c22, FLOAT c23, FLOAT c24);
 	DLL_DEFINE void SetMatrix3rdRow(D3DXMATRIXA16* pMat, FLOAT c31, FLOAT c32, FLOAT c33, FLOAT c34);
 	DLL_DEFINE void SetMatrix4thRow(D3DXMATRIXA16* pMat, FLOAT c41, FLOAT c42, FLOAT c43, FLOAT c44);
+	DLL_DEFINE void ShowMatrixValue(D3DXMATRIXA16* pMat);
 
 } // namespace RX end
 #endif

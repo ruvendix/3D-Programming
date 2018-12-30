@@ -49,13 +49,10 @@ INT32 main()
 
 void ZeroMatrix(D3DXMATRIXA16* pMat)
 {
-	NULLCHK_RETURN_NOCOMENT(pMat);
-
-	// 행렬은 이렇게 값을 설정합니다.
-	pMat->_11 = 0.0f; pMat->_12 = 0.0f; pMat->_13 = 0.0f; pMat->_14 = 0.0f;
-	pMat->_21 = 0.0f; pMat->_22 = 0.0f; pMat->_23 = 0.0f; pMat->_24 = 0.0f;
-	pMat->_31 = 0.0f; pMat->_32 = 0.0f; pMat->_33 = 0.0f; pMat->_34 = 0.0f;
-	pMat->_41 = 0.0f; pMat->_42 = 0.0f; pMat->_43 = 0.0f; pMat->_44 = 0.0f;
+	for (INT32 i = 0; i < 4; ++i)
+	{
+		SetMatrixRow(pMat, i, 0.0f, 0.0f, 0.0f, 0.0f);
+	}
 
 	// 이렇게 해도 됩니다.
 	//::ZeroMemory(pMat, sizeof(D3DXMATRIXA16));
@@ -145,23 +142,20 @@ void SetupTest()
 
 void AddTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat1;
-	D3DXMATRIXA16 mat2;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat1);
-	ZeroMatrix(&mat2);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat1, i, 1.0f, 2.0f, 2.0f, 3.0f);
 	}
 
-	// 행렬의 덧셈입니다.
-	// 행렬의 덧셈은 함수가 따로 제공되지 않습니다.
+	D3DXMATRIXA16 mat2;
+	ZeroMatrix(&mat2);
+
 	D3DXMATRIXA16 matResult;
 	ZeroMatrix(&matResult);
+
+	// 행렬의 덧셈입니다.
+	// 행렬의 덧셈은 함수가 따로 제공되지 않습니다.
 	matResult = mat1 + mat2;
 	printf("mat1 + mat2의 결과입니다.\n");
 	ShowMatrixValue(&matResult);
@@ -169,23 +163,20 @@ void AddTest()
 
 void SubtractTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat1;
-	D3DXMATRIXA16 mat2;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat1);
-	ZeroMatrix(&mat2);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat1, i, 1.0f, 2.0f, 2.0f, 3.0f);
 	}
 
-	// 행렬의 덧셈입니다.
-	// 행렬의 덧셈은 함수가 따로 제공되지 않습니다.
+	D3DXMATRIXA16 mat2;
+	ZeroMatrix(&mat2);
+
 	D3DXMATRIXA16 matResult;
 	ZeroMatrix(&matResult);
+
+	// 행렬의 뺄셈입니다.
+	// 행렬의 뺄셈은 함수가 따로 제공되지 않습니다.
 	matResult = mat2 - mat1;
 	printf("mat2 - mat1의 결과입니다.\n");
 	ShowMatrixValue(&matResult);
@@ -193,21 +184,17 @@ void SubtractTest()
 
 void ScalarMultiplyTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat, i, 1.0f, 2.0f, 3.0f, 4.0f);
 	}
 
-	// 행렬의 스칼라 곱셈입니다.
-	// 행렬의 스칼라 곱셈은 함수가 따로 제공되지 않습니다.
 	D3DXMATRIXA16 matResult;
 	ZeroMatrix(&matResult);
+
+	// 행렬의 스칼라 곱셈입니다.
+	// 행렬의 스칼라 곱셈은 함수가 따로 제공되지 않습니다.
 	matResult = mat * 2.0f;
 	printf("mat * 2.0f의 결과입니다.\n");
 	ShowMatrixValue(&matResult);
@@ -215,21 +202,17 @@ void ScalarMultiplyTest()
 
 void ScalarDivideTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat, i, 2.0f, 4.0f, 6.0f, 8.0f);
 	}
 
-	// 행렬의 스칼라 나눗셈입니다.
-	// 행렬의 스칼라 나눗셈은 함수가 따로 제공되지 않습니다.
 	D3DXMATRIXA16 matResult;
 	ZeroMatrix(&matResult);
+
+	// 행렬의 스칼라 나눗셈입니다.
+	// 행렬의 스칼라 나눗셈은 함수가 따로 제공되지 않습니다.
 	matResult = mat / 2.0f;
 	printf("mat / 2.0f의 결과입니다.\n");
 	ShowMatrixValue(&matResult);
@@ -237,11 +220,7 @@ void ScalarDivideTest()
 
 void IdentityTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
 
 	// 단위행렬로 만듭니다.
 	D3DXMatrixIdentity(&mat);
@@ -253,16 +232,12 @@ void IdentityTest()
 
 void TransposeTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat, i, 1.0f, 2.0f, 3.0f, 4.0f);
 	}
+
 	printf("전치되기 전 mat의 값을 출력합니다.\n");
 	ShowMatrixValue(&mat);
 
@@ -277,19 +252,13 @@ void TransposeTest()
 
 void MultiplyTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat1;
-	D3DXMATRIXA16 mat2;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat1);
-	ZeroMatrix(&mat2);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat1, i, 1.0f, 2.0f, 1.0f, 2.0f);
 	}
 
+	D3DXMATRIXA16 mat2;
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat2, i, 2.0f, 1.0f, 2.0f, 1.0f);
@@ -316,26 +285,20 @@ void MultiplyTest()
 
 void IdentityMultiplyTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat1;
-	D3DXMATRIXA16 mat2;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat1);
-	ZeroMatrix(&mat2);
-
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat1, i, 1.0f, 2.0f, 1.0f, 2.0f);
 	}
 
+	D3DXMATRIXA16 mat2;
 	for (INT32 i = 0; i < 4; ++i)
 	{
 		SetMatrixRow(&mat2, i, 2.0f, 1.0f, 2.0f, 1.0f);
 	}
 
 	// 행렬의 곱셈은 순서가 중요합니다.
-	// A * B와 B * A의 결과는 다릅니다. 벡터의 외적과 같죠.
+	// (A * B)와 (B * A)의 결과는 다릅니다. 벡터의 외적과 같죠.
 	// 하지만 스칼라 곱셈에서는 순서에 영향을 받지 않습니다.
 	D3DXMATRIXA16 matResult = mat1 * mat2;
 	printf("mat1 * mat2의 결과입니다.\n");
@@ -360,12 +323,7 @@ void IdentityMultiplyTest()
 
 void DeterminantTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
-	
 	SetMatrix1stRow(&mat, 1.0f, 2.0f, 3.0f, 4.0f);
 	SetMatrix2ndRow(&mat, 4.0f, 3.0f, 2.0f, 1.0f);
 	SetMatrix3rdRow(&mat, 3.0f, 1.0f, 2.0f, 4.0f);
@@ -380,12 +338,7 @@ void DeterminantTest()
 
 void InverseTest()
 {
-	// 4행 4열 행렬의 기본형입니다.
 	D3DXMATRIXA16 mat;
-
-	// 영행렬로 만듭니다.
-	ZeroMatrix(&mat);
-
 	SetMatrix1stRow(&mat, 1.0f, 2.0f, 3.0f, 4.0f);
 	SetMatrix2ndRow(&mat, 4.0f, 3.0f, 2.0f, 1.0f);
 	SetMatrix3rdRow(&mat, 3.0f, 1.0f, 2.0f, 4.0f);
