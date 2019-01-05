@@ -8,8 +8,8 @@
 struct LoadXFileInfo
 {
 	ID3DXMesh*          pMesh;         // 메시 인터페이스 포인터
-	D3DXMATERIAL*       pMaterial;     // 머티리얼과 텍스처 이름을 담아둘 포인터
-	DWORD               materialCnt;   // 모델의 머티리얼 개수
+	D3DXMATERIAL*       pMaterial;     // 재질과 텍스처 이름을 담아둘 포인터
+	DWORD               materialCnt;   // 모델의 재질 개수
 	IDirect3DTexture9** ppMeshTexture; // 메시에 사용되는 텍스처 인터페이스 포인터의 포인터
 };
 
@@ -110,7 +110,7 @@ HRESULT CALLBACK OnRender()
 	// XFile에서 로딩한 메시를 렌더링합니다.
 	for (UINT32 i = 0; i < g_loadXFileInfo.materialCnt; ++i)
 	{
-		// 각 메시마다 머티리얼을 설정해줍니다.
+		// 각 메시마다 재질을 설정해줍니다.
 		D3DDEVICE9->SetMaterial(&g_loadXFileInfo.pMaterial[i].MatD3D);
 
 		// 각 메시마다 텍스처를 설정해줍니다.
@@ -194,13 +194,13 @@ void LoadXFile()
 		D3DXMESH_MANAGED, // XFile에서 로딩한 메시의 정점 버퍼 및 인덱스 버퍼를 저장할 메모리풀
 		D3DDEVICE9,    // 가상 디바이스 객체(레퍼런스 카운트 증가)
 		nullptr, // 지금 당장은 인접 정보를 사용하지 않음
-		&pMaterialBuffer, // XFile의 머티리얼 정보를 저장
+		&pMaterialBuffer, // XFile의 재질 정보를 저장
 		nullptr, // 지금 당장은 사용하지 않음
-		&g_loadXFileInfo.materialCnt, // XFile의 머티리얼 개수를 저장
+		&g_loadXFileInfo.materialCnt, // XFile의 재질 개수를 저장
 		&g_loadXFileInfo.pMesh); // XFile의 메시를 저장
 	DXERR_HANDLER(g_DXResult);
 
-	// XFile에서 로딩한 머티리얼 정보를 캐스팅해서 사용합니다.
+	// XFile에서 로딩한 재질 정보를 캐스팅해서 사용합니다.
 	// 이렇게 포인터를 다른 포인터로 해석할 때는 reinterpret_cast<>를 사용해야 가독성이 좋습니다.
 	D3DXMATERIAL* pMaterial = reinterpret_cast<D3DXMATERIAL*>(pMaterialBuffer->GetBufferPointer());
 
@@ -211,7 +211,7 @@ void LoadXFile()
 	
 	for (INT32 i = 0; i < materialCnt; ++i)
 	{
-		// XFile에서 로딩한 머티리얼 정보를 저장합니다.
+		// XFile에서 로딩한 재질 정보를 저장합니다.
 		g_loadXFileInfo.pMaterial[i] = pMaterial[i];
 		g_loadXFileInfo.pMaterial[i].MatD3D.Ambient = g_loadXFileInfo.pMaterial[i].MatD3D.Diffuse;
 		

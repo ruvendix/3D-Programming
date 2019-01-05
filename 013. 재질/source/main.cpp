@@ -96,6 +96,12 @@ HRESULT CALLBACK OnInit()
 	// 재질을 초기화합니다.
 	::ZeroMemory(&g_mtrl, sizeof(g_mtrl));
 
+	// 재질의 주변광을 설정합니다.
+	g_mtrl.MatD3D.Ambient.a = 0.0f;
+	g_mtrl.MatD3D.Ambient.r = 0.5f;
+	g_mtrl.MatD3D.Ambient.g = 0.5f;
+	g_mtrl.MatD3D.Ambient.b = 0.5f;
+
 	return S_OK;
 }
 
