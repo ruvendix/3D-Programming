@@ -14,8 +14,8 @@
 #define RXRENDERERDX9_H__
 
 #include "common.h"
-#include "RXVertexBufferDX9.h"
-#include "RXIndexBufferDX9.h"
+//#include "RXVertexBufferDX9.h"
+//#include "RXIndexBufferDX9.h"
 
 // DirectX 에러는 렌더러 관련에서만 사용됩니다.
 extern HRESULT g_DXResult;
@@ -67,11 +67,11 @@ namespace RX
 
 		void DefaultProjectionMatrix();
 
-		HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
-			const RXVertexBufferDX9& vertexBuffer);
-		HRESULT DrawIdxedPrimitive(const RXVertexBufferDX9& vertexBuffer,
-			const RXIndexBufferDX9& IndexBuffer);
-		HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
+		//HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType,
+		//	const RXVertexBufferDX9& vertexBuffer);
+		//HRESULT DrawIdxedPrimitive(const RXVertexBufferDX9& vertexBuffer,
+		//	const RXIndexBufferDX9& IndexBuffer);
+		//HRESULT DrawDXMesh(const LPD3DXMESH pMesh);
 
 		// ====================================================================================
 		// 폰트 관련 함수

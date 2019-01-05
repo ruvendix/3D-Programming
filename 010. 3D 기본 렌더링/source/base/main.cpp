@@ -45,28 +45,17 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	return RXMAIN_DX9->getMessageCode();
 }
 
-// 초기화 함수입니다.
-// 3D 렌더링은 연산이 많이 들어가므로 웬만한 작업은 초기화해줘야 합니다.
-// 렌더링하면서 실시간으로 연산도 가능하지만 그렇게 되면 프레임이 떨어지게 됩니다.
-// 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
 	g_p3DAxis = RXNew RX::RX3DAxisDX9;
 	NULLCHK_HEAPALLOC(g_p3DAxis);
 	g_p3DAxis->CreateAxis(0.5f);
 
-	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
-	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
-	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
 	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, false);
 
 	return S_OK;
 }
 
-// 렌더링 함수입니다.
-// 실제 렌더링 작업인 Draw Call이 처리됩니다.
-// Draw Call은 프레임당 호출되는 렌더링 함수를 뜻하는데 호출되는 빈도수를
-// 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
 	//ViewMatrixTest();

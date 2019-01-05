@@ -27,8 +27,12 @@ struct CustomVertex
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-HRESULT                 g_DXResult      = S_OK;
+HRESULT g_DXResult = S_OK;
+
+namespace
+{
+	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+}
 
 
 // ====================================================================================
@@ -75,7 +79,7 @@ HRESULT CALLBACK OnInit()
 	// 정점 버퍼를 생성합니다.
 	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
 		sizeof(CustomVertex) * 3, // 정점 버퍼의 용량입니다.
-		D3DUSAGE_WRITEONLY,       // 사용법인데 0이 기본이지만 최적화를 위해 쓰기 전용으로 설정합니다.
+		D3DUSAGE_WRITEONLY,       // 사용법은 기본이 0이지만 최적화를 위해 D3DUSAGE_WRITEONLY로 설정합니다.
 		CUSTOM_FVF,               // FVF 형식입니다.
 		D3DPOOL_MANAGED,          // 메모리풀 설정입니다.
 		&g_pVertexBuffer,         // 정점 버퍼의 포인터를 넘깁니다.
@@ -91,7 +95,7 @@ HRESULT CALLBACK OnInit()
 		0,                        // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
 		sizeof(CustomVertex) * 3, // 복사할 정점 정보의 용량을 넘겨줍니다.
 		&pVertexData,             // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
-		D3DFLAG_NONE);            // 잠금 플래그인데 0으로 설정합니다.
+		D3DLOCK_READONLY);        // 잠금 플래는 기본이 0이지만 최적화를 위해 D3DLOCK_READONLY로 설정합니다.
 	::CopyMemory(pVertexData, vertices, sizeof(CustomVertex) * 3);
 	g_pVertexBuffer->Unlock();
 

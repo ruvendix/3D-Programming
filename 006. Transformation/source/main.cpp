@@ -5,8 +5,12 @@
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-HRESULT                 g_DXResult      = S_OK;
+HRESULT g_DXResult = S_OK;
+
+namespace
+{
+	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+}
 
 
 // ====================================================================================
@@ -16,8 +20,8 @@ HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
 void ScalingTest(FLOAT rX, FLOAT rY, FLOAT rZ);
-void Rotation2DTest(FLOAT rDegree);           // 2차원에서의 기준 축 회전입니다.
-void RotationQuaternion2DTest(FLOAT rDegree); // 2차원에서의 쿼터니언 회전입니다.
+void Rotation2DTest(FLOAT rDegree);
+void RotationQuaternion2DTest(FLOAT rDegree);
 void TranslationTest(FLOAT rX, FLOAT rY, FLOAT rZ);
 
 
@@ -41,10 +45,6 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	return RXMAIN_DX9->getMessageCode();
 }
 
-// 초기화 함수입니다.
-// 3D 렌더링은 연산이 많이 들어가므로 웬만한 작업은 초기화해줘야 합니다.
-// 렌더링하면서 실시간으로 연산도 가능하지만 그렇게 되면 프레임이 떨어지게 됩니다.
-// 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
 	// 정점 순서는 왼손좌표계이므로 시계방향입니다.
@@ -57,83 +57,42 @@ HRESULT CALLBACK OnInit()
 		{ { -0.2f, -0.2f , 0.0f }, DXCOLOR_BLUE  },
 	};
 
-	// 정점 버퍼를 생성합니다.
-	g_DXResult = D3DDEVICE9->CreateVertexBuffer(
-		sizeof(VertexP3D) * 3, // 정점 버퍼의 용량입니다.
-		0,                     // 사용법인데 일반적으로는 0입니다.
-		VertexP3D::format,     // FVF 형식입니다.
-		D3DPOOL_MANAGED,       // 메모리풀 설정입니다.
-		&g_pVertexBuffer,      // 정점 버퍼의 포인터를 넘깁니다.
-		nullptr);              // nullptr로 설정합니다.
-
+	g_DXResult = D3DDEVICE9->CreateVertexBuffer(sizeof(VertexP3D) * 3, D3DUSAGE_WRITEONLY,
+		VertexP3D::format, D3DPOOL_MANAGED, &g_pVertexBuffer, nullptr);
 	DXERR_HANDLER(g_DXResult);
 	NULLCHK_RETURN_EFAIL(g_pVertexBuffer, "정점 버퍼 초기화 실패!");
 	
-	// 정점 버퍼에 실제로 정점 정보를 복사합니다.
-	// 메모리에 접근하기 때문에 메모리를 잠그고 푸는 과정이 있습니다.
 	void* pVertexData = nullptr;
-	g_pVertexBuffer->Lock(
-		0,                     // 오프셋(Offset), 즉 시작 위치를 의미하는데 전체 잠금은 0입니다.
-		sizeof(VertexP3D) * 3, // 복사할 정점 정보의 용량을 넘겨줍니다.
-		&pVertexData,          // 복사된 정점 정보를 다룰 수 있는 포인터를 설정해줍니다.
-		0);                    // 잠금 플래그인데 0으로 설정합니다.
+	g_pVertexBuffer->Lock(0, sizeof(VertexP3D) * 3, &pVertexData, D3DLOCK_READONLY);
 	::CopyMemory(pVertexData, vertices, sizeof(VertexP3D) * 3);
 	g_pVertexBuffer->Unlock();
-
-	// 뷰행렬을 설정합니다.
-	D3DXVECTOR3 vEye(0.0f, 0.0f, -2.0f);   // 카메라의 위치
-	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
-	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
-
-	D3DXMATRIXA16 matView;
-	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
-
-	// 투영행렬을 설정합니다.
-	D3DXMATRIXA16 matProjection;
-	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
-		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
-		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
-	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 
 	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를 사용하게 되므로
 	// 각종 변환 과정을 거쳐야 합니다. 조명(라이팅, Lighting)도 그중 하나인데
 	// 조명에 관한 연산을 따로 하지 않았으므로 조명은 꺼줘야 합니다.
 	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, false);
-	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
 
 	return S_OK;
 }
 
-// 렌더링 함수입니다.
-// 실제 렌더링 작업인 Draw Call이 처리됩니다.
-// Draw Call은 프레임당 호출되는 렌더링 함수를 뜻하는데 호출되는 빈도수를
-// 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
-	// 크기변환행렬을 테스트합니다.
+	// 크기변환을 테스트합니다.
 	//ScalingTest(2.0f, 2.0f, 0.0f);
 
-	// 회전행렬을 테스트합니다.
+	// 2차원에서의 기준 축 회전변환을 테스트합니다.
 	//Rotation2DTest(30.0f);
 
-	// 쿼터니언 회전행렬을 테스트합니다.
+	// 2차원에서의 쿼터니언 회전변환을 테스트합니다.
 	//RotationQuaternion2DTest(30.0f);
 
-	// 이동행렬을 테스트합니다.
+	// 이동변환을 테스트합니다.
 	//TranslationTest(0.4f, 0.4f, 0.0f);
 
 	D3DDEVICE9->SetFVF(VertexP3D::format);
-	D3DDEVICE9->SetStreamSource(
-		0,                  // 스트림 넘버인데 0으로 설정합니다.
-		g_pVertexBuffer,    // 정점 버퍼를 설정해줍니다.
-		0,                  // 오프셋인데 0으로 설정합니다.
-		sizeof(VertexP3D)); // 보폭(Stride)을 의미하는데 FVF로 생성한 크기와 일치해야 합니다.
-	
-	D3DDEVICE9->DrawPrimitive(
-		D3DPT_TRIANGLELIST, // 렌더링 형식을 설정합니다.
-		0,                  // 오프셋인데 0으로 설정합니다.
-		1);                 // 렌더링할 개수를 설정합니다. 개수가 안 맞으면 정상 작동 보장하지 못합니다.
+	D3DDEVICE9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3D));
+
+	D3DDEVICE9->DrawPrimitive(D3DPT_TRIANGLELIST, 0, 1);
 
 	return S_OK;
 }
