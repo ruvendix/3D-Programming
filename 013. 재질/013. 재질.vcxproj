@@ -127,14 +127,12 @@
   <ItemGroup>
     <ClInclude Include="..\common\include\base_project.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="source\old_main.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\source\base_project.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\old_main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="013. 재질.rc" />

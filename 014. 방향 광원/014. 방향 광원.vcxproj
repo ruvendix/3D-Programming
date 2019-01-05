@@ -127,7 +127,6 @@
   <ItemGroup>
     <ClInclude Include="..\common\include\base_project.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="source\old_main.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="014. 방향 광원.rc" />
@@ -140,7 +139,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="source\main.cpp" />
-    <ClCompile Include="source\old_main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

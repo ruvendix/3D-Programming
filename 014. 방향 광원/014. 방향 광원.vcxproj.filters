@@ -21,9 +21,6 @@
     <ClInclude Include="..\common\include\base_project.h">
       <Filter>source\base</Filter>
     </ClInclude>
-    <ClInclude Include="source\old_main.h">
-      <Filter>source</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="014. 방향 광원.rc">
@@ -38,9 +35,6 @@
   <ItemGroup>
     <ClCompile Include="..\common\source\base_project.cpp">
       <Filter>source\base</Filter>
-    </ClCompile>
-    <ClCompile Include="source\old_main.cpp">
-      <Filter>source</Filter>
     </ClCompile>
     <ClCompile Include="source\main.cpp">
       <Filter>source</Filter>

@@ -21,18 +21,12 @@
     <ClInclude Include="resource.h">
       <Filter>source\base</Filter>
     </ClInclude>
-    <ClInclude Include="source\old_main.h">
-      <Filter>source</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\common\source\base_project.cpp">
       <Filter>source\base</Filter>
     </ClCompile>
     <ClCompile Include="source\main.cpp">
-      <Filter>source</Filter>
-    </ClCompile>
-    <ClCompile Include="source\old_main.cpp">
       <Filter>source</Filter>
     </ClCompile>
   </ItemGroup>
