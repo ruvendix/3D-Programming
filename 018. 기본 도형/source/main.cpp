@@ -136,7 +136,7 @@ HRESULT CALLBACK OnRelease()
 void DefaultViewAndProjection()
 {
 	// 뷰행렬을 설정합니다.
-	D3DXVECTOR3 vEye(1.0f, 4.0f, -3.0f);   // 카메라의 위치
+	D3DXVECTOR3 vEye(10.0f, 10.0f, 10.0f);   // 카메라의 위치
 	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
 	D3DXVECTOR3 vUp(0.0f, 1.0f, 0.0f);     // 카메라의 업 벡터
 
