@@ -14,7 +14,7 @@
 #define RXRENDERERDX9_H__
 
 #include "common.h"
-//#include "RXVertexBufferDX9.h"
+#include "RXVertexBufferDX9.h"
 //#include "RXIndexBufferDX9.h"
 
 // DirectX 에러는 렌더러 관련에서만 사용됩니다.
@@ -34,6 +34,13 @@ namespace RX
 			m_drawCallCnt = 0;
 		}
 
+		HRESULT CreateDevice();
+		HRESULT BeginRender();
+		HRESULT EndRender();
+		HRESULT Present();
+		HRESULT Release();
+		HRESULT VerifyDevice(D3DPRESENT_PARAMETERS* pD3DPP);
+
 		// 리소스의 메모리풀이 D3DPOOL_DEFAULT인 것만 정리합니다.
 		// 그 외의 리소스는 정리되지 않습니다.
 		void ArrangeVideoMemory();
@@ -48,12 +55,7 @@ namespace RX
 		// 현재 백버퍼의 서페이스를 파일로 저장합니다. (스크린샷 기능, 많이 느림...)
 		void SaveBackBufferToFile(const CHAR* szFile, D3DXIMAGE_FILEFORMAT fileFormat = D3DXIFF_JPG);
 
-		HRESULT CreateDevice();
-		HRESULT BeginRender();
-		HRESULT EndRender();
-		HRESULT Present();
-		HRESULT Release();
-		HRESULT VerifyDevice(D3DPRESENT_PARAMETERS* pD3DPP);
+		HRESULT DrawPrimitive(D3DPRIMITIVETYPE primitiveType, const RXVertexBufferDX9& vertexBuffer);
 		
 		// ====================================================================================
 		// 정점 관련

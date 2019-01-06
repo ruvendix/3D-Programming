@@ -58,9 +58,9 @@ HRESULT CALLBACK OnInit()
 
 HRESULT CALLBACK OnRender()
 {
-	//ViewMatrixTest();
+	ViewMatrixTest();
 	//ProjectionMatrixTest();
-	ViewPortTest();
+	//ViewPortTest();
 	return S_OK;
 }
 

@@ -1,7 +1,6 @@
 #include "base_project.h"
 #include "main.h"
 #include "global_variable_declaration.h"
-#include "RX\RX3DAxisDX9.h"
 
 
 // ====================================================================================
@@ -13,26 +12,22 @@ const FLOAT TERRAIN_DISTANCE = 0.4f; // 격자 간의 거리
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
-IDirect3DIndexBuffer9*  g_pIndexBuffer  = nullptr;
-
-D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
-D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
-
 HRESULT g_DXResult = S_OK;
 
 namespace
 {
+	IDirect3DVertexBuffer9* g_pVertexBuffer = nullptr;
+	IDirect3DIndexBuffer9*  g_pIndexBuffer = nullptr;
+
 	INT32 g_terrainVertexCnt; // 지형의 정점 개수
 	INT32 g_terrainIndexCnt;  // 지형의 인덱스 개수
 
 	std::vector<VertexP3N>   g_vecTerrainVertex; // 지형의 정점 정보
 	std::vector<Index16>     g_vecTerrainIndex;  // 지형의 인덱스 정보
 
-	RX::RX3DAxisDX9 g_axis; // 3D축을 다루기 위한 것
-
 	D3DLIGHT9 g_light;
 }
+
 
 // ====================================================================================
 // 함수 선언부입니다.
@@ -41,25 +36,12 @@ HRESULT CALLBACK OnUpdate();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
-// 기본 뷰행렬 및 프로젝션행렬을 설정합니다.
 void DefaultViewAndProjection();
-
-// 기본 조명을 설정합니다.
 void DefaultLight();
-
-// 기본 렌더 스테이트를 설정합니다.
 void DefaultRenderState();
-
-// 지형 렌더링을 위한 정점 버퍼를 생성합니다.
 void CreateTerrainVertex();
-
-// 지형 렌더링을 위한 인덱스 버퍼를 생성합니다.
 void CreateTerrainIndex();
-
-// 지형에서의 법선벡터를 구합니다.
 void CalcTerrainNormalVector();
-
-// 사용자의 키보드 또는 마우스 입력에 따른 처리를 합니다.
 void OnUserInput();
 
 // ====================================================================================
@@ -87,32 +69,22 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	return RXMAIN_DX9->getMessageCode();
 }
 
-// 초기화 함수입니다.
-// 3D 렌더링은 연산이 많이 들어가므로 웬만한 작업은 초기화해줘야 합니다.
-// 렌더링하면서 실시간으로 연산도 가능하지만 그렇게 되면 프레임이 떨어지게 됩니다.
-// 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
 	CreateTerrainVertex();
 	CreateTerrainIndex();
 
 	DefaultViewAndProjection();
-
 	DefaultLight();
 	DefaultRenderState();
 
-	// 축을 생성합니다.
 	g_axis.CreateAxis(20.0f);
 
-	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
 
 	return S_OK;
 }
 
-// 업데이트 함수입니다.
-// 렌더링에 영향을 주거나 프로그램에 영향을 주는
-// 정보들을 매프레임마다 업데이트합니다.
 HRESULT CALLBACK OnUpdate()
 {
 	OnUserInput();
@@ -122,31 +94,18 @@ HRESULT CALLBACK OnUpdate()
 	return S_OK;
 }
 
-// 렌더링 함수입니다.
-// 실제 렌더링 작업인 Draw Call이 처리됩니다.
-// Draw Call은 프레임당 호출되는 렌더링 함수를 뜻하는데 호출되는 빈도수를
-// 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
 	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
 	g_axis.DrawAxis();
 	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, TRUE);
 
-	D3DDEVICE9->SetFVF(VertexP3N::format); // 정점 형식 연결
-	D3DDEVICE9->SetStreamSource(
-		0,                  // 사용할 스트림 인덱스
-		g_pVertexBuffer,    // 연결할 정점 버퍼
-		0,                  // 정점 버퍼의 오프셋
-		sizeof(VertexP3N)); // 정점 용량
+	D3DDEVICE9->SetFVF(VertexP3N::format);
+	D3DDEVICE9->SetStreamSource(0, g_pVertexBuffer, 0, sizeof(VertexP3N));
+	D3DDEVICE9->SetIndices(g_pIndexBuffer);
 
-	D3DDEVICE9->SetIndices(g_pIndexBuffer); // 인덱스 버퍼 연결
-	D3DDEVICE9->DrawIndexedPrimitive(
-		D3DPT_TRIANGLELIST, // 인덱스 버퍼는 트라이앵글리스트로 고정
-		0, // 첫 인덱스가 될 정점 버퍼의 정점 인덱스
-		0, // 사용할 첫 인덱스(인덱스가 0, 1, 2, 3이 있을 때 3이면 3부터 시작)
-		g_terrainVertexCnt, // 사용할 정점 개수(2번째 인자 + 3번째 인자만큼 뺀 값)
-		0, // 인덱스 버퍼의 오프셋
-		g_terrainIndexCnt / 3); // 렌더링할 개수(큐브는 삼각형 12개)
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+		g_terrainVertexCnt, 0, g_terrainIndexCnt / 3);
 
 	D3DXMATRIXA16 matWorld;
 	D3DXMATRIXA16 matTrans;
@@ -159,37 +118,22 @@ HRESULT CALLBACK OnRender()
 	D3DXMatrixTranslation(&matTrans, -3.1f, 3.1f, 0.0f);
 	D3DXMatrixRotationZ(&matRotateZ, D3DXToRadian(-90.0f));
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &(matRotateZ * matTrans));
-	D3DDEVICE9->DrawIndexedPrimitive(
-		D3DPT_TRIANGLELIST, // 인덱스 버퍼는 트라이앵글리스트로 고정
-		0, // 첫 인덱스가 될 정점 버퍼의 정점 인덱스
-		0, // 사용할 첫 인덱스(인덱스가 0, 1, 2, 3이 있을 때 3이면 3부터 시작)
-		g_terrainVertexCnt, // 사용할 정점 개수(2번째 인자 + 3번째 인자만큼 뺀 값)
-		0, // 인덱스 버퍼의 오프셋
-		g_terrainIndexCnt / 3); // 렌더링할 개수(큐브는 삼각형 12개)
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+		g_terrainVertexCnt, 0, g_terrainIndexCnt / 3);
 
 	// 위쪽 벽
 	D3DXMatrixTranslation(&matTrans, 0.0f, 6.2f, 0.0f);
 	D3DXMatrixRotationZ(&matRotateZ, D3DXToRadian(180.0f));
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &(matRotateZ * matTrans));
-	D3DDEVICE9->DrawIndexedPrimitive(
-		D3DPT_TRIANGLELIST, // 인덱스 버퍼는 트라이앵글리스트로 고정
-		0, // 첫 인덱스가 될 정점 버퍼의 정점 인덱스
-		0, // 사용할 첫 인덱스(인덱스가 0, 1, 2, 3이 있을 때 3이면 3부터 시작)
-		g_terrainVertexCnt, // 사용할 정점 개수(2번째 인자 + 3번째 인자만큼 뺀 값)
-		0, // 인덱스 버퍼의 오프셋
-		g_terrainIndexCnt / 3); // 렌더링할 개수(큐브는 삼각형 12개)
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+		g_terrainVertexCnt, 0, g_terrainIndexCnt / 3);
 
 	// 오른쪽 벽
 	D3DXMatrixTranslation(&matTrans, 3.1f, 3.1f, 0.0f);
 	D3DXMatrixRotationZ(&matRotateZ, D3DXToRadian(90.0f));
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &(matRotateZ * matTrans));
-	D3DDEVICE9->DrawIndexedPrimitive(
-		D3DPT_TRIANGLELIST, // 인덱스 버퍼는 트라이앵글리스트로 고정
-		0, // 첫 인덱스가 될 정점 버퍼의 정점 인덱스
-		0, // 사용할 첫 인덱스(인덱스가 0, 1, 2, 3이 있을 때 3이면 3부터 시작)
-		g_terrainVertexCnt, // 사용할 정점 개수(2번째 인자 + 3번째 인자만큼 뺀 값)
-		0, // 인덱스 버퍼의 오프셋
-		g_terrainIndexCnt / 3); // 렌더링할 개수(큐브는 삼각형 12개)
+	D3DDEVICE9->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0,
+		g_terrainVertexCnt, 0, g_terrainIndexCnt / 3);
 
 	// 현재 적용된 월드행렬을 가져옵니다.
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matWorld);
@@ -211,6 +155,7 @@ HRESULT CALLBACK OnRelease()
 
 void DefaultViewAndProjection()
 {
+	// ==========================================================
 	// 뷰행렬을 설정합니다.
 	D3DXVECTOR3 vEye(0.0f, 3.0f, -11.0f);  // 카메라의 위치
 	D3DXVECTOR3 vLookAt(0.0f, 3.1f, 0.0f); // 카메라가 보는 지점
@@ -219,16 +164,14 @@ void DefaultViewAndProjection()
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
 	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
-
+	// ==========================================================
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
 		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
 		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
-	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
-
-	// 전역행렬 초기화입니다.
-	g_matViewAndProjection = matView * g_matProjection;
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	// ==========================================================
 }
 
 void DefaultLight()
