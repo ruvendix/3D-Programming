@@ -152,6 +152,100 @@ void DefaultSamplerState()
 	D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP);
 }
 
+void OnUserInput()
+{
+	if (::GetAsyncKeyState('Z') & 0x8000)
+	{
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	}
+
+	if (::GetAsyncKeyState('X') & 0x8000)
+	{
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
+	}
+
+	if (::GetAsyncKeyState('C') & 0x8000)
+	{
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
+	}
+
+	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
+	if (::GetAsyncKeyState('A') & 0x8000)
+	{
+		g_rotateAngle.z += 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('D') & 0x8000)
+	{
+		g_rotateAngle.z -= 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('W') & 0x8000)
+	{
+		g_rotateAngle.x += 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('S') & 0x8000)
+	{
+		g_rotateAngle.x -= 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('Q') & 0x8000)
+	{
+		g_rotateAngle.y += 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('E') & 0x8000)
+	{
+		g_rotateAngle.y -= 180.0f * rDeltaSeconds;
+	}
+
+	if (::GetAsyncKeyState('R') & 0x8000)
+	{
+		RX::ZeroVector(&g_rotateAngle);
+		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+	}
+
+	if (::GetAsyncKeyState('T') & 0x0001)
+	{
+		++g_exampleRenderInfoU.idx;
+		g_exampleRenderInfoU.szValue = UpdateAddressMode(&g_exampleRenderInfoU);
+		if (g_exampleRenderInfoU.idx >= static_cast<INT32>(ADDRESS_MODE::END))
+		{
+			g_exampleRenderInfoU.idx = 1; // 시작값이 1인 것에 주의!
+			g_exampleRenderInfoU.value = D3DTADDRESS_WRAP;
+			g_exampleRenderInfoU.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
+		}
+
+		D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSU, g_exampleRenderInfoU.value);
+	}
+
+	if (::GetAsyncKeyState('Y') & 0x0001)
+	{
+		++g_exampleRenderInfoV.idx;
+		g_exampleRenderInfoV.szValue = UpdateAddressMode(&g_exampleRenderInfoV);
+		if (g_exampleRenderInfoV.idx >= static_cast<INT32>(ADDRESS_MODE::END))
+		{
+			g_exampleRenderInfoV.idx = 1; // 시작값이 1인 것에 주의!
+			g_exampleRenderInfoV.value = D3DTADDRESS_WRAP;
+			g_exampleRenderInfoV.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
+		}
+
+		D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSV, g_exampleRenderInfoV.value);
+	}
+
+	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
+	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
+
+	D3DXMATRIXA16 matRot;
+	D3DXMatrixRotationYawPitchRoll(&matRot,
+		D3DXToRadian(g_rotateAngle.y),
+		D3DXToRadian(g_rotateAngle.x),
+		D3DXToRadian(g_rotateAngle.z));
+
+	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
+}
+
 const TCHAR* UpdateAddressMode(ExampleRenderInfo* pInfo)
 {
 	NULLCHK(pInfo);
@@ -288,99 +382,5 @@ void InitIndexBuffer()
 	g_pIndexBuffer->Lock(0, indicesSize, &pData, D3DLOCK_READONLY);
 	::CopyMemory(pData, &g_vecIndex16[0], indicesSize);
 	g_pIndexBuffer->Unlock();
-}
-
-void OnUserInput()
-{
-	if (::GetAsyncKeyState('Z') & 0x8000)
-	{
-		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	}
-
-	if (::GetAsyncKeyState('X') & 0x8000)
-	{
-		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	}
-
-	if (::GetAsyncKeyState('C') & 0x8000)
-	{
-		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
-	}
-
-	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
-	if (::GetAsyncKeyState('A') & 0x8000)
-	{
-		g_rotateAngle.z += 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('D') & 0x8000)
-	{
-		g_rotateAngle.z -= 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('W') & 0x8000)
-	{
-		g_rotateAngle.x += 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('S') & 0x8000)
-	{
-		g_rotateAngle.x -= 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('Q') & 0x8000)
-	{
-		g_rotateAngle.y += 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('E') & 0x8000)
-	{
-		g_rotateAngle.y -= 180.0f * rDeltaSeconds;
-	}
-
-	if (::GetAsyncKeyState('R') & 0x8000)
-	{
-		RX::ZeroVector(&g_rotateAngle);
-		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	}
-
-	if (::GetAsyncKeyState('T') & 0x0001)
-	{
-		++g_exampleRenderInfoU.idx;
-		g_exampleRenderInfoU.szValue = UpdateAddressMode(&g_exampleRenderInfoU);
-		if (g_exampleRenderInfoU.idx >= static_cast<INT32>(ADDRESS_MODE::END))
-		{
-			g_exampleRenderInfoU.idx     = 1; // 시작값이 1인 것에 주의!
-			g_exampleRenderInfoU.value   = D3DTADDRESS_WRAP;
-			g_exampleRenderInfoU.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
-		}
-
-		D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSU, g_exampleRenderInfoU.value);
-	}
-
-	if (::GetAsyncKeyState('Y') & 0x0001)
-	{
-		++g_exampleRenderInfoV.idx;
-		g_exampleRenderInfoV.szValue = UpdateAddressMode(&g_exampleRenderInfoV);
-		if (g_exampleRenderInfoV.idx >= static_cast<INT32>(ADDRESS_MODE::END))
-		{
-			g_exampleRenderInfoV.idx     = 1; // 시작값이 1인 것에 주의!
-			g_exampleRenderInfoV.value   = D3DTADDRESS_WRAP;
-			g_exampleRenderInfoV.szValue = CONVERT_FLAG_TO_STRING(D3DTADDRESS_WRAP);
-		}
-
-		D3DDEVICE9->SetSamplerState(0, D3DSAMP_ADDRESSV, g_exampleRenderInfoV.value);
-	}
-	
-	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
-	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
-
-	D3DXMATRIXA16 matRot;
-	D3DXMatrixRotationYawPitchRoll(&matRot,
-		D3DXToRadian(g_rotateAngle.y),
-		D3DXToRadian(g_rotateAngle.x),
-		D3DXToRadian(g_rotateAngle.z));
-
-	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 }
 #pragma endregion
