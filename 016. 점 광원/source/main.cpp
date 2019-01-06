@@ -357,7 +357,7 @@ void CreateTerrainVertex()
 		0, // 오프셋
 		g_terrainVertexCnt * sizeof(VertexP3N), // 용량
 		&pVertices,    // 정점 버퍼의 정점 정보를 넣을 시작 주소
-		D3DFLAG_NONE); // 현재는 사용하지 않음
+		D3DLOCK_READONLY); // 현재는 사용하지 않음
 	DXERR_HANDLER(g_DXResult);
 	::CopyMemory(pVertices, &g_vecTerrainVertex[0], g_terrainVertexCnt * sizeof(VertexP3N));
 	g_pVertexBuffer->Unlock();
@@ -440,7 +440,7 @@ void CreateTerrainIndex()
 		0, // 오프셋
 		g_terrainIndexCnt * sizeof(Index16), // 용량
 		&pIndices,     // 인덱스 버퍼의 인덱스 정보를 넣을 시작 주소
-		D3DFLAG_NONE); // 현재는 사용하지 않음
+		D3DLOCK_READONLY); // 현재는 사용하지 않음
 	DXERR_HANDLER(g_DXResult);
 	::CopyMemory(pIndices, &g_vecTerrainIndex[0], g_terrainIndexCnt * sizeof(Index16));
 	g_pIndexBuffer->Unlock();

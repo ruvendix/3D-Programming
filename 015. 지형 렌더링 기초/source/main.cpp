@@ -256,7 +256,7 @@ void CreateTerrainVertex()
 	NULLCHK_RETURN(g_pVertexBuffer, "정점 버퍼 생성 실패했습니다!");
 
 	void* pVertices = nullptr;
-	g_pVertexBuffer->Lock(0, g_terrainVertexCnt * sizeof(VertexP3N), &pVertices, D3DFLAG_NONE);
+	g_pVertexBuffer->Lock(0, g_terrainVertexCnt * sizeof(VertexP3N), &pVertices, D3DLOCK_READONLY);
 	::CopyMemory(pVertices, &g_vecTerrainVertex[0], g_terrainVertexCnt * sizeof(VertexP3N));
 	g_pVertexBuffer->Unlock();
 }
@@ -327,7 +327,7 @@ void CreateTerrainIndex()
 	NULLCHK_RETURN(g_pIndexBuffer, "인덱스 버퍼 생성 실패했습니다!");
 
 	void* pIndices = nullptr;
-	g_pIndexBuffer->Lock(0, g_terrainIndexCnt * sizeof(Index16), &pIndices, D3DFLAG_NONE);
+	g_pIndexBuffer->Lock(0, g_terrainIndexCnt * sizeof(Index16), &pIndices, D3DLOCK_READONLY);
 	::CopyMemory(pIndices, &g_vecTerrainIndex[0], g_terrainIndexCnt * sizeof(Index16));
 	g_pIndexBuffer->Unlock();
 }

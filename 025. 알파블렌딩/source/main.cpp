@@ -244,7 +244,7 @@ void InitVertexBuffer()
 
 	// 정점 버퍼에 정점 정보 넣기
 	void* pData = nullptr;
-	g_pVertexBuffer->Lock(0, verticesSize, &pData, D3DFLAG_NONE);
+	g_pVertexBuffer->Lock(0, verticesSize, &pData, D3DLOCK_READONLY);
 	::CopyMemory(pData, &g_vecP3D[0], verticesSize);
 	g_pVertexBuffer->Unlock();
 }
@@ -286,7 +286,7 @@ void InitIndexBuffer()
 
 	// 인덱스 버퍼에 인덱스 정보 넣기
 	void* pData = nullptr;
-	g_pIndexBuffer->Lock(0, indicesSize, &pData, D3DFLAG_NONE);
+	g_pIndexBuffer->Lock(0, indicesSize, &pData, D3DLOCK_READONLY);
 	::CopyMemory(pData, &g_vecIndex16[0], indicesSize);
 	g_pIndexBuffer->Unlock();
 }
