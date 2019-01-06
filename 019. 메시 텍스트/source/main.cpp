@@ -203,6 +203,7 @@ void DefaultMatrix()
 		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
 		(RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
 	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
+	// =====================================================================
 }
 
 void DefaultLight()

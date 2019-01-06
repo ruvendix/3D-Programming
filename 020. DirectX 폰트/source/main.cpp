@@ -38,9 +38,6 @@ enum class TEXT_RENDERING_FLAG : INT32
 
 // ====================================================================================
 // 전역 변수 선언부입니다.
-D3DXMATRIXA16 g_matViewAndProjection; // 미리 계산해둔 뷰행렬 * 투영행렬
-D3DXMATRIXA16 g_matProjection;        // 미리 계산해둔 투영행렬
-
 HRESULT g_DXResult = S_OK;
 
 namespace
@@ -52,7 +49,6 @@ namespace
 	// ID3DXSprite와 연동해서 사용해야 합니다.
 	ID3DXFont* g_pFont = nullptr;
 	
-	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
 	D3DXVECTOR3 g_rotateAngle;
 
 	INT32        g_textRenderingFlagIdx = 0;
@@ -68,13 +64,8 @@ HRESULT CALLBACK OnUpdate();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
-// 기본 행렬을 설정합니다.
 void DefaultMatrix();
-
-// 기본 렌더 스테이트를 설정합니다.
 void DefaultRenderState();
-
-// 사용자의 키보드 또는 마우스 입력에 따른 처리를 합니다.
 void OnUserInput();
 
 // 텍스트 렌더링 플래그를 문자열로 바꾸는 함수입니다.
@@ -105,19 +96,13 @@ INT32 APIENTRY _tWinMain(HINSTANCE hInstance,
 	return RXMAIN_DX9->getMessageCode();
 }
 
-// 초기화 함수입니다.
-// 3D 렌더링은 연산이 많이 들어가므로 웬만한 작업은 초기화해줘야 합니다.
-// 렌더링하면서 실시간으로 연산도 가능하지만 그렇게 되면 프레임이 떨어지게 됩니다.
-// 일반적으로 렌더링할 때는 렌더링 작업만 처리합니다.
 HRESULT CALLBACK OnInit()
 {
 	DefaultMatrix();
 	DefaultRenderState();
 
-	// 축을 생성합니다.
 	g_axis.CreateAxis(20.0f);
 
-	// 마우스 커서를 보여줍니다.
 	RX::ShowMouseCursor(true);
 
 	// ======================================================================
@@ -154,19 +139,12 @@ HRESULT CALLBACK OnInit()
 	return S_OK;
 }
 
-// 업데이트 함수입니다.
-// 렌더링에 영향을 주거나 프로그램에 영향을 주는
-// 정보들을 매프레임마다 업데이트합니다.
 HRESULT CALLBACK OnUpdate()
 {
 	OnUserInput();
 	return S_OK;
 }
 
-// 렌더링 함수입니다.
-// 실제 렌더링 작업인 Draw Call이 처리됩니다.
-// Draw Call은 프레임당 호출되는 렌더링 함수를 뜻하는데 호출되는 빈도수를
-// 조사하면 Draw Call Count를 알아낼 수 있습니다.
 HRESULT CALLBACK OnRender()
 {
 	g_axis.DrawAxis();
@@ -203,39 +181,20 @@ void DefaultMatrix()
 
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
-	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);
-	
+	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);	
 	// =====================================================================
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
 		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
 		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
-	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &g_matProjection);
-	
+	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// =====================================================================
-	// 전역행렬 초기화입니다.
-	g_matViewAndProjection = matView * g_matProjection;
 }
 
 void DefaultRenderState()
 {
-	// rhw를 사용하지 않는다면 변환 이전의 공간좌표를
-	// 사용하게 되므로 각종 변환 과정을 거쳐야 합니다.
-	// 조명(라이팅, Lighting)도 그중 하나인데
-	// 이번에는 조명을 사용하지 않으므로 조명을 꺼줍니다.
 	D3DDEVICE9->SetRenderState(D3DRS_LIGHTING, FALSE);
-
-	// 필 모드를 설정합니다. 디폴트는 솔리드입니다.
-	D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
-	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_WIREFRAME);
-	//D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_POINT);
-
-	// 컬링 모드를 설정합니다. 디폴트는 반시계방향 컬링입니다.
-	// 큐브를 확인하기 위해서는 컬링 모드를 무시해야 합니다.
-	D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
-	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_CW);
-	//D3DDEVICE9->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 }
 
 void OnUserInput()
@@ -309,13 +268,10 @@ void OnUserInput()
 		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
 	}
 
-	// 각도 보정
 	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
 	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
 	g_rotateAngle.y = RX::AdjustAngle(g_rotateAngle.y);
 
-	// 회전행렬입니다. 순서는 Z -> X -> Y입니다.
-	// 즉, Roll -> Pitch -> Yaw입니다.
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
 		D3DXToRadian(g_rotateAngle.y),
