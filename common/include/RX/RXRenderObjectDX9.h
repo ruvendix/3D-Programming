@@ -14,6 +14,7 @@
 
 #include "common.h"
 #include "RXVertexBufferDX9.h"
+#include "RXIndexBufferDX9.h"
 
 namespace RX
 {

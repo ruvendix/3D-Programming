@@ -57,7 +57,7 @@ namespace RX
 		FLOAT   m_rTimeScale; // 타임스케일입니다. (값이 크면 빨라지고, 작으면 느려집니다)
 		DWORD   m_FPS;        // 초당 프레임 개수입니다. (Frame Per Second)
 		RXTimer m_frameTimer; // 프레임을 측정하기 위한 타이머입니다.
-		std::wstring m_szFPS; // 프레임을 문자열로 저장하기 위한 것입니다.
+		WCHAR   m_szFPS[DEFAULT_STRING_LENGTH]; // 프레임을 문자열로 저장하기 위한 것입니다.
 	};
 
 } // namespace RX end

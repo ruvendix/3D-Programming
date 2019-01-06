@@ -29,13 +29,12 @@ HRESULT CALLBACK OnUpdate();
 HRESULT CALLBACK OnRender();
 HRESULT CALLBACK OnRelease();
 
-
 void InputKeyboard();
-void CalcTriangleNormal();
 void CreateCube(FLOAT rPoint1, FLOAT rPoint2);
 void InsertBaseVertex(FLOAT rPoint1, FLOAT rPoint2);
 void InitCubeVertexAndIndex(FLOAT rPoint1, FLOAT rPoint2);
 void AdjustColorRange(D3DCOLORVALUE* pColor);
+
 
 // ====================================================================================
 // <Win32 API는 WinMain()이 진입점입니다>
@@ -79,8 +78,6 @@ HRESULT CALLBACK OnInit()
 		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
 	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
 	// ==========================================================
-
-	CalcTriangleNormal();
 
 	RX::ShowMouseCursor(true);
 
@@ -291,23 +288,6 @@ void AdjustColorRange(D3DCOLORVALUE* pColor)
 }
 
 #pragma region 큐브 생성 및 법선벡터 구하는 과정
-void CalcTriangleNormal()
-{
-	::ZeroMemory(g_vCubeTriangleNormal, sizeof(D3DXVECTOR3) * 12);
-
-	INT32 index = -1;
-	for (INT32 i = 0; i < 12; ++i)
-	{
-		// 인덱스 버퍼에 원하는 정점이 순서대로 들어가있으므로
-		// 인덱스를 하나씩 증가시키면 원하는 정점을 알아낼 수 있습니다.
-		// 기준 정점과 인접한 정점 2개를 알아내면 법선벡터를 구할 수 있습니다.
-		D3DXVECTOR3 v1 = g_vBaseVertex[g_vecIndex16[++index].index];
-		D3DXVECTOR3 v2 = g_vBaseVertex[g_vecIndex16[++index].index];
-		D3DXVECTOR3 v3 = g_vBaseVertex[g_vecIndex16[++index].index];
-		g_vCubeTriangleNormal[i] = RX::CalcNormalVector(v1, v2, v3);
-	}
-}
-
 void CreateCube(FLOAT rPoint1, FLOAT rPoint2)
 {
 	if (rPoint1 > rPoint2)
@@ -355,7 +335,7 @@ void InsertBaseVertex(FLOAT rPoint1, FLOAT rPoint2)
 	RX::SetVector(&g_vBaseVertex[2], rPoint2, rPoint2, rPoint2);                         // 2
 	RX::SetVector(&g_vBaseVertex[3], rPoint2 - rDistance, rPoint2, rPoint2);             // 3
 
-																						 // 아랫면 정점 4개
+	// 아랫면 정점 4개
 	RX::SetVector(&g_vBaseVertex[4], rPoint1, rPoint1, rPoint1);                         // 4
 	RX::SetVector(&g_vBaseVertex[5], rPoint1 + rDistance, rPoint1, rPoint1);             // 5
 	RX::SetVector(&g_vBaseVertex[6], rPoint1 + rDistance, rPoint1, rPoint1 + rDistance); // 6
