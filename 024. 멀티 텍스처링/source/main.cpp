@@ -421,12 +421,9 @@ void OnUserInput()
 		D3DDEVICE9->SetTextureStageState(1, D3DTSS_COLOROP, g_exampleRenderInfo.value);
 	}
 
-	// 각도 보정
 	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
 	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
 
-	// 회전행렬입니다. 순서는 Z -> X -> Y입니다.
-	// 즉, Roll -> Pitch -> Yaw입니다.
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
 		D3DXToRadian(g_rotateAngle.y),

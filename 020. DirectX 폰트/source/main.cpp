@@ -173,7 +173,7 @@ HRESULT CALLBACK OnRelease()
 
 void DefaultMatrix()
 {
-	// =====================================================================
+	// ==========================================================
 	// 뷰행렬을 설정합니다.
 	D3DXVECTOR3 vEye(1.0f, 4.0f, -3.0f);   // 카메라의 위치
 	D3DXVECTOR3 vLookAt(0.0f, 0.0f, 0.0f); // 카메라가 보는 지점
@@ -182,14 +182,14 @@ void DefaultMatrix()
 	D3DXMATRIXA16 matView;
 	D3DXMatrixLookAtLH(&matView, &vEye, &vLookAt, &vUp);
 	D3DDEVICE9->SetTransform(D3DTS_VIEW, &matView);	
-	// =====================================================================
+	// ==========================================================
 	// 투영행렬을 설정합니다.
 	D3DXMATRIXA16 matProjection;
 	D3DXMatrixPerspectiveFovLH(&matProjection, (D3DX_PI / 4.0f),
 		(static_cast<FLOAT>(RXMAIN_DX9->getClientRect()->CalcWidth()) /
 		                   (RXMAIN_DX9->getClientRect()->CalcHeight())), 1.0f, 1000.0f);
 	D3DDEVICE9->SetTransform(D3DTS_PROJECTION, &matProjection);
-	// =====================================================================
+	// ==========================================================
 }
 
 void DefaultRenderState()

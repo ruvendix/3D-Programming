@@ -15,6 +15,9 @@ namespace
 	std::vector<VertexP3D>  g_vecP3D;         // 정점 정보입니다.
 	std::vector<Index16>    g_vecIndex16;     // 인덱스 정보입니다.
 	D3DXVECTOR3             g_vBaseVertex[8]; // 기준 정점 정보입니다.
+
+	// 원래는 벡터로만 사용되는데 이번에는 FLOAT 3개를 묶은 것으로 봅니다.
+	D3DXVECTOR3 g_rotateAngle;
 }
 
 // ====================================================================================
@@ -100,58 +103,53 @@ HRESULT CALLBACK OnInit()
 
 HRESULT CALLBACK OnUpdate()
 {
-	static FLOAT rAngleZ = 0.0f;
-	static FLOAT rAngleX = 0.0f;
-	static FLOAT rAngleY = 0.0f;
-
 	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
 	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		rAngleZ += 180.0f * rDeltaSeconds;
+		g_rotateAngle.z += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		rAngleZ -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.z -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		rAngleX += 180.0f * rDeltaSeconds;
+		g_rotateAngle.x += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		rAngleX -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.x -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		rAngleY += 180.0f * rDeltaSeconds;
+		g_rotateAngle.y += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		rAngleY -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.y -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
-		rAngleZ = 0.0f;
-		rAngleX = 0.0f;
-		rAngleY = 0.0f;
+		RX::ZeroVector(&g_rotateAngle);
 	}
 
 	// 각도 보정
-	rAngleZ = RX::AdjustAngle(rAngleZ);
-	rAngleX = RX::AdjustAngle(rAngleX);
-	rAngleY = RX::AdjustAngle(rAngleY);
+	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
+	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
+	g_rotateAngle.y = RX::AdjustAngle(g_rotateAngle.y);
 
 	// 회전행렬입니다. 순서는 Z -> X -> Y입니다.
 	// 즉, Roll -> Pitch -> Yaw입니다.
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
-		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
+		D3DXToRadian(g_rotateAngle.y), D3DXToRadian(g_rotateAngle.x),
+		D3DXToRadian(g_rotateAngle.z));
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	return S_OK;

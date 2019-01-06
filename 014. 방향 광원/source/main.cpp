@@ -23,6 +23,8 @@ namespace
 	// 광원 구조체입니다.
 	// 이번에는 방향 광원으로 사용합니다.
 	D3DLIGHT9 g_directionalLight;
+
+	D3DXVECTOR3 g_rotateAngle;
 }
 
 
@@ -145,57 +147,50 @@ HRESULT CALLBACK OnRelease()
 #pragma region 중복되는 이전 코드
 void InputKeyboard()
 {
-	static FLOAT rAngleZ = 0.0f;
-	static FLOAT rAngleX = 0.0f;
-	static FLOAT rAngleY = 0.0f;
-
 	FLOAT rDeltaSeconds = RX::RXProgramFPSMgr::Instance()->getTimer()->getDeltaSeconds();
 	if (::GetAsyncKeyState('A') & 0x8000)
 	{
-		rAngleZ += 180.0f * rDeltaSeconds;
+		g_rotateAngle.z += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('D') & 0x8000)
 	{
-		rAngleZ -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.z -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('W') & 0x8000)
 	{
-		rAngleX += 180.0f * rDeltaSeconds;
+		g_rotateAngle.x += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('S') & 0x8000)
 	{
-		rAngleX -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.x -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('Q') & 0x8000)
 	{
-		rAngleY += 180.0f * rDeltaSeconds;
+		g_rotateAngle.y += 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('E') & 0x8000)
 	{
-		rAngleY -= 180.0f * rDeltaSeconds;
+		g_rotateAngle.y -= 180.0f * rDeltaSeconds;
 	}
 
 	if (::GetAsyncKeyState('R') & 0x8000)
 	{
-		rAngleZ = 0.0f;
-		rAngleX = 0.0f;
-		rAngleY = 0.0f;
-
-		D3DDEVICE9->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+		RX::ZeroVector(&g_rotateAngle);
 	}
 
-	rAngleZ = RX::AdjustAngle(rAngleZ);
-	rAngleX = RX::AdjustAngle(rAngleX);
-	rAngleY = RX::AdjustAngle(rAngleY);
+	g_rotateAngle.z = RX::AdjustAngle(g_rotateAngle.z);
+	g_rotateAngle.x = RX::AdjustAngle(g_rotateAngle.x);
+	g_rotateAngle.y = RX::AdjustAngle(g_rotateAngle.y);
 
 	D3DXMATRIXA16 matRot;
 	D3DXMatrixRotationYawPitchRoll(&matRot,
-		D3DXToRadian(rAngleY), D3DXToRadian(rAngleX), D3DXToRadian(rAngleZ));
+		D3DXToRadian(g_rotateAngle.y), D3DXToRadian(g_rotateAngle.x),
+		D3DXToRadian(g_rotateAngle.z));
 	D3DDEVICE9->SetTransform(D3DTS_WORLD, &matRot);
 
 	if (::GetAsyncKeyState('Z') & 0x8000)
